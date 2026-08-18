@@ -142,6 +142,21 @@ Full spec §11–19 flow at `/author/submissions/new` → `/author/submissions/[
 
 **Verified against the real admin account and real production conference data** (not a disposable test) via a one-off browser-driven script, since exercising this section meaningfully requires being logged in as an actual admin: login → dashboard load → edited a subtheme description and the abstract word limit, confirmed the save worked, then reverted both to their original values → confirmed the status filter round-trips correctly through the URL (`?status=draft`), which also served as proof the custom Select component participates in native GET form submission, not just visual selection → created a real test reviewer end-to-end, then deleted it (auth user + `reviewer_profiles` row) via the admin API afterward. Confirmed via direct DB query that the conference and subtheme reverts actually landed, not just that the UI claimed success. The test script itself had real admin credentials hardcoded for the login step, so it was deleted after use rather than committed.
 
-## 16. Immediate next steps
+## 16. SMTP (auth emails) — configured
 
-The system now has a complete author path (register → submit → track) and enough admin tooling to actually run the conference (reviewers, subthemes, conference settings). Phase 4 (Review) is next, and is now actually testable: add the 5 real reviewers (names still needed from the project owner, per spec §57 — not invented), then build the reviewer dashboard, double-blind review form, conflict-of-interest declaration, and the automatic subtheme-routing-on-submit step that was deliberately deferred in Phase 2 because there was nothing to route to yet.
+Gmail SMTP via `asmnigeriaonehealth@gmail.com` (the conference secretariat account), set up through the Supabase Management API rather than the dashboard UI — the dashboard only lets you *edit* email templates once custom SMTP is already on, which meant SMTP and the template fix had to land together. Configured in one PATCH to `/v1/projects/{ref}/config/auth`:
+
+- `smtp_host`/`port`/`user`/`pass`/`sender_name`/`admin_email` — Gmail SMTP, app-password auth (requires 2-Step Verification on that Google account, which the project owner enabled).
+- `site_url` moved from `localhost:3000` to the production URL, and `uri_allow_list` now includes both localhost (dev) and production, so redirect links work in both environments.
+- Both `mailer_templates_confirmation_content` and `mailer_templates_recovery_content` rewritten to the app's `/auth/confirm?token_hash=...&type=...` route (the same fix identified back in Phase 2 §13 but blocked at the time since template editing needs SMTP first) — and their `mailer_templates_custom_contents` flags flipped to `true`, without which Supabase silently keeps using its built-in default content regardless of what's saved in the content field.
+
+**Verified live**: triggered a real password-reset email to `researchvy@gmail.com` via `/auth/v1/recover`, project owner confirmed it arrived and the reset link worked correctly against the production site.
+
+**Important distinction — this is not the same as conference notification emails.** What's configured now is Supabase Auth's own mail (signup confirmation, password reset). The spec's actual notification requirements (§32-33: submission acknowledgement, decision notifications, reviewer assignment, all tracked with retry/status in the `notifications` table) are a separate piece of application code that doesn't exist yet — `submit_abstract()` already writes `notifications` rows with `status = 'pending'`, but nothing reads and sends them. `EMAIL_HOST`/`PORT`/`USER`/`PASSWORD`/`FROM` are populated in both `.env.local` and Vercel (same Gmail credentials) ready for when that's built, but building the actual mailer (likely Nodemailer in a Server Action, plus templates for each notification type) is still open.
+
+## 17. Immediate next steps
+
+The system now has a complete author path (register → submit → track), enough admin tooling to actually run the conference (reviewers, subthemes, conference settings), and working auth email. Two candidate next pieces, either order:
+
+1. **Phase 4 (Review)** — needs the 5 real reviewer names from the project owner first (spec §57 — not invented), then the reviewer dashboard, double-blind review form, conflict-of-interest declaration, and the automatic subtheme-routing-on-submit step deferred from Phase 2.
+2. **Notification sending** (§16 above) — buildable now independent of reviewers: read pending `notifications` rows and actually send them via the now-configured Gmail SMTP, starting with the submission-acknowledgement email that's been sitting as `pending` since the first successful test submission.
