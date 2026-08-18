@@ -74,6 +74,7 @@ export type Database = {
           name: string
           short_name: string
           theme: string | null
+          tagline: string | null
           reference_prefix: string
           location: string
           venue: string | null
@@ -101,6 +102,7 @@ export type Database = {
           name: string
           short_name: string
           theme?: string | null
+          tagline?: string | null
           reference_prefix: string
           location: string
           venue?: string | null
@@ -128,6 +130,7 @@ export type Database = {
           name?: string
           short_name?: string
           theme?: string | null
+          tagline?: string | null
           reference_prefix?: string
           location?: string
           venue?: string | null

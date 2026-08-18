@@ -28,9 +28,13 @@ import { addReviewerSchema, type AddReviewerInput } from "@/lib/validations/revi
 
 type Subtheme = { id: string; name: string }
 
+type SubmitOutcome =
+  | { kind: "created"; tempPassword: string }
+  | { kind: "reused" }
+
 export function AddReviewerForm({ subthemes }: { subthemes: Subtheme[] }) {
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const [tempPassword, setTempPassword] = useState<string | null>(null)
+  const [outcome, setOutcome] = useState<SubmitOutcome | null>(null)
 
   const form = useForm<AddReviewerInput>({
     resolver: zodResolver(addReviewerSchema),
@@ -47,25 +51,37 @@ export function AddReviewerForm({ subthemes }: { subthemes: Subtheme[] }) {
 
   async function onSubmit(values: AddReviewerInput) {
     setSubmitError(null)
-    setTempPassword(null)
+    setOutcome(null)
     const result = await addReviewerAction(values)
     if ("error" in result) {
       setSubmitError(result.error)
       return
     }
-    setTempPassword(result.tempPassword)
+    setOutcome(
+      "tempPassword" in result
+        ? { kind: "created", tempPassword: result.tempPassword }
+        : { kind: "reused" }
+    )
     form.reset()
   }
 
   return (
     <div className="space-y-4">
-      {tempPassword && (
+      {outcome?.kind === "created" && (
         <Alert>
           <AlertDescription>
             Reviewer account created. Share these credentials with them directly (email
             delivery isn&apos;t configured yet):
             <br />
-            Temporary password: <strong className="font-mono">{tempPassword}</strong>
+            Temporary password: <strong className="font-mono">{outcome.tempPassword}</strong>
+          </AlertDescription>
+        </Alert>
+      )}
+      {outcome?.kind === "reused" && (
+        <Alert>
+          <AlertDescription>
+            This reviewer already has an account — added them to this subtheme too. No new
+            credentials needed; they use their existing login.
           </AlertDescription>
         </Alert>
       )}

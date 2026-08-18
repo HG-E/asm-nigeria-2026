@@ -3,6 +3,7 @@ import { z } from "zod"
 export const conferenceSettingsSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
   theme: z.string().trim().optional().or(z.literal("")),
+  tagline: z.string().trim().optional().or(z.literal("")),
   location: z.string().trim().min(1, "Location is required"),
   venue: z.string().trim().optional().or(z.literal("")),
   startDate: z.string().optional().or(z.literal("")),

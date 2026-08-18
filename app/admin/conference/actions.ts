@@ -28,6 +28,7 @@ export async function updateConferenceAction(
     .update({
       name: data.name,
       theme: data.theme || null,
+      tagline: data.tagline || null,
       location: data.location,
       venue: data.venue || null,
       start_date: data.startDate || null,

@@ -40,6 +40,7 @@ export default async function AdminConferencePage() {
             defaultValues={{
               name: conference.name,
               theme: conference.theme ?? "",
+              tagline: conference.tagline ?? "",
               location: conference.location,
               venue: conference.venue ?? "",
               startDate: conference.start_date ?? "",

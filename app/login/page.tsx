@@ -9,14 +9,27 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { createClient } from "@/lib/supabase/server"
 
 export default async function LoginPage(props: PageProps<"/login">) {
   const searchParams = await props.searchParams
   const verified = searchParams.verified === "1"
   const reset = searchParams.reset === "1"
 
+  const supabase = await createClient()
+  const { data: conference } = await supabase
+    .from("conferences")
+    .select("tagline")
+    .eq("is_active", true)
+    .maybeSingle()
+
   return (
-    <div className="flex min-h-svh items-center justify-center bg-muted/30 px-4 py-12">
+    <div className="flex min-h-svh flex-col items-center justify-center gap-4 bg-muted/30 px-4 py-12">
+      {conference?.tagline && (
+        <p className="text-muted-foreground text-center text-sm italic">
+          &ldquo;{conference.tagline}&rdquo;
+        </p>
+      )}
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">Log in</CardTitle>
