@@ -31,6 +31,11 @@ export async function proposeDecisionAction(
     return { error: "Submission not found." }
   }
 
+  const DECIDABLE_STATUSES = ["reviews_completed", "decision_pending"]
+  if (!DECIDABLE_STATUSES.includes(submission.status)) {
+    return { error: "This submission is not currently awaiting a decision." }
+  }
+
   const { data: existing } = await supabase
     .from("decisions")
     .select("id, is_final")
@@ -39,9 +44,11 @@ export async function proposeDecisionAction(
     .limit(1)
     .maybeSingle()
 
-  if (existing?.is_final) {
-    return { error: "A final decision has already been recorded for this submission." }
-  }
+  // A final decision belongs to a past review round (e.g. the committee
+  // asked for a revision, the author resubmitted, and reviewers are now
+  // done with round 2) -- it's history, not a draft to overwrite. Only an
+  // existing NON-final decision is the current round's in-progress draft.
+  const draft = existing && !existing.is_final ? existing : null
 
   const decisionFields = {
     decision: data.decision,
@@ -50,8 +57,8 @@ export async function proposeDecisionAction(
     revision_deadline: data.revisionDeadline || null,
   }
 
-  const { error } = existing
-    ? await supabase.from("decisions").update(decisionFields).eq("id", existing.id)
+  const { error } = draft
+    ? await supabase.from("decisions").update(decisionFields).eq("id", draft.id)
     : await supabase.from("decisions").insert({
         submission_id: submissionId,
         conference_id: submission.conference_id,
