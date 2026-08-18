@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
+import { RevisionForm } from "@/components/submission/revision-form"
 import { Step1Form } from "@/components/submission/step1-form"
 import { Step2Form } from "@/components/submission/step2-form"
 import { Step3Form } from "@/components/submission/step3-form"
@@ -38,6 +39,88 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
 
   if (!submission) {
     notFound()
+  }
+
+  if (submission.status === "revision_required") {
+    const conference = await getActiveConference()
+    const nextVersion = submission.current_version + 1
+
+    const [{ data: draftVersion }, { data: currentVersionRow }, { data: document }, { data: decision }] =
+      await Promise.all([
+        supabase
+          .from("submission_versions")
+          .select("abstract_text")
+          .eq("submission_id", id)
+          .eq("version_number", nextVersion)
+          .maybeSingle(),
+        supabase
+          .from("submission_versions")
+          .select("abstract_text")
+          .eq("submission_id", id)
+          .eq("version_number", submission.current_version)
+          .maybeSingle(),
+        supabase
+          .from("submission_documents")
+          .select("id, file_name, file_type, file_size_bytes, storage_path")
+          .eq("submission_id", id)
+          .eq("is_current", true)
+          .maybeSingle(),
+        supabase
+          .from("decisions")
+          .select("author_message, revision_deadline")
+          .eq("submission_id", id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+      ])
+
+    const defaultAbstractText = draftVersion?.abstract_text ?? currentVersionRow?.abstract_text ?? ""
+
+    return (
+      <Card className="mx-auto max-w-2xl">
+        <CardHeader>
+          <CardTitle>{submission.title || "Untitled abstract"}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <dl className="grid grid-cols-2 gap-y-2 text-sm">
+            <dt className="text-muted-foreground">Reference</dt>
+            <dd>{submission.reference_number ?? "—"}</dd>
+            <dt className="text-muted-foreground">Subtheme</dt>
+            <dd>{submission.conference_subthemes?.name ?? "—"}</dd>
+            <dt className="text-muted-foreground">Status</dt>
+            <dd className="capitalize">Revision required</dd>
+          </dl>
+
+          {(decision?.author_message || decision?.revision_deadline) && (
+            <Alert>
+              <AlertDescription className="space-y-1">
+                {decision.revision_deadline && (
+                  <p>
+                    <strong>Revision deadline:</strong>{" "}
+                    {new Date(decision.revision_deadline).toLocaleDateString()}
+                  </p>
+                )}
+                {decision.author_message && <p>{decision.author_message}</p>}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <RevisionForm
+            submissionId={id}
+            userId={session.authUserId}
+            wordLimit={conference?.abstract_word_limit ?? 300}
+            defaultAbstractText={defaultAbstractText}
+            currentDocument={document ?? null}
+            allowedFileTypes={conference?.allowed_file_types ?? []}
+            maxFileSizeMb={conference?.max_file_size_mb ?? 10}
+          />
+
+          <Link href="/author/dashboard" className={buttonVariants({ variant: "outline" })}>
+            Back to dashboard
+          </Link>
+        </CardContent>
+      </Card>
+    )
   }
 
   if (submission.status !== "draft") {

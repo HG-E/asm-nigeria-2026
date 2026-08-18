@@ -897,6 +897,10 @@ export type Database = {
         Args: { p_submission_id: string }
         Returns: string
       }
+      resubmit_abstract: {
+        Args: { p_submission_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       blind_mode: "none" | "single" | "double"

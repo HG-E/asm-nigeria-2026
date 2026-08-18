@@ -35,6 +35,32 @@ async function loadOwnDraft(supabase: Awaited<ReturnType<typeof createClient>>, 
   return data
 }
 
+// Document re-upload is the one piece of editing shared between the initial
+// draft flow and a revision -- everything else (title, authors, subtheme,
+// declarations) stays locked once a submission has been through review, so
+// only this loader (used by recordDocumentAction/deleteDocumentAction)
+// accepts revision_required. loadOwnDraft above stays draft-only on purpose.
+async function loadOwnEditableSubmission(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  id: string,
+  authUserId: string
+) {
+  const { data } = await supabase
+    .from("submissions")
+    .select("id, corresponding_author_id, status, current_version")
+    .eq("id", id)
+    .single()
+
+  if (
+    !data ||
+    data.corresponding_author_id !== authUserId ||
+    (data.status !== "draft" && data.status !== "revision_required")
+  ) {
+    return null
+  }
+  return data
+}
+
 export async function updateStep1Action(id: string, input: Step1Input): Promise<ActionResult> {
   const session = await requireAuth()
   const parsed = step1Schema.safeParse(input)
@@ -181,7 +207,7 @@ export async function recordDocumentAction(
 ): Promise<ActionResult> {
   const session = await requireAuth()
   const supabase = await createClient()
-  const draft = await loadOwnDraft(supabase, id, session.authUserId)
+  const draft = await loadOwnEditableSubmission(supabase, id, session.authUserId)
   if (!draft) {
     return { error: "This draft is no longer editable." }
   }
@@ -244,7 +270,7 @@ export async function deleteDocumentAction(
 ): Promise<ActionResult> {
   const session = await requireAuth()
   const supabase = await createClient()
-  const draft = await loadOwnDraft(supabase, id, session.authUserId)
+  const draft = await loadOwnEditableSubmission(supabase, id, session.authUserId)
   if (!draft) {
     return { error: "This draft is no longer editable." }
   }
@@ -317,6 +343,111 @@ export async function submitAbstractAction(id: string): Promise<ActionResult> {
     // Don't make the author wait on SMTP round trips (multiple recipients
     // can take 10s+ sequentially) -- send after the response is already on
     // its way, per Next.js's documented pattern for post-response work.
+    after(() => sendNotifications(ids))
+  }
+
+  redirect(`/author/submissions/${id}?submitted=1`)
+}
+
+async function loadOwnRevisableSubmission(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  id: string,
+  authUserId: string
+) {
+  const { data } = await supabase
+    .from("submissions")
+    .select("id, corresponding_author_id, status, current_version")
+    .eq("id", id)
+    .single()
+
+  if (!data || data.corresponding_author_id !== authUserId || data.status !== "revision_required") {
+    return null
+  }
+  return data
+}
+
+export async function saveRevisionAction(id: string, input: Step3Input): Promise<ActionResult> {
+  const session = await requireAuth()
+  const parsed = step3Schema.safeParse(input)
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" }
+  }
+
+  const supabase = await createClient()
+  const submission = await loadOwnRevisableSubmission(supabase, id, session.authUserId)
+  if (!submission) {
+    return { error: "This submission is not open for revision." }
+  }
+
+  const conference = await getActiveConference()
+  const wordCount = countWords(parsed.data.abstractText)
+  if (conference && wordCount > conference.abstract_word_limit) {
+    return {
+      error: `Your abstract is ${wordCount} words, over the ${conference.abstract_word_limit}-word limit.`,
+    }
+  }
+
+  const { error } = await supabase.from("submission_versions").upsert(
+    {
+      submission_id: id,
+      version_number: submission.current_version + 1,
+      abstract_text: parsed.data.abstractText,
+      word_count: wordCount,
+    },
+    { onConflict: "submission_id,version_number" }
+  )
+
+  if (error) {
+    return { error: "Could not save. Please try again." }
+  }
+
+  return { success: true }
+}
+
+export async function submitRevisionAction(id: string): Promise<ActionResult> {
+  const session = await requireAuth()
+  const supabase = await createClient()
+
+  const submission = await loadOwnRevisableSubmission(supabase, id, session.authUserId)
+  if (!submission) {
+    return { error: "This submission is not open for revision." }
+  }
+
+  const nextVersion = submission.current_version + 1
+  const [{ data: version }, { data: documents }] = await Promise.all([
+    supabase
+      .from("submission_versions")
+      .select("abstract_text, word_count")
+      .eq("submission_id", id)
+      .eq("version_number", nextVersion)
+      .maybeSingle(),
+    supabase.from("submission_documents").select("id").eq("submission_id", id).eq("is_current", true),
+  ])
+
+  if (!version?.abstract_text?.trim()) {
+    return { error: "Add your revised abstract content before submitting." }
+  }
+  const conference = await getActiveConference()
+  if (conference && version.word_count > conference.abstract_word_limit) {
+    return { error: `Your abstract exceeds the ${conference.abstract_word_limit}-word limit.` }
+  }
+  if (!documents || documents.length === 0) {
+    return { error: "Upload your revised abstract document before submitting." }
+  }
+
+  const { error } = await supabase.rpc("resubmit_abstract", { p_submission_id: id })
+  if (error) {
+    return { error: "Your revision could not be submitted. Please try again." }
+  }
+
+  const admin = createAdminClient()
+  const { data: pendingNotifications } = await admin
+    .from("notifications")
+    .select("id")
+    .eq("submission_id", id)
+    .eq("status", "pending")
+  if (pendingNotifications && pendingNotifications.length > 0) {
+    const ids = pendingNotifications.map((n) => n.id)
     after(() => sendNotifications(ids))
   }
 

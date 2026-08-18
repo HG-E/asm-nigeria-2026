@@ -95,6 +95,14 @@ async function renderContent(
         <p><strong>Subtheme:</strong> ${subtheme}</p>
         <p>Please log in to your reviewer dashboard to declare any conflict of interest and complete your review.</p>
       `
+    case "reviewer_reassignment":
+      return `
+        <h2>Revised abstract ready for re-review</h2>
+        <p>The author has submitted a revised version of an abstract you previously reviewed.</p>
+        <p><strong>Reference number:</strong> ${reference}</p>
+        <p><strong>Subtheme:</strong> ${subtheme}</p>
+        <p>Please log in to your reviewer dashboard to review the updated abstract.</p>
+      `
     default:
       return `<p>Update on submission ${reference}: ${title}</p>`
   }
