@@ -100,7 +100,7 @@ export default async function CommitteeSubmissionDetailPage(
             <p className="text-muted-foreground text-sm">No reviewer assigned yet.</p>
           ) : (
             assignments.map((a) => {
-              const review = a.reviews?.[0]
+              const review = a.reviews
               return (
                 <div key={a.id} className="rounded-lg border p-3 text-sm">
                   <div className="flex items-center justify-between">
