@@ -77,6 +77,7 @@ export default async function AdminDashboardPage() {
         {[
           ["Manage Submissions", "/admin/submissions", "Search, filter, and view all submissions."],
           ["Manage Reviewers", "/admin/reviewers", "Add and manage the 5 scientific reviewers."],
+          ["Manage Committee", "/admin/committee", "Add scientific committee members."],
           ["Manage Subthemes", "/admin/subthemes", "Edit conference subthemes."],
           ["Conference Settings", "/admin/conference", "Dates, deadlines, word limit, file rules."],
         ].map(([title, href, desc]) => (

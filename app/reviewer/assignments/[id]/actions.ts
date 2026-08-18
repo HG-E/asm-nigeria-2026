@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache"
 
 import { requireRole } from "@/lib/auth"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 import {
   conflictDeclarationSchema,
@@ -175,6 +176,29 @@ async function saveReview(
       previous_status: "in_progress",
       new_status: "completed",
     })
+
+    // A plain reviewer's own session can only see their own assignment row
+    // (RLS), not their co-reviewers', so checking whether ALL assignments
+    // for this submission are done needs the admin client -- same reason
+    // the status transition itself does, since reviewers have no UPDATE
+    // access to submissions at all.
+    const admin = createAdminClient()
+    const { data: siblingAssignments } = await admin
+      .from("review_assignments")
+      .select("status")
+      .eq("submission_id", assignment.submission_id)
+      .eq("is_active", true)
+
+    const allDone = (siblingAssignments ?? []).every(
+      (a) => a.status === "completed" || a.status === "conflict"
+    )
+    if (allDone) {
+      await admin
+        .from("submissions")
+        .update({ status: "reviews_completed" })
+        .eq("id", assignment.submission_id)
+        .in("status", ["assigned", "under_review"])
+    }
   }
 
   revalidatePath(`/reviewer/assignments/${assignmentId}`)

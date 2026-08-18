@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 
+import { DecisionFinalizePanel } from "@/components/admin/decision-finalize-panel"
 import { ReviewerAssignmentPanel } from "@/components/admin/reviewer-assignment-panel"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -43,6 +44,14 @@ export default async function AdminSubmissionDetailPage(
         .eq("submission_id", id)
         .eq("is_active", true),
     ])
+
+  const { data: decisionRows } = await supabase
+    .from("decisions")
+    .select("*")
+    .eq("submission_id", id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+  const latestDecision = decisionRows?.[0]
 
   const { data: reviewerPool } = await supabase
     .from("reviewer_profiles")
@@ -167,6 +176,29 @@ export default async function AdminSubmissionDetailPage(
                 ? `${r.user_profiles.first_name} ${r.user_profiles.last_name}`
                 : "Unknown reviewer",
             }))}
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Committee Decision</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DecisionFinalizePanel
+            submissionId={id}
+            decision={
+              latestDecision
+                ? {
+                    id: latestDecision.id,
+                    decision: latestDecision.decision,
+                    decisionNotes: latestDecision.decision_notes,
+                    authorMessage: latestDecision.author_message,
+                    revisionDeadline: latestDecision.revision_deadline,
+                    isFinal: latestDecision.is_final,
+                  }
+                : null
+            }
           />
         </CardContent>
       </Card>

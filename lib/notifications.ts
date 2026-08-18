@@ -24,6 +24,60 @@ async function renderContent(
   const subtheme = submission?.conference_subthemes?.name ?? ""
 
   switch (notificationType) {
+    case "decision_notification": {
+      const { data: decision } = await admin
+        .from("decisions")
+        .select("decision, author_message, revision_deadline")
+        .eq("submission_id", submissionId)
+        .eq("is_final", true)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+
+      const authorNote = decision?.author_message
+        ? `<p>${decision.author_message}</p>`
+        : ""
+
+      if (decision?.decision === "accepted" || decision?.decision === "accepted_oral" || decision?.decision === "accepted_poster") {
+        const presentationType =
+          decision.decision === "accepted_oral"
+            ? "Oral presentation"
+            : decision.decision === "accepted_poster"
+              ? "Poster presentation"
+              : "To be confirmed"
+        return `
+          <h2>Congratulations — your abstract has been accepted</h2>
+          <p><strong>Reference number:</strong> ${reference}</p>
+          <p><strong>Title:</strong> ${title}</p>
+          <p><strong>Presentation type:</strong> ${presentationType}</p>
+          ${authorNote}
+          <p>Further details on next steps will follow from the secretariat. Log in to your dashboard to view your full submission record.</p>
+        `
+      }
+
+      if (decision?.decision === "minor_revision" || decision?.decision === "major_revision") {
+        const deadline = decision.revision_deadline
+          ? new Date(decision.revision_deadline).toLocaleDateString()
+          : "to be confirmed"
+        return `
+          <h2>Revision required</h2>
+          <p><strong>Reference number:</strong> ${reference}</p>
+          <p><strong>Title:</strong> ${title}</p>
+          <p><strong>Revision deadline:</strong> ${deadline}</p>
+          ${authorNote}
+          <p>Please log in to your dashboard to review the committee's comments and submit your revised abstract before the deadline.</p>
+        `
+      }
+
+      return `
+        <h2>Decision on your submission</h2>
+        <p><strong>Reference number:</strong> ${reference}</p>
+        <p><strong>Title:</strong> ${title}</p>
+        <p>After careful review, the scientific committee has decided not to accept this submission for ASM Nigeria 2026.</p>
+        ${authorNote}
+        <p>Thank you for your interest in the conference, and we encourage future submissions.</p>
+      `
+    }
     case "submission_acknowledgement":
       return `
         <h2>Abstract received</h2>
