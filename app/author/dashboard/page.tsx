@@ -151,10 +151,14 @@ export default async function AuthorDashboardPage() {
                       </TableCell>
                       <TableCell className="max-w-xs truncate">
                         <Link
-                          href={`/author/submissions/${submission.id}`}
+                          href={
+                            submission.status === "draft"
+                              ? `/author/submissions/${submission.id}?step=1`
+                              : `/author/submissions/${submission.id}`
+                          }
                           className="hover:underline"
                         >
-                          {submission.title || "Untitled"}
+                          {submission.title || "Untitled draft"}
                         </Link>
                       </TableCell>
                       <TableCell>{submission.conference_subthemes?.name ?? "—"}</TableCell>

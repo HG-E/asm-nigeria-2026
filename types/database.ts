@@ -890,6 +890,10 @@ export type Database = {
         Args: { p_conference_id: string }
         Returns: string
       }
+      submit_abstract: {
+        Args: { p_submission_id: string }
+        Returns: string
+      }
     }
     Enums: {
       blind_mode: "none" | "single" | "double"

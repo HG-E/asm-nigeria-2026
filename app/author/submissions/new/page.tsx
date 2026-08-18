@@ -1,27 +1,32 @@
-import Link from "next/link"
+import { redirect } from "next/navigation"
 
-import { buttonVariants } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Step1Form } from "@/components/submission/step1-form"
+import { WizardShell } from "@/components/submission/wizard-shell"
 import { requireAuth } from "@/lib/auth"
+import { getActiveConference } from "@/lib/conference"
+
+import { createDraftAction } from "./actions"
 
 export default async function NewSubmissionPage() {
   await requireAuth()
+  const conference = await getActiveConference()
+
+  if (!conference) {
+    redirect("/author/dashboard")
+  }
 
   return (
-    <Card className="mx-auto max-w-xl">
-      <CardHeader>
-        <CardTitle>Submit a new abstract</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-muted-foreground text-sm">
-          The multi-step abstract submission form (subtheme selection,
-          co-authors, content with live word count, declarations, document
-          upload, and review) is next up.
-        </p>
-        <Link href="/author/dashboard" className={buttonVariants({ variant: "outline" })}>
-          Back to dashboard
-        </Link>
-      </CardContent>
-    </Card>
+    <WizardShell currentStep={1}>
+      <Step1Form
+        subthemes={conference.conference_subthemes}
+        defaultValues={{
+          title: "",
+          subthemeId: "",
+          keywords: [],
+          presentationPreference: "either",
+        }}
+        onSubmit={createDraftAction}
+      />
+    </WizardShell>
   )
 }
