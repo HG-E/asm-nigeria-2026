@@ -1,9 +1,12 @@
 "use server"
 
 import { redirect } from "next/navigation"
+import { after } from "next/server"
 
 import { requireAuth } from "@/lib/auth"
 import { getActiveConference } from "@/lib/conference"
+import { sendNotifications } from "@/lib/notifications"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 import {
   countWords,
@@ -301,6 +304,20 @@ export async function submitAbstractAction(id: string): Promise<ActionResult> {
   const { error } = await supabase.rpc("submit_abstract", { p_submission_id: id })
   if (error) {
     return { error: "Your submission could not be completed. Please try again." }
+  }
+
+  const admin = createAdminClient()
+  const { data: pendingNotifications } = await admin
+    .from("notifications")
+    .select("id")
+    .eq("submission_id", id)
+    .eq("status", "pending")
+  if (pendingNotifications && pendingNotifications.length > 0) {
+    const ids = pendingNotifications.map((n) => n.id)
+    // Don't make the author wait on SMTP round trips (multiple recipients
+    // can take 10s+ sequentially) -- send after the response is already on
+    // its way, per Next.js's documented pattern for post-response work.
+    after(() => sendNotifications(ids))
   }
 
   redirect(`/author/submissions/${id}?submitted=1`)

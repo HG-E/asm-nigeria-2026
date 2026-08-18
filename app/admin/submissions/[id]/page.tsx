@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 
+import { ReviewerAssignmentPanel } from "@/components/admin/reviewer-assignment-panel"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { requireRole } from "@/lib/auth"
@@ -39,8 +40,15 @@ export default async function AdminSubmissionDetailPage(
       supabase
         .from("review_assignments")
         .select("*, user_profiles:reviewer_id(first_name, last_name)")
-        .eq("submission_id", id),
+        .eq("submission_id", id)
+        .eq("is_active", true),
     ])
+
+  const { data: reviewerPool } = await supabase
+    .from("reviewer_profiles")
+    .select("user_id, user_profiles:user_id(first_name, last_name)")
+    .eq("conference_id", submission.conference_id)
+    .eq("is_active", true)
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -143,20 +151,23 @@ export default async function AdminSubmissionDetailPage(
           <CardTitle className="text-base">Review Assignment</CardTitle>
         </CardHeader>
         <CardContent>
-          {assignments && assignments.length > 0 ? (
-            <ul className="space-y-1 text-sm">
-              {assignments.map((a) => (
-                <li key={a.id}>
-                  {a.user_profiles?.first_name} {a.user_profiles?.last_name} —{" "}
-                  <span className="text-muted-foreground">{a.status}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-muted-foreground text-sm">
-              Not yet assigned to a reviewer.
-            </p>
-          )}
+          <ReviewerAssignmentPanel
+            submissionId={id}
+            assignments={(assignments ?? []).map((a) => ({
+              id: a.id,
+              status: a.status,
+              reviewerId: a.reviewer_id,
+              reviewerName: a.user_profiles
+                ? `${a.user_profiles.first_name} ${a.user_profiles.last_name}`
+                : "Unknown reviewer",
+            }))}
+            availableReviewers={(reviewerPool ?? []).map((r) => ({
+              id: r.user_id,
+              name: r.user_profiles
+                ? `${r.user_profiles.first_name} ${r.user_profiles.last_name}`
+                : "Unknown reviewer",
+            }))}
+          />
         </CardContent>
       </Card>
     </div>
