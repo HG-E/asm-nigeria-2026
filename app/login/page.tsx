@@ -1,0 +1,51 @@
+import Link from "next/link"
+
+import { LoginForm } from "@/components/auth/login-form"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+
+export default async function LoginPage(props: PageProps<"/login">) {
+  const searchParams = await props.searchParams
+  const verified = searchParams.verified === "1"
+  const reset = searchParams.reset === "1"
+
+  return (
+    <div className="flex min-h-svh items-center justify-center bg-muted/30 px-4 py-12">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl">Log in</CardTitle>
+          <CardDescription>ASM Nigeria 2026 Abstract Management System</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {verified && (
+            <Alert>
+              <AlertDescription>
+                Email confirmed. You can now log in.
+              </AlertDescription>
+            </Alert>
+          )}
+          {reset && (
+            <Alert>
+              <AlertDescription>
+                Password updated. Log in with your new password.
+              </AlertDescription>
+            </Alert>
+          )}
+          <LoginForm />
+          <p className="text-muted-foreground text-center text-sm">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="text-foreground underline underline-offset-4">
+              Register
+            </Link>
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}

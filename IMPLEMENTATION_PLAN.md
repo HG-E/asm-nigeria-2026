@@ -82,6 +82,27 @@ Vercel, connected to `HG-E/asm-nigeria-2026`. Env vars mirrored from `.env.local
 
 Follow spec §47 checklist as each phase lands, rather than deferring all testing to the end: registration + duplicate-email + verification on Phase 1/2, submission + draft + duplicate-submit protection on Phase 2, routing + conflict-of-interest + reassignment on Phase 4, cross-role unauthorized-access attempts (author→author, author→reviewer, reviewer→reviewer, reviewer→admin) on every phase that adds a new role surface, since RLS is the real backstop and is cheapest to verify incrementally.
 
-## 13. Immediate next steps (this session, pending approval)
+## 13. Progress: auth + author dashboard shell (this session)
 
-Phase 1 foundation (scaffold, Supabase clients, `proxy.ts`, DB fixes above) is done. Next: build the auth pages (register/login/verify-email/forgot-password) and wire the author dashboard shell, since that's the critical path to a working end-to-end demo and doesn't require reviewer names or SMTP to be useful.
+Built and browser-tested end-to-end against the live Supabase project:
+
+- `/register` — full form per spec §8, calls Supabase `signUp()` with profile data in `user_metadata`, handles the "email already registered" case (identities-length quirk with email confirmation on).
+- `/login`, `/forgot-password`, `/reset-password` — standard Supabase Auth flows.
+- `/auth/confirm` — token_hash-based confirmation route (Supabase's current documented Next.js SSR pattern, verified against their docs rather than assumed). **Requires a one-time manual step**: the Supabase dashboard's "Confirm signup" and "Reset password" email templates still use the default `{{ .ConfirmationURL }}` link, which bypasses this route. Update them in Authentication → Email Templates to:
+  - Confirm signup: `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next={{ .RedirectTo }}`
+  - Reset password: `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next={{ .RedirectTo }}`
+
+  Also confirm Authentication → URL Configuration has `http://localhost:3000` in Redirect URLs for local dev to work. Email templates and redirect URLs are dashboard/Management-API-only — not reachable via the service role key or DB connection this session used.
+- `/author/dashboard`, `/author/profile` — summary cards + submission table (spec §10) and editable profile (spec §9), both querying live Supabase with RLS scoping to `auth.uid()`.
+- `proxy.ts` route gating confirmed working: unauthenticated visits to `/author/*` redirect to `/login?next=...`.
+- `/author/submissions/new` and `/author/submissions/[id]` are placeholders — the multi-step submission form (spec §11–19) is the next real piece of work.
+
+**Bugs found and fixed during this build:**
+- The installed shadcn style (`base-nova`, Base UI–based) doesn't support the classic Radix `asChild` pattern on `Button`. Composing a `Button` onto a `Link` via `render={<Link/>} nativeButton={false}` compiles fine but silently overwrites the anchor's `role="link"` with `role="button"` — confirmed by reading Base UI's `useButton` source, not assumed. Fixed by using the exported `buttonVariants()` class helper directly on `Link` for all nav-styled-as-button cases, which is the established shadcn pattern for this anyway.
+- `types/database.ts` (hand-written since Docker-based `supabase gen types` isn't available here) initially omitted `Relationships` on every table, which silently collapsed all `.from(...).select(...)` results to `never` — no error, just useless types. Fixed by adding accurate FK relationship metadata per table, verified by `tsc --noEmit` going clean.
+
+**Verified via a live browser smoke test** (`npm run test:smoke`, `scripts/smoke-test.mjs`, Playwright driving system Chrome since this sandbox can't download Playwright's bundled Chromium): home page, full registration form fill + submit, error surfacing (hit Supabase's `@example.com`-domain rejection and then its free-tier email rate limit — both real server responses displayed correctly to the user, not app bugs), login page render, and confirmed unauthenticated `/author/dashboard` redirects to `/login`. An earlier disposable test account (during the trigger-fix diagnosis) already proved the full signup → trigger → `user_profiles` row mechanism works; this session's rate limit prevented repeating that exact confirmation-email round trip but didn't need to.
+
+## 14. Immediate next steps
+
+The multi-step abstract submission form (spec §11–19: subtheme dropdown, co-authors, content with live word count against `conferences.abstract_word_limit`, declarations, document upload to the private `abstracts` bucket via signed URLs, review-and-submit) is the next real piece of work — it's the other half of the MVP acceptance criteria's items 5–15 and doesn't require reviewer names or SMTP to build and test.
