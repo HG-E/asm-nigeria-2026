@@ -52,6 +52,7 @@ await shot("02-register-empty")
 
 await page.fill('input[name="firstName"]', "Amaka")
 await page.fill('input[name="lastName"]', "Okafor")
+await page.fill('input[name="asmIdNumber"]', "12345678")
 await page.fill('input[name="email"]', testEmail)
 await page.fill('input[name="password"]', "TestPassword123!")
 await page.fill('input[name="confirmPassword"]', "TestPassword123!")

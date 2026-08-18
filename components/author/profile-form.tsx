@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { digitsOnly } from "@/lib/utils"
 import { profileSchema, type ProfileInput } from "@/lib/validations/profile"
 
 export function ProfileForm({
@@ -77,6 +78,26 @@ export function ProfileForm({
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="asmIdNumber"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>ASM ID Number</FormLabel>
+              <FormControl>
+                <Input
+                  inputMode="numeric"
+                  autoComplete="off"
+                  {...field}
+                  onChange={(e) => field.onChange(digitsOnly(e.target.value, 9))}
+                />
+              </FormControl>
+              <p className="text-muted-foreground text-xs">7 to 9 digits, numbers only.</p>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}

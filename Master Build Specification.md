@@ -265,6 +265,7 @@ Required:
 
 - First name
 - Last name
+- ASM ID Number (7 to 9 digits, numeric only — matches the ASM membership ID format; the input itself strips non-digit characters as the author types, rather than only rejecting on submit)
 - Email
 - Password
 - Confirm password
@@ -311,6 +312,7 @@ Author Dashboard
 The author can manage:
 
 - Name
+- ASM ID Number
 - Email
 - Phone
 - Institution

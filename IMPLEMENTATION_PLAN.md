@@ -103,6 +103,10 @@ Built and browser-tested end-to-end against the live Supabase project:
 
 **Verified via a live browser smoke test** (`npm run test:smoke`, `scripts/smoke-test.mjs`, Playwright driving system Chrome since this sandbox can't download Playwright's bundled Chromium): home page, full registration form fill + submit, error surfacing (hit Supabase's `@example.com`-domain rejection and then its free-tier email rate limit — both real server responses displayed correctly to the user, not app bugs), login page render, and confirmed unauthenticated `/author/dashboard` redirects to `/login`. An earlier disposable test account (during the trigger-fix diagnosis) already proved the full signup → trigger → `user_profiles` row mechanism works; this session's rate limit prevented repeating that exact confirmation-email round trip but didn't need to.
 
+## 13b. ASM ID Number (added post-review)
+
+Spec §8/§9 updated to require an **ASM ID Number** at registration and on the profile — matches the ASM membership ID format: 7–9 digits, numeric only (older accounts run 7, current is 8, a few are 9). `0003_add_asm_id_number.sql` adds `user_profiles.asm_id_number text not null` (safe as a hard NOT NULL, zero rows existed) and updates `handle_new_user()` to populate it from signup metadata. Enforced with a regex (`/^\d{7,9}$/`) in both Zod schemas, and the input itself strips non-digit keystrokes as you type (`lib/utils.ts#digitsOnly`) rather than only rejecting on submit. Surfaced everywhere author identity already shows: registration form, profile form, the author header nav, and the dashboard welcome block.
+
 ## 14. Immediate next steps
 
 The multi-step abstract submission form (spec §11–19: subtheme dropdown, co-authors, content with live word count against `conferences.abstract_word_limit`, declarations, document upload to the private `abstracts` bucket via signed URLs, review-and-submit) is the next real piece of work — it's the other half of the MVP acceptance criteria's items 5–15 and doesn't require reviewer names or SMTP to build and test.

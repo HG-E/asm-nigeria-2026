@@ -86,6 +86,9 @@ export default async function AuthorDashboardPage() {
             Welcome, {session.profile.first_name}
           </h1>
           <p className="text-muted-foreground text-sm">
+            ASM ID Number: {session.profile.asm_id_number}
+          </p>
+          <p className="text-muted-foreground text-sm">
             Track and manage your abstract submissions.
           </p>
         </div>

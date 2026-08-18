@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import { digitsOnly } from "@/lib/utils"
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth"
 
 export function RegisterForm() {
@@ -30,6 +31,7 @@ export function RegisterForm() {
     defaultValues: {
       firstName: "",
       lastName: "",
+      asmIdNumber: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -102,6 +104,28 @@ export function RegisterForm() {
               )}
             />
           </div>
+          <FormField
+            control={form.control}
+            name="asmIdNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>ASM ID Number</FormLabel>
+                <FormControl>
+                  <Input
+                    inputMode="numeric"
+                    autoComplete="off"
+                    placeholder="e.g. 12345678"
+                    {...field}
+                    onChange={(e) => field.onChange(digitsOnly(e.target.value, 9))}
+                  />
+                </FormControl>
+                <p className="text-muted-foreground text-xs">
+                  7 to 9 digits, numbers only.
+                </p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="email"

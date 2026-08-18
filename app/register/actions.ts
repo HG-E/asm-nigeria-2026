@@ -26,6 +26,7 @@ export async function registerAction(input: RegisterInput): Promise<RegisterResu
       data: {
         first_name: data.firstName,
         last_name: data.lastName,
+        asm_id_number: data.asmIdNumber,
         professional_title: data.professionalTitle,
         institution: data.institution,
         department: data.department,

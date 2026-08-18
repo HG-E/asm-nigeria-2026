@@ -24,6 +24,7 @@ export default async function AuthorProfilePage() {
             defaultValues={{
               firstName: profile.first_name,
               lastName: profile.last_name,
+              asmIdNumber: profile.asm_id_number,
               professionalTitle: profile.professional_title ?? "",
               institution: profile.institution ?? "",
               department: profile.department ?? "",

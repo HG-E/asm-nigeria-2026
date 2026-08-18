@@ -4,6 +4,10 @@ export const registerSchema = z
   .object({
     firstName: z.string().trim().min(1, "First name is required"),
     lastName: z.string().trim().min(1, "Last name is required"),
+    asmIdNumber: z
+      .string()
+      .trim()
+      .regex(/^\d{7,9}$/, "ASM ID Number must be 7 to 9 digits, numbers only"),
     email: z.email("Enter a valid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
