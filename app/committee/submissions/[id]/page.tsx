@@ -51,6 +51,13 @@ export default async function CommitteeSubmissionDetailPage(
 
   const currentVersion = versions?.find((v) => v.version_number === submission.current_version)
   const latestDecision = decisions?.[0]
+  // A finalized decision from an earlier review round (the committee asked
+  // for a revision, the author resubmitted) is history, not a lock on the
+  // current round -- only the submission's own status says whether a new
+  // decision can be proposed right now.
+  const DECIDABLE_STATUSES = ["reviews_completed", "decision_pending"]
+  const isLocked = !DECIDABLE_STATUSES.includes(submission.status)
+  const draftDecision = latestDecision && !latestDecision.is_final ? latestDecision : null
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -172,12 +179,12 @@ export default async function CommitteeSubmissionDetailPage(
         </CardHeader>
         <CardContent>
           <DecisionForm
-            isFinal={latestDecision?.is_final ?? false}
+            isFinal={isLocked}
             defaultValues={{
-              decision: latestDecision?.decision,
-              decisionNotes: latestDecision?.decision_notes ?? "",
-              authorMessage: latestDecision?.author_message ?? "",
-              revisionDeadline: latestDecision?.revision_deadline?.slice(0, 10) ?? "",
+              decision: draftDecision?.decision,
+              decisionNotes: draftDecision?.decision_notes ?? "",
+              authorMessage: draftDecision?.author_message ?? "",
+              revisionDeadline: draftDecision?.revision_deadline?.slice(0, 10) ?? "",
             }}
             onSave={proposeDecisionAction.bind(null, id)}
           />
