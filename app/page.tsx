@@ -82,8 +82,9 @@ export default async function Home() {
 
   const heroSlides = [
     {
-      kicker: conference?.tagline ? `"${conference.tagline}"` : "Welcome",
+      kicker: "Welcome",
       headline: conference?.name ?? "ASM Nigeria 2026",
+      quote: conference?.tagline ?? undefined,
       body:
         conference?.theme ??
         "A gathering for microbiologists working across human, animal, and environmental health.",

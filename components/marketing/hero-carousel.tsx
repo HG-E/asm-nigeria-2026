@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 type Slide = {
   kicker: string
   headline: string
+  quote?: string
   body: string
   illustration: "triad" | "diatoms" | "colonies"
 }
@@ -51,19 +52,19 @@ function Diatoms() {
 }
 
 function Colonies() {
-  // Bacterial rod/coccus cluster arranged in a loose upward arc -- growth,
-  // review, momentum -- without literalizing into a checkmark or icon.
+  // Bacterial rod/coccus cluster -- a tight, overlapping colony rather than
+  // scattered specimens, so it reads as one cohesive motif at hero scale.
   const shapes = [
-    { x: 90, y: 260, w: 46, h: 22, rot: -18, color: "var(--brand-blue)" },
-    { x: 150, y: 220, w: 40, h: 40, rot: 0, color: "var(--brand-gold)", round: true },
-    { x: 210, y: 190, w: 52, h: 24, rot: 12, color: "var(--brand-red)" },
-    { x: 270, y: 150, w: 36, h: 36, rot: 0, color: "var(--brand-blue)", round: true },
-    { x: 130, y: 300, w: 34, h: 34, rot: 0, color: "var(--brand-red)", round: true },
+    { x: 155, y: 230, w: 130, h: 62, rot: -22, color: "var(--brand-blue)" },
+    { x: 235, y: 175, w: 96, h: 96, rot: 0, color: "var(--brand-gold)", round: true },
+    { x: 195, y: 145, w: 150, h: 66, rot: 14, color: "var(--brand-red)" },
+    { x: 130, y: 165, w: 84, h: 84, rot: 0, color: "var(--brand-blue)", round: true },
+    { x: 245, y: 260, w: 78, h: 78, rot: 0, color: "var(--brand-red)", round: true },
   ]
   return (
     <svg viewBox="0 0 400 400" className="h-full w-full">
       {shapes.map((s, i) => (
-        <g key={i} style={{ mixBlendMode: "multiply" }} opacity={0.55}>
+        <g key={i} style={{ mixBlendMode: "multiply" }} opacity={0.65}>
           {s.round ? (
             <circle cx={s.x} cy={s.y} r={s.w / 2} fill={s.color} />
           ) : (
@@ -137,7 +138,7 @@ export function HeroCarousel({
       </div>
       <p className="text-muted-foreground text-sm font-medium tracking-wide uppercase">{eyebrow}</p>
 
-      <div className="min-h-[9.5rem] sm:min-h-[8rem]">
+      <div className="min-h-[11rem] sm:min-h-[9.5rem]">
         <p key={`kicker-${active}`} className="text-brand-blue-deep animate-in fade-in slide-in-from-bottom-1 text-sm font-semibold tracking-wide uppercase duration-500">
           {slide.kicker}
         </p>
@@ -147,6 +148,11 @@ export function HeroCarousel({
         >
           {slide.headline}
         </h1>
+        {slide.quote && (
+          <p key={`quote-${active}`} className="text-brand-blue-deep animate-in fade-in mx-auto mt-3 max-w-xl text-balance text-lg font-medium italic duration-600">
+            &ldquo;{slide.quote}&rdquo;
+          </p>
+        )}
         <p
           key={`body-${active}`}
           className="text-muted-foreground animate-in fade-in mx-auto mt-3 max-w-xl text-balance duration-700"
