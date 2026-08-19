@@ -19,7 +19,7 @@ export default function TermsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl">Conference Terms &amp; Submission Declaration</CardTitle>
-            <p className="text-muted-foreground text-sm">Last updated 19 August 2026</p>
+            <p className="text-muted-foreground text-sm">Last updated 20 August 2026</p>
             <p className="text-muted-foreground text-sm">
               These terms apply to anyone registering as an author and submitting an abstract
               to ASM Nigeria 2026 through this system. By checking the box at registration, an
@@ -82,7 +82,8 @@ export default function TermsPage() {
                 An accepted abstract will be assigned a presentation format (oral or poster)
                 by the committee, which may differ from the author&apos;s stated preference.
                 Acceptance of an abstract is separate from conference registration and
-                attendance, which is handled independently.
+                attendance, which is handled independently through its own registration form
+                and fee. Registration fees, like submission fees, are non-refundable once paid.
               </p>
             </Clause>
             <Clause number={8} title="Publication">

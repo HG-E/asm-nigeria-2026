@@ -19,7 +19,7 @@ export default function PrivacyPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl">Privacy &amp; Data-Use Policy</CardTitle>
-            <p className="text-muted-foreground text-sm">Last updated 19 August 2026</p>
+            <p className="text-muted-foreground text-sm">Last updated 20 August 2026</p>
             <p className="text-muted-foreground text-sm">
               This describes what personal data the Abstract Management System collects from
               authors, reviewers, and committee members, and how it&apos;s used.
