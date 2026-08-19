@@ -129,6 +129,18 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
     const paymentRejected = submission.payment_status === "rejected"
     const conference = paymentRejected ? await getActiveConference() : null
 
+    const DECIDED_STATUSES = ["accepted", "accepted_oral", "accepted_poster", "rejected"]
+    const { data: finalDecision } = DECIDED_STATUSES.includes(submission.status)
+      ? await supabase
+          .from("decisions")
+          .select("decision, author_message")
+          .eq("submission_id", id)
+          .eq("is_final", true)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle()
+      : { data: null }
+
     return (
       <Card className="mx-auto max-w-2xl">
         <CardHeader>
@@ -152,6 +164,16 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
             <dt className="text-muted-foreground">Status</dt>
             <dd className="capitalize">{submission.status.replaceAll("_", " ")}</dd>
           </dl>
+
+          {finalDecision?.author_message && (
+            <Alert
+              variant={
+                finalDecision.decision === "rejected" ? "destructive" : "default"
+              }
+            >
+              <AlertDescription>{finalDecision.author_message}</AlertDescription>
+            </Alert>
+          )}
 
           {paymentRejected && (
             <>
