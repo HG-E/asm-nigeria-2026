@@ -103,6 +103,14 @@ async function renderContent(
         <p><strong>Subtheme:</strong> ${subtheme}</p>
         <p>Please log in to your reviewer dashboard to review the updated abstract.</p>
       `
+    case "reviewer_conflict_needs_reassignment":
+      return `
+        <h2>Action needed: no reviewer available</h2>
+        <p>Every reviewer assigned to an abstract declared a conflict of interest, so it currently has no active reviewer.</p>
+        <p><strong>Reference number:</strong> ${reference}</p>
+        <p><strong>Subtheme:</strong> ${subtheme}</p>
+        <p>The submission has been moved back to screening. Please assign a replacement reviewer from the admin submission page.</p>
+      `
     default:
       return `<p>Update on submission ${reference}: ${title}</p>`
   }

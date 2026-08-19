@@ -1,8 +1,10 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { after } from "next/server"
 
 import { requireRole } from "@/lib/auth"
+import { sendNotifications } from "@/lib/notifications"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 import {
@@ -13,6 +15,82 @@ import {
 } from "@/lib/validations/review"
 
 export type ActionResult = { error: string } | { success: true }
+
+// Runs after EITHER a review is submitted OR a conflict is declared --
+// both are ways an assignment becomes "done", and the submission needs to
+// move on once every active assignment is done, regardless of which path
+// got it there. Previously only the submit-review path checked this, so a
+// reviewer declaring a conflict (especially the only reviewer on a
+// subtheme) left the submission silently stuck at "assigned" forever with
+// no signal to admin that a replacement reviewer was needed.
+async function finalizeReviewRoundIfDone(
+  admin: ReturnType<typeof createAdminClient>,
+  submissionId: string
+) {
+  const { data: siblingAssignments } = await admin
+    .from("review_assignments")
+    .select("status")
+    .eq("submission_id", submissionId)
+    .eq("is_active", true)
+
+  const assignments = siblingAssignments ?? []
+  if (assignments.length === 0) return
+
+  const allDone = assignments.every((a) => a.status === "completed" || a.status === "conflict")
+  if (!allDone) return
+
+  const anyCompleted = assignments.some((a) => a.status === "completed")
+
+  if (anyCompleted) {
+    await admin
+      .from("submissions")
+      .update({ status: "reviews_completed" })
+      .eq("id", submissionId)
+      .in("status", ["assigned", "under_review"])
+    return
+  }
+
+  // Every active reviewer declared a conflict -- nobody actually reviewed
+  // it. Route back to screening (the same status used when nobody was
+  // auto-routed in the first place) so admin can assign a replacement, and
+  // alert every admin since nothing else would surface this.
+  const { data: submission } = await admin
+    .from("submissions")
+    .select("reference_number")
+    .eq("id", submissionId)
+    .single()
+
+  await admin
+    .from("submissions")
+    .update({ status: "screening" })
+    .eq("id", submissionId)
+    .in("status", ["assigned", "under_review"])
+
+  const { data: admins } = await admin
+    .from("user_profiles")
+    .select("id, email")
+    .in("role", ["admin", "super_admin"])
+
+  if (admins && admins.length > 0) {
+    const { data: inserted } = await admin
+      .from("notifications")
+      .insert(
+        admins.map((a) => ({
+          recipient_id: a.id,
+          recipient_email: a.email,
+          submission_id: submissionId,
+          notification_type: "reviewer_conflict_needs_reassignment",
+          subject: `All reviewers declared a conflict of interest: ${submission?.reference_number ?? submissionId}`,
+          status: "pending" as const,
+        }))
+      )
+      .select("id")
+
+    if (inserted && inserted.length > 0) {
+      after(() => sendNotifications(inserted.map((n) => n.id)))
+    }
+  }
+}
 
 async function loadOwnAssignment(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -73,6 +151,8 @@ export async function declareConflictAction(
       previous_status: "pending",
       new_status: "conflict",
     })
+
+    await finalizeReviewRoundIfDone(createAdminClient(), assignment.submission_id)
   } else {
     const { error } = await supabase
       .from("review_assignments")
@@ -182,23 +262,7 @@ async function saveReview(
     // for this submission are done needs the admin client -- same reason
     // the status transition itself does, since reviewers have no UPDATE
     // access to submissions at all.
-    const admin = createAdminClient()
-    const { data: siblingAssignments } = await admin
-      .from("review_assignments")
-      .select("status")
-      .eq("submission_id", assignment.submission_id)
-      .eq("is_active", true)
-
-    const allDone = (siblingAssignments ?? []).every(
-      (a) => a.status === "completed" || a.status === "conflict"
-    )
-    if (allDone) {
-      await admin
-        .from("submissions")
-        .update({ status: "reviews_completed" })
-        .eq("id", assignment.submission_id)
-        .in("status", ["assigned", "under_review"])
-    }
+    await finalizeReviewRoundIfDone(createAdminClient(), assignment.submission_id)
   }
 
   revalidatePath(`/reviewer/assignments/${assignmentId}`)
