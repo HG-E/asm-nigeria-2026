@@ -121,6 +121,14 @@ async function renderContent(
         <p>Please log in to your dashboard and upload a corrected receipt as soon as possible.</p>
       `
     }
+    case "submission_withdrawn":
+      return `
+        <h2>Submission withdrawn</h2>
+        <p>You've withdrawn the following submission from consideration for ASM Nigeria 2026.</p>
+        <p><strong>Reference number:</strong> ${reference}</p>
+        <p><strong>Title:</strong> ${title}</p>
+        <p>This is a confirmation for your records. If this wasn't intentional, contact the secretariat as soon as possible.</p>
+      `
     case "reviewer_conflict_needs_reassignment":
       return `
         <h2>Action needed: no reviewer available</h2>

@@ -921,6 +921,42 @@ export type Database = {
           },
         ]
       }
+      contact_messages: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          subject: string
+          message: string
+          ip_address: string | null
+          secretariat_notified_at: string | null
+          auto_reply_sent_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          subject: string
+          message: string
+          ip_address?: string | null
+          secretariat_notified_at?: string | null
+          auto_reply_sent_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          subject?: string
+          message?: string
+          ip_address?: string | null
+          secretariat_notified_at?: string | null
+          auto_reply_sent_at?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: {
@@ -942,6 +978,10 @@ export type Database = {
       }
       resubmit_abstract: {
         Args: { p_submission_id: string }
+        Returns: undefined
+      }
+      withdraw_submission: {
+        Args: { p_submission_id: string; p_reason?: string | null }
         Returns: undefined
       }
     }

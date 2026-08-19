@@ -46,6 +46,19 @@ export const step4Schema = z.object({
 })
 export type Step4Input = z.infer<typeof step4Schema>
 
+// A submission can be withdrawn any time between formal submission and a
+// final decision -- not while still a draft (nothing to withdraw from yet),
+// and not once accepted/rejected/already withdrawn (decided).
+export const WITHDRAWABLE_STATUSES = [
+  "submitted",
+  "screening",
+  "assigned",
+  "under_review",
+  "reviews_completed",
+  "decision_pending",
+  "revision_required",
+] as const
+
 export function countWords(text: string) {
   const trimmed = text.trim()
   if (!trimmed) return 0

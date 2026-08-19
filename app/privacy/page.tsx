@@ -41,14 +41,20 @@ export default function PrivacyPage() {
                   your bank transfer, uploaded for verification.
                 </li>
                 <li>Review activity: scores, recommendations, and comments, for reviewer accounts.</li>
+                <li>
+                  Contact form messages: the name, email, subject, and message you provide, and
+                  the IP address your message was sent from (used only to prevent spam and abuse
+                  of the form).
+                </li>
               </ul>
             </Clause>
             <Clause number={2} title="How we use it">
               <p>
                 To route your abstract to the right reviewers, communicate submission and
-                decision status, verify payment, compile the Book of Abstracts, and keep an
-                audit record of conference decisions. We don&apos;t use your information for
-                anything beyond running this conference.
+                decision status, verify payment, compile the Book of Abstracts, respond to
+                enquiries submitted through the contact form (including an automatic
+                acknowledgement email), and keep an audit record of conference decisions. We
+                don&apos;t use your information for anything beyond running this conference.
               </p>
             </Clause>
             <Clause number={3} title="Who can see what">
@@ -71,7 +77,7 @@ export default function PrivacyPage() {
                 <li>
                   <strong className="text-foreground">Administrators</strong> have full
                   access, needed to run the conference and support authors and reviewers
-                  directly.
+                  directly, including contact form messages.
                 </li>
               </ul>
             </Clause>

@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
+import { WithdrawSubmissionPanel } from "@/components/author/withdraw-submission-panel"
 import { PaymentStep } from "@/components/submission/payment-step"
 import { RevisionForm } from "@/components/submission/revision-form"
 import { Step1Form } from "@/components/submission/step1-form"
@@ -16,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { requireAuth } from "@/lib/auth"
 import { getActiveConference } from "@/lib/conference"
 import { createClient } from "@/lib/supabase/server"
+import { WITHDRAWABLE_STATUSES } from "@/lib/validations/submission"
 
 import {
   submitAbstractAction,
@@ -116,9 +118,12 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
             maxFileSizeMb={conference?.max_file_size_mb ?? 10}
           />
 
-          <Link href="/author/dashboard" className={buttonVariants({ variant: "outline" })}>
-            Back to dashboard
-          </Link>
+          <div className="space-y-3">
+            <Link href="/author/dashboard" className={buttonVariants({ variant: "outline" })}>
+              Back to dashboard
+            </Link>
+            <WithdrawSubmissionPanel submissionId={id} />
+          </div>
         </CardContent>
       </Card>
     )
@@ -200,9 +205,14 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
             </>
           )}
 
-          <Link href="/author/dashboard" className={buttonVariants({ variant: "outline" })}>
-            Back to dashboard
-          </Link>
+          <div className="space-y-3">
+            <Link href="/author/dashboard" className={buttonVariants({ variant: "outline" })}>
+              Back to dashboard
+            </Link>
+            {(WITHDRAWABLE_STATUSES as readonly string[]).includes(submission.status) && (
+              <WithdrawSubmissionPanel submissionId={id} />
+            )}
+          </div>
         </CardContent>
       </Card>
     )

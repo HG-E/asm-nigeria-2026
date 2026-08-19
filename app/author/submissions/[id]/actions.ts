@@ -1,6 +1,7 @@
 "use server"
 
 import { redirect } from "next/navigation"
+import { revalidatePath } from "next/cache"
 import { after } from "next/server"
 
 import { requireAuth } from "@/lib/auth"
@@ -14,6 +15,7 @@ import {
   step2Schema,
   step3Schema,
   step4Schema,
+  WITHDRAWABLE_STATUSES,
   type Step1Input,
   type Step2Input,
   type Step3Input,
@@ -473,4 +475,45 @@ export async function submitRevisionAction(id: string): Promise<ActionResult> {
   }
 
   redirect(`/author/submissions/${id}?submitted=1`)
+}
+
+export async function withdrawSubmissionAction(id: string, reason: string): Promise<ActionResult> {
+  const session = await requireAuth()
+  const supabase = await createClient()
+
+  const { data: submission } = await supabase
+    .from("submissions")
+    .select("id, corresponding_author_id, status")
+    .eq("id", id)
+    .single()
+
+  if (
+    !submission ||
+    submission.corresponding_author_id !== session.authUserId ||
+    !(WITHDRAWABLE_STATUSES as readonly string[]).includes(submission.status)
+  ) {
+    return { error: "This submission can no longer be withdrawn." }
+  }
+
+  const { error } = await supabase.rpc("withdraw_submission", {
+    p_submission_id: id,
+    p_reason: reason.trim() || null,
+  })
+  if (error) {
+    return { error: "Could not withdraw this submission. Please try again." }
+  }
+
+  const admin = createAdminClient()
+  const { data: pendingNotifications } = await admin
+    .from("notifications")
+    .select("id")
+    .eq("submission_id", id)
+    .eq("status", "pending")
+  if (pendingNotifications && pendingNotifications.length > 0) {
+    const ids = pendingNotifications.map((n) => n.id)
+    after(() => sendNotifications(ids))
+  }
+
+  revalidatePath(`/author/submissions/${id}`)
+  return { success: true }
 }

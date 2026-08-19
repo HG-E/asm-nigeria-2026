@@ -94,11 +94,15 @@ export default function TermsPage() {
             </Clause>
             <Clause number={9} title="Withdrawal">
               <p>
-                To withdraw a submission at any stage, contact the secretariat at{" "}
+                You can withdraw a submitted abstract at any time before a final decision is
+                made, using the &ldquo;Withdraw submission&rdquo; option on the submission&apos;s
+                page in your dashboard. Withdrawal removes it from the review process and cannot
+                be undone or resubmitted; the submission fee is not refunded. If you need help,
+                contact the secretariat at{" "}
                 <a href="mailto:asmnigeriaonehealth@gmail.com" className="underline underline-offset-4">
                   asmnigeriaonehealth@gmail.com
                 </a>
-                . Self-service withdrawal is not currently available in the portal.
+                .
               </p>
             </Clause>
             <Clause number={10} title="Changes to these terms">
