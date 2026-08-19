@@ -63,6 +63,13 @@ export default async function CommitteeSubmissionDetailPage(
   const isNotYetDecidable = !hasFinalDecision && !DECIDABLE_STATUSES.includes(submission.status)
   const lockReason = hasFinalDecision ? "final" : isNotYetDecidable ? "not_decidable" : null
   const draftDecision = latestDecision && !latestDecision.is_final ? latestDecision : null
+  // What the form should show: the actual final decision once locked (so a
+  // committee member reviewing it back sees what was really decided,
+  // instead of blank fields), or the in-progress draft when a new decision
+  // is still being proposed -- never a past round's final decision as a
+  // pre-fill, which would misleadingly suggest it as the starting point
+  // for a new round's proposal.
+  const decisionToDisplay = hasFinalDecision ? latestDecision : draftDecision
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -186,10 +193,10 @@ export default async function CommitteeSubmissionDetailPage(
           <DecisionForm
             lockReason={lockReason}
             defaultValues={{
-              decision: draftDecision?.decision,
-              decisionNotes: draftDecision?.decision_notes ?? "",
-              authorMessage: draftDecision?.author_message ?? "",
-              revisionDeadline: draftDecision?.revision_deadline?.slice(0, 10) ?? "",
+              decision: decisionToDisplay?.decision,
+              decisionNotes: decisionToDisplay?.decision_notes ?? "",
+              authorMessage: decisionToDisplay?.author_message ?? "",
+              revisionDeadline: decisionToDisplay?.revision_deadline?.slice(0, 10) ?? "",
             }}
             onSave={proposeDecisionAction.bind(null, id)}
           />
