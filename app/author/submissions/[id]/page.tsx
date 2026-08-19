@@ -139,8 +139,8 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
             <Alert>
               <AlertDescription>
                 Submitted successfully. Your reference number is{" "}
-                <strong>{submission.reference_number}</strong>. A confirmation email will
-                follow once the secretariat&apos;s email service is configured.
+                <strong>{submission.reference_number}</strong>. A confirmation email is on
+                its way to your inbox.
               </AlertDescription>
             </Alert>
           )}

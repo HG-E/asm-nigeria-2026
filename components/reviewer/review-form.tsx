@@ -138,20 +138,26 @@ export function ReviewForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Recommendation</FormLabel>
-              <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a recommendation" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {RECOMMENDATIONS.map((r) => (
-                    <SelectItem key={r.value} value={r.value}>
-                      {r.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {readOnly ? (
+                <p className="text-sm">
+                  {RECOMMENDATIONS.find((r) => r.value === field.value)?.label ?? "—"}
+                </p>
+              ) : (
+                <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a recommendation" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {RECOMMENDATIONS.map((r) => (
+                      <SelectItem key={r.value} value={r.value}>
+                        {r.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
               <FormMessage />
             </FormItem>
           )}

@@ -119,7 +119,7 @@ export default async function CommitteeSubmissionDetailPage(
                     <span className="font-medium">
                       {a.user_profiles?.first_name} {a.user_profiles?.last_name}
                     </span>
-                    <Badge variant="secondary">{a.status}</Badge>
+                    <Badge variant="secondary">{a.status.replaceAll("_", " ")}</Badge>
                   </div>
                   {review?.is_submitted ? (
                     <div className="mt-2 space-y-1">

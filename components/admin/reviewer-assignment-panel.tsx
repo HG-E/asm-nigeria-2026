@@ -71,7 +71,7 @@ export function ReviewerAssignmentPanel({
           {assignments.map((a) => (
             <li key={a.id} className="flex items-center justify-between">
               <span>
-                {a.reviewerName} — <Badge variant="secondary">{a.status}</Badge>
+                {a.reviewerName} — <Badge variant="secondary">{a.status.replaceAll("_", " ")}</Badge>
               </span>
               <Button
                 type="button"

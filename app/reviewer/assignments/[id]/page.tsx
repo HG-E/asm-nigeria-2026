@@ -58,7 +58,7 @@ export default async function ReviewAssignmentPage(
           <h1 className="text-2xl font-semibold">{submission.title}</h1>
           <p className="text-muted-foreground font-mono text-sm">{submission.reference_number}</p>
         </div>
-        <Badge variant="secondary">{assignment.status}</Badge>
+        <Badge variant="secondary">{assignment.status.replaceAll("_", " ")}</Badge>
       </div>
 
       <Card>
