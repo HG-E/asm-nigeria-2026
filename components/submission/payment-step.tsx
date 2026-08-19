@@ -57,6 +57,12 @@ export function PaymentStep({
 
   async function handleFileSelected(file: File) {
     setError(null)
+    // Reset immediately (not just in the upload try/finally below) so
+    // re-picking the SAME file after an early validation failure -- e.g.
+    // no currency selected yet -- still fires a change event next time,
+    // instead of the native input silently no-oping on an unchanged value.
+    if (inputRef.current) inputRef.current.value = ""
+
     if (!currency) {
       setError("Select which currency you paid in first.")
       return
