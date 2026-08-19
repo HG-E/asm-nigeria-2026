@@ -76,7 +76,7 @@ export default async function AdminDashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           ["Manage Submissions", "/admin/submissions", "Search, filter, and view all submissions."],
-          ["Manage Reviewers", "/admin/reviewers", "Add and manage the 5 scientific reviewers."],
+          ["Manage Reviewers", "/admin/reviewers", "Add and manage scientific reviewers."],
           ["Manage Committee", "/admin/committee", "Add scientific committee members."],
           ["Manage Subthemes", "/admin/subthemes", "Edit conference subthemes."],
           ["Conference Settings", "/admin/conference", "Dates, deadlines, word limit, file rules."],
