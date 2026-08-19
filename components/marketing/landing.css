@@ -376,8 +376,12 @@
 }
 .asm-landing .nav-mobile {
   display: none;
-  position: fixed;
-  top: 108px;
+  /* Anchored to #nav (position: sticky, so it's a containing block) rather
+     than a fixed pixel offset from the viewport -- a hardcoded offset would
+     leave a gap once the urgency banner above it disappears after its
+     deadline passes. */
+  position: absolute;
+  top: 100%;
   left: 0;
   right: 0;
   background: var(--blue-d);
