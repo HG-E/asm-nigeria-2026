@@ -1,5 +1,6 @@
 import Link from "next/link"
 
+import { BrandStripe } from "@/components/layout/brand-stripe"
 import { Button } from "@/components/ui/button"
 import { requireRole } from "@/lib/auth"
 
@@ -21,8 +22,9 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <div className="flex min-h-svh flex-col">
       <header className="border-b">
+        <BrandStripe />
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <Link href="/admin/dashboard" className="font-semibold">
+          <Link href="/admin/dashboard" className="text-brand-blue-deep font-semibold">
             ASM Nigeria 2026 &middot; Admin
           </Link>
           <nav className="flex flex-wrap items-center gap-4 text-sm">

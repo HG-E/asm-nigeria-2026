@@ -1,5 +1,6 @@
 import Link from "next/link"
 
+import { BrandStripe } from "@/components/layout/brand-stripe"
 import { Button } from "@/components/ui/button"
 import { requireAuth } from "@/lib/auth"
 
@@ -9,8 +10,9 @@ export default async function AuthorLayout({ children }: LayoutProps<"/author">)
   return (
     <div className="flex min-h-svh flex-col">
       <header className="border-b">
+        <BrandStripe />
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <Link href="/author/dashboard" className="font-semibold">
+          <Link href="/author/dashboard" className="text-brand-blue-deep font-semibold">
             ASM Nigeria 2026
           </Link>
           <nav className="flex items-center gap-4 text-sm">

@@ -19,8 +19,8 @@ const TYPE_LABELS: Record<string, string> = {
   decision_notification: "Decision notification",
 }
 
-function statusVariant(status: string): "default" | "secondary" | "destructive" | "outline" {
-  if (status === "sent") return "default"
+function statusVariant(status: string): "gold" | "secondary" | "destructive" | "outline" {
+  if (status === "sent") return "gold"
   if (status === "failed") return "destructive"
   return "secondary"
 }

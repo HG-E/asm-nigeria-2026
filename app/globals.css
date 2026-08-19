@@ -7,6 +7,14 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-blue-deep: var(--brand-blue-deep);
+  --color-brand-blue-tint: var(--brand-blue-tint);
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-gold-deep: var(--brand-gold-deep);
+  --color-brand-gold-tint: var(--brand-gold-tint);
+  --color-brand-red: var(--brand-red);
+  --color-brand-red-tint: var(--brand-red-tint);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-source-serif);
@@ -49,72 +57,94 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  /* ASM Nigeria 2026 brand palette -- red, blue, golden yellow, white only.
+     Blue carries the UI (trustworthy, scientific); gold is the accent for
+     warmth and positive/finalized states; red is reserved for destructive
+     and rejected states so it doesn't compete with blue for attention. */
+  --brand-blue: #1d4e89;
+  --brand-blue-deep: #123863;
+  --brand-blue-tint: #eaf1fa;
+  --brand-gold: #c9971f;
+  --brand-gold-deep: #8a6415;
+  --brand-gold-tint: #fbf1dc;
+  --brand-red: #b3252c;
+  --brand-red-tint: #fbeaea;
+
+  --background: #ffffff;
+  --foreground: #14181f;
+  --card: #ffffff;
+  --card-foreground: #14181f;
+  --popover: #ffffff;
+  --popover-foreground: #14181f;
+  --primary: var(--brand-blue);
+  --primary-foreground: #ffffff;
+  --secondary: var(--brand-blue-tint);
+  --secondary-foreground: var(--brand-blue-deep);
+  --muted: #f4f6f9;
+  --muted-foreground: #667085;
+  --accent: var(--brand-gold);
+  --accent-foreground: #3a2c0a;
+  --destructive: var(--brand-red);
+  --border: #e2e6ed;
+  --input: #e2e6ed;
+  --ring: var(--brand-blue);
+  --chart-1: var(--brand-blue);
+  --chart-2: var(--brand-gold);
+  --chart-3: var(--brand-red);
+  --chart-4: #6d93c2;
+  --chart-5: #dab963;
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #14181f;
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--brand-blue-tint);
+  --sidebar-accent-foreground: var(--brand-blue-deep);
+  --sidebar-border: #e2e6ed;
+  --sidebar-ring: var(--brand-blue);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --brand-blue: #5b8fd6;
+  --brand-blue-deep: #cfe0f5;
+  --brand-blue-tint: #16233a;
+  --brand-gold: #e0b24a;
+  --brand-gold-deep: #f6dfa4;
+  --brand-gold-tint: #2b2312;
+  --brand-red: #e0666c;
+  --brand-red-tint: #2e1416;
+
+  --background: #0b1220;
+  --foreground: #f3f5f8;
+  --card: #101828;
+  --card-foreground: #f3f5f8;
+  --popover: #101828;
+  --popover-foreground: #f3f5f8;
+  --primary: var(--brand-blue);
+  --primary-foreground: #0b1220;
+  --secondary: var(--brand-blue-tint);
+  --secondary-foreground: var(--brand-blue-deep);
+  --muted: #16233a;
+  --muted-foreground: #8b98ac;
+  --accent: var(--brand-gold);
+  --accent-foreground: #2b2312;
+  --destructive: var(--brand-red);
+  --border: #223049;
+  --input: #223049;
+  --ring: var(--brand-blue);
+  --chart-1: var(--brand-blue);
+  --chart-2: var(--brand-gold);
+  --chart-3: var(--brand-red);
+  --chart-4: #3f6396;
+  --chart-5: #a9843a;
+  --sidebar: #101828;
+  --sidebar-foreground: #f3f5f8;
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: #0b1220;
+  --sidebar-accent: #16233a;
+  --sidebar-accent-foreground: var(--brand-blue-deep);
+  --sidebar-border: #223049;
+  --sidebar-ring: var(--brand-blue);
 }
 
 @layer base {

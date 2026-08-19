@@ -12,8 +12,21 @@ export default async function Home() {
     .maybeSingle()
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-4 text-center">
+    <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden px-4 text-center">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background:
+            "radial-gradient(60% 50% at 50% 8%, color-mix(in oklab, var(--brand-blue) 10%, transparent), transparent), radial-gradient(45% 40% at 85% 85%, color-mix(in oklab, var(--brand-gold) 12%, transparent), transparent)",
+        }}
+      />
       <div className="max-w-2xl space-y-6">
+        <div className="flex items-center justify-center gap-1.5" aria-hidden>
+          <span className="bg-brand-blue h-[3px] w-8 rounded-full" />
+          <span className="bg-brand-gold h-[3px] w-8 rounded-full" />
+          <span className="bg-brand-red h-[3px] w-8 rounded-full" />
+        </div>
         <p className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
           {conference?.short_name ?? "ASM Nigeria 2026"}
           {conference?.location ? ` · ${conference.location}` : ""}
@@ -22,7 +35,7 @@ export default async function Home() {
           Abstract Management System
         </h1>
         {conference?.tagline && (
-          <p className="text-balance text-lg font-medium italic">
+          <p className="text-brand-blue-deep text-balance text-lg font-medium italic">
             &ldquo;{conference.tagline}&rdquo;
           </p>
         )}

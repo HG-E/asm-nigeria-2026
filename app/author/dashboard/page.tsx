@@ -48,9 +48,9 @@ const STATUS_LABELS: Record<SubmissionStatus, string> = {
   withdrawn: "Withdrawn",
 }
 
-function statusVariant(status: SubmissionStatus): "default" | "secondary" | "destructive" | "outline" {
+function statusVariant(status: SubmissionStatus): "gold" | "secondary" | "destructive" | "outline" {
   if (status === "draft") return "outline"
-  if (ACCEPTED_STATUSES.includes(status)) return "default"
+  if (ACCEPTED_STATUSES.includes(status)) return "gold"
   if (status === "rejected" || status === "withdrawn") return "destructive"
   if (status === "revision_required") return "secondary"
   return "secondary"

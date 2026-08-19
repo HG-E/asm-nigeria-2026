@@ -41,6 +41,13 @@ const STATUSES: SubmissionStatus[] = [
   "withdrawn",
 ]
 
+function statusVariant(status: SubmissionStatus): "gold" | "secondary" | "destructive" | "outline" {
+  if (status === "draft") return "outline"
+  if (status === "accepted" || status === "accepted_oral" || status === "accepted_poster") return "gold"
+  if (status === "rejected" || status === "withdrawn") return "destructive"
+  return "secondary"
+}
+
 export default async function AdminSubmissionsPage(props: PageProps<"/admin/submissions">) {
   await requireRole("admin")
   const searchParams = await props.searchParams
@@ -144,13 +151,13 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
                     </TableCell>
                     <TableCell>{s.conference_subthemes?.name ?? "—"}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{s.status.replaceAll("_", " ")}</Badge>
+                      <Badge variant={statusVariant(s.status)}>{s.status.replaceAll("_", " ")}</Badge>
                     </TableCell>
                     <TableCell>
                       <Badge
                         variant={
                           s.payment_status === "verified"
-                            ? "default"
+                            ? "gold"
                             : s.payment_status === "rejected"
                               ? "destructive"
                               : "secondary"

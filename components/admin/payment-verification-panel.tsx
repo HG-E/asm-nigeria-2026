@@ -11,8 +11,8 @@ import { Textarea } from "@/components/ui/textarea"
 
 type PaymentStatus = "pending" | "verified" | "rejected"
 
-function statusVariant(status: PaymentStatus): "default" | "secondary" | "destructive" {
-  if (status === "verified") return "default"
+function statusVariant(status: PaymentStatus): "gold" | "secondary" | "destructive" {
+  if (status === "verified") return "gold"
   if (status === "rejected") return "destructive"
   return "secondary"
 }
