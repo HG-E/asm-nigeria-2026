@@ -7,6 +7,7 @@ const STEPS = [
   "Abstract Content",
   "Declarations",
   "Document Upload",
+  "Payment",
   "Review & Submit",
 ]
 

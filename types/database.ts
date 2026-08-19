@@ -94,6 +94,9 @@ export type Database = {
           secretariat_email: string | null
           website: string | null
           ref_sequence: number
+          submission_fee_ngn: number | null
+          submission_fee_usd: number | null
+          payment_account_details: string | null
           created_at: string
           updated_at: string
         }
@@ -122,6 +125,9 @@ export type Database = {
           secretariat_email?: string | null
           website?: string | null
           ref_sequence?: number
+          submission_fee_ngn?: number | null
+          submission_fee_usd?: number | null
+          payment_account_details?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -150,6 +156,9 @@ export type Database = {
           secretariat_email?: string | null
           website?: string | null
           ref_sequence?: number
+          submission_fee_ngn?: number | null
+          submission_fee_usd?: number | null
+          payment_account_details?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -319,6 +328,13 @@ export type Database = {
           screened_by: string | null
           screened_at: string | null
           submitted_at: string | null
+          payment_status: Database["public"]["Enums"]["payment_status"]
+          payment_currency: string | null
+          payment_receipt_path: string | null
+          payment_receipt_uploaded_at: string | null
+          payment_verified_by: string | null
+          payment_verified_at: string | null
+          payment_rejection_reason: string | null
           created_at: string
           updated_at: string
         }
@@ -341,6 +357,13 @@ export type Database = {
           screened_by?: string | null
           screened_at?: string | null
           submitted_at?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          payment_currency?: string | null
+          payment_receipt_path?: string | null
+          payment_receipt_uploaded_at?: string | null
+          payment_verified_by?: string | null
+          payment_verified_at?: string | null
+          payment_rejection_reason?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -363,6 +386,13 @@ export type Database = {
           screened_by?: string | null
           screened_at?: string | null
           submitted_at?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          payment_currency?: string | null
+          payment_receipt_path?: string | null
+          payment_receipt_uploaded_at?: string | null
+          payment_verified_by?: string | null
+          payment_verified_at?: string | null
+          payment_rejection_reason?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -391,6 +421,13 @@ export type Database = {
           {
             foreignKeyName: "submissions_screened_by_fkey"
             columns: ["screened_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submissions_payment_verified_by_fkey"
+            columns: ["payment_verified_by"]
             isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
@@ -918,6 +955,7 @@ export type Database = {
         | "major_revision"
         | "rejected"
       notification_status: "pending" | "sent" | "failed"
+      payment_status: "pending" | "verified" | "rejected"
       presentation_preference: "oral" | "poster" | "either"
       review_status: "pending" | "in_progress" | "completed" | "conflict"
       submission_status:

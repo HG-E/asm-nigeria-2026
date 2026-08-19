@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 
 import { DecisionFinalizePanel } from "@/components/admin/decision-finalize-panel"
+import { PaymentVerificationPanel } from "@/components/admin/payment-verification-panel"
 import { ReviewerAssignmentPanel } from "@/components/admin/reviewer-assignment-panel"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -58,6 +59,14 @@ export default async function AdminSubmissionDetailPage(
     .select("user_id, user_profiles:user_id(first_name, last_name)")
     .eq("conference_id", submission.conference_id)
     .eq("is_active", true)
+
+  let receiptUrl: string | null = null
+  if (submission.payment_receipt_path) {
+    const { data: signed } = await supabase.storage
+      .from("payment-receipts")
+      .createSignedUrl(submission.payment_receipt_path, 60 * 10)
+    receiptUrl = signed?.signedUrl ?? null
+  }
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -152,6 +161,22 @@ export default async function AdminSubmissionDetailPage(
           ) : (
             <p className="text-muted-foreground text-sm">No document uploaded.</p>
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Payment</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PaymentVerificationPanel
+            submissionId={id}
+            status={submission.payment_status}
+            currency={submission.payment_currency}
+            receiptUrl={receiptUrl}
+            receiptFileName={submission.payment_receipt_path?.split("/").pop() ?? null}
+            rejectionReason={submission.payment_rejection_reason}
+          />
         </CardContent>
       </Card>
 

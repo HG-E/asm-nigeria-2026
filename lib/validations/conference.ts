@@ -17,5 +17,8 @@ export const conferenceSettingsSchema = z.object({
   secretariatEmail: z.email("Enter a valid email address").optional().or(z.literal("")),
   website: z.string().trim().optional().or(z.literal("")),
   submissionsOpen: z.boolean(),
+  submissionFeeNgn: z.number().min(0).optional(),
+  submissionFeeUsd: z.number().min(0).optional(),
+  paymentAccountDetails: z.string().trim().optional().or(z.literal("")),
 })
 export type ConferenceSettingsInput = z.infer<typeof conferenceSettingsSchema>

@@ -52,7 +52,7 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
   let query = supabase
     .from("submissions")
     .select(
-      "id, reference_number, title, status, submitted_at, created_at, conference_subthemes(name), user_profiles:corresponding_author_id(first_name, last_name, email)"
+      "id, reference_number, title, status, payment_status, submitted_at, created_at, conference_subthemes(name), user_profiles:corresponding_author_id(first_name, last_name, email)"
     )
     .order("created_at", { ascending: false })
     .limit(100)
@@ -122,6 +122,7 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
                   <TableHead>Author</TableHead>
                   <TableHead>Subtheme</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Payment</TableHead>
                   <TableHead>Submitted</TableHead>
                 </TableRow>
               </TableHeader>
@@ -144,6 +145,19 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
                     <TableCell>{s.conference_subthemes?.name ?? "—"}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">{s.status.replaceAll("_", " ")}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          s.payment_status === "verified"
+                            ? "default"
+                            : s.payment_status === "rejected"
+                              ? "destructive"
+                              : "secondary"
+                        }
+                      >
+                        {s.payment_status}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       {s.submitted_at ? new Date(s.submitted_at).toLocaleDateString() : "—"}

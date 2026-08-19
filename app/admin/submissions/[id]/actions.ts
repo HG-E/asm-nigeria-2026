@@ -154,6 +154,106 @@ export async function finalizeDecisionAction(
   return { success: true }
 }
 
+export async function verifyPaymentAction(submissionId: string): Promise<ActionResult> {
+  const session = await requireRole("admin")
+  const supabase = await createClient()
+
+  const { error } = await supabase
+    .from("submissions")
+    .update({
+      payment_status: "verified",
+      payment_verified_by: session.authUserId,
+      payment_verified_at: new Date().toISOString(),
+      payment_rejection_reason: null,
+    })
+    .eq("id", submissionId)
+
+  if (error) {
+    return { error: "Could not verify the payment. Please try again." }
+  }
+
+  await supabase.from("audit_logs").insert({
+    actor_id: session.authUserId,
+    actor_email: session.email,
+    action: "payment_verified",
+    entity_type: "submission",
+    entity_id: submissionId,
+  })
+
+  revalidatePath(`/admin/submissions/${submissionId}`)
+  return { success: true }
+}
+
+export async function rejectPaymentAction(
+  submissionId: string,
+  reason: string
+): Promise<ActionResult> {
+  const session = await requireRole("admin")
+  if (!reason.trim()) {
+    return { error: "Provide a reason so the author knows what to fix." }
+  }
+  const supabase = await createClient()
+
+  const { data: submission } = await supabase
+    .from("submissions")
+    .select("corresponding_author_id, reference_number")
+    .eq("id", submissionId)
+    .single()
+
+  if (!submission) {
+    return { error: "Submission not found." }
+  }
+
+  const { data: author } = await supabase
+    .from("user_profiles")
+    .select("email")
+    .eq("id", submission.corresponding_author_id)
+    .single()
+
+  const { error } = await supabase
+    .from("submissions")
+    .update({
+      payment_status: "rejected",
+      payment_verified_by: session.authUserId,
+      payment_verified_at: new Date().toISOString(),
+      payment_rejection_reason: reason.trim(),
+    })
+    .eq("id", submissionId)
+
+  if (error) {
+    return { error: "Could not reject the payment. Please try again." }
+  }
+
+  await supabase.from("audit_logs").insert({
+    actor_id: session.authUserId,
+    actor_email: session.email,
+    action: "payment_rejected",
+    entity_type: "submission",
+    entity_id: submissionId,
+    metadata: { reason: reason.trim() },
+  })
+
+  const { data: notification } = await supabase
+    .from("notifications")
+    .insert({
+      recipient_id: submission.corresponding_author_id,
+      recipient_email: author?.email ?? "",
+      submission_id: submissionId,
+      notification_type: "payment_rejected",
+      subject: `Payment receipt needs attention: ${submission.reference_number ?? submissionId}`,
+      status: "pending",
+    })
+    .select("id")
+    .single()
+
+  if (notification) {
+    after(() => sendNotifications([notification.id]))
+  }
+
+  revalidatePath(`/admin/submissions/${submissionId}`)
+  return { success: true }
+}
+
 export async function removeAssignmentAction(
   submissionId: string,
   assignmentId: string

@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
+import { PaymentStep } from "@/components/submission/payment-step"
 import { RevisionForm } from "@/components/submission/revision-form"
 import { Step1Form } from "@/components/submission/step1-form"
 import { Step2Form } from "@/components/submission/step2-form"
@@ -125,6 +126,9 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
 
   if (submission.status !== "draft") {
     const submitted = searchParams.submitted === "1"
+    const paymentRejected = submission.payment_status === "rejected"
+    const conference = paymentRejected ? await getActiveConference() : null
+
     return (
       <Card className="mx-auto max-w-2xl">
         <CardHeader>
@@ -148,6 +152,32 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
             <dt className="text-muted-foreground">Status</dt>
             <dd className="capitalize">{submission.status.replaceAll("_", " ")}</dd>
           </dl>
+
+          {paymentRejected && (
+            <>
+              <Alert variant="destructive">
+                <AlertDescription>
+                  Your payment receipt was rejected
+                  {submission.payment_rejection_reason
+                    ? `: ${submission.payment_rejection_reason}`
+                    : "."}{" "}
+                  Please upload a corrected receipt below.
+                </AlertDescription>
+              </Alert>
+              <PaymentStep
+                submissionId={id}
+                userId={session.authUserId}
+                currentReceipt={null}
+                defaultCurrency={submission.payment_currency as "NGN" | "USD" | null}
+                feeNgn={conference?.submission_fee_ngn ?? null}
+                feeUsd={conference?.submission_fee_usd ?? null}
+                accountDetails={conference?.payment_account_details ?? null}
+                backHref="/author/dashboard"
+                nextHref="/author/dashboard"
+              />
+            </>
+          )}
+
           <Link href="/author/dashboard" className={buttonVariants({ variant: "outline" })}>
             Back to dashboard
           </Link>
@@ -161,7 +191,7 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
     notFound()
   }
 
-  const step = Math.min(6, Math.max(1, Number(searchParams.step) || 1))
+  const step = Math.min(7, Math.max(1, Number(searchParams.step) || 1))
   const base = `/author/submissions/${id}`
 
   if (step === 1) {
@@ -281,7 +311,32 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
     )
   }
 
-  // Step 6: Review & Submit
+  if (step === 6) {
+    return (
+      <WizardShell currentStep={6}>
+        <PaymentStep
+          submissionId={id}
+          userId={session.authUserId}
+          currentReceipt={
+            submission.payment_receipt_path
+              ? {
+                  path: submission.payment_receipt_path,
+                  uploadedAt: submission.payment_receipt_uploaded_at ?? "",
+                }
+              : null
+          }
+          defaultCurrency={submission.payment_currency as "NGN" | "USD" | null}
+          feeNgn={conference.submission_fee_ngn}
+          feeUsd={conference.submission_fee_usd}
+          accountDetails={conference.payment_account_details}
+          backHref={`${base}?step=5`}
+          nextHref={`${base}?step=7`}
+        />
+      </WizardShell>
+    )
+  }
+
+  // Step 7: Review & Submit
   const [{ data: authors }, { data: version }, { data: document }] = await Promise.all([
     supabase
       .from("submission_authors")
@@ -303,7 +358,7 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
   ])
 
   return (
-    <WizardShell currentStep={6}>
+    <WizardShell currentStep={7}>
       <Step6Review
         title={submission.title}
         subthemeName={submission.conference_subthemes?.name ?? "—"}
@@ -319,7 +374,12 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
           originalityConfirmed: submission.originality_confirmed,
         }}
         documentFileName={document?.file_name ?? "No document uploaded"}
-        backHref={`${base}?step=5`}
+        paymentSummary={
+          submission.payment_receipt_path
+            ? `Receipt uploaded (paid in ${submission.payment_currency ?? "—"})`
+            : "No payment receipt uploaded"
+        }
+        backHref={`${base}?step=6`}
         onSubmit={submitAbstractAction.bind(null, id)}
       />
     </WizardShell>

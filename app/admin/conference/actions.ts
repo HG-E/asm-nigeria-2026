@@ -42,6 +42,9 @@ export async function updateConferenceAction(
       secretariat_email: data.secretariatEmail || null,
       website: data.website || null,
       submissions_open: data.submissionsOpen,
+      submission_fee_ngn: data.submissionFeeNgn ?? null,
+      submission_fee_usd: data.submissionFeeUsd ?? null,
+      payment_account_details: data.paymentAccountDetails || null,
     })
     .eq("id", id)
 

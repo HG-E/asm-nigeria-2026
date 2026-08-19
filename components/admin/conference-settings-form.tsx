@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import { Textarea } from "@/components/ui/textarea"
 import {
   conferenceSettingsSchema,
   type ConferenceSettingsInput,
@@ -259,6 +260,71 @@ export function ConferenceSettingsForm({
                   />
                 </FormControl>
                 <FormLabel className="font-normal">Submissions are open</FormLabel>
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <Separator />
+
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium">Payment</h3>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="submissionFeeNgn"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Submission fee (NGN)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? undefined : e.target.valueAsNumber)
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="submissionFeeUsd"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Submission fee (USD equivalent)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? undefined : e.target.valueAsNumber)
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <FormField
+            control={form.control}
+            name="paymentAccountDetails"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Payment account details</FormLabel>
+                <FormControl>
+                  <Textarea
+                    rows={3}
+                    placeholder="Bank name, account number, account name -- shown to authors during submission"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />

@@ -27,6 +27,7 @@ export function Step6Review({
   wordCount,
   declarations,
   documentFileName,
+  paymentSummary,
   backHref,
   onSubmit,
 }: {
@@ -44,6 +45,7 @@ export function Step6Review({
     originalityConfirmed: boolean
   }
   documentFileName: string
+  paymentSummary: string
   backHref: string
   onSubmit: () => Promise<ActionResult>
 }) {
@@ -124,6 +126,13 @@ export function Step6Review({
       <div className="space-y-1 text-sm">
         <h3 className="font-medium">Document</h3>
         <p className="text-muted-foreground">{documentFileName}</p>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-1 text-sm">
+        <h3 className="font-medium">Payment</h3>
+        <p className="text-muted-foreground">{paymentSummary}</p>
       </div>
 
       {error && (

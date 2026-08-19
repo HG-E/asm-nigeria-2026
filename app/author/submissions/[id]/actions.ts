@@ -344,6 +344,9 @@ export async function submitAbstractAction(id: string): Promise<ActionResult> {
   if (!documents || documents.length === 0) {
     return { error: "Upload your abstract document before submitting." }
   }
+  if (!submission.payment_receipt_path) {
+    return { error: "Upload your payment receipt before submitting." }
+  }
 
   const { error } = await supabase.rpc("submit_abstract", { p_submission_id: id })
   if (error) {

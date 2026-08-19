@@ -103,6 +103,24 @@ async function renderContent(
         <p><strong>Subtheme:</strong> ${subtheme}</p>
         <p>Please log in to your reviewer dashboard to review the updated abstract.</p>
       `
+    case "payment_rejected": {
+      const { data: submissionRow } = await admin
+        .from("submissions")
+        .select("payment_rejection_reason")
+        .eq("id", submissionId)
+        .single()
+      const rejectionReason = submissionRow?.payment_rejection_reason
+        ? `<p><strong>Reason:</strong> ${submissionRow.payment_rejection_reason}</p>`
+        : ""
+      return `
+        <h2>Your payment receipt needs attention</h2>
+        <p>We could not verify the payment receipt for your abstract.</p>
+        <p><strong>Reference number:</strong> ${reference}</p>
+        <p><strong>Title:</strong> ${title}</p>
+        ${rejectionReason}
+        <p>Please log in to your dashboard and upload a corrected receipt as soon as possible.</p>
+      `
+    }
     case "reviewer_conflict_needs_reassignment":
       return `
         <h2>Action needed: no reviewer available</h2>
