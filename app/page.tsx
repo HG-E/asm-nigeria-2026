@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ClipboardCheck, FileSearch, Gavel, ShieldCheck, UploadCloud } from "lucide-react"
 
+import { BrandMark } from "@/components/layout/brand-mark"
 import { HeroCarousel } from "@/components/marketing/hero-carousel"
 import { Reveal } from "@/components/marketing/reveal"
 import { Badge } from "@/components/ui/badge"
@@ -106,6 +107,21 @@ export default async function Home() {
 
   return (
     <div className="flex flex-1 flex-col">
+      {/* Site header */}
+      <header className="border-b">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+          <BrandMark suffix="Nigeria 2026" />
+          <nav className="flex items-center gap-3 text-sm">
+            <Link href="/login" className="text-muted-foreground hover:text-foreground px-2">
+              Log in
+            </Link>
+            <Link href="/register" className={buttonVariants({ size: "sm" })}>
+              Register
+            </Link>
+          </nav>
+        </div>
+      </header>
+
       {/* Hero */}
       <section className="relative overflow-hidden px-4 pt-20 pb-24 sm:pt-28 sm:pb-32">
         <div

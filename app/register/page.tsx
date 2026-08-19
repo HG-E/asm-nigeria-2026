@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { RegisterForm } from "@/components/auth/register-form"
+import { BrandMark } from "@/components/layout/brand-mark"
 import {
   Card,
   CardContent,
@@ -19,7 +20,8 @@ export default async function RegisterPage() {
     .maybeSingle()
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-4 bg-muted/30 px-4 py-12">
+    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted/30 px-4 py-12">
+      <BrandMark height={40} />
       {conference?.tagline && (
         <p className="text-muted-foreground text-center text-sm italic">
           &ldquo;{conference.tagline}&rdquo;

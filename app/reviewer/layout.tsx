@@ -1,5 +1,4 @@
-import Link from "next/link"
-
+import { BrandMark } from "@/components/layout/brand-mark"
 import { BrandStripe } from "@/components/layout/brand-stripe"
 import { Button } from "@/components/ui/button"
 import { requireRole } from "@/lib/auth"
@@ -12,9 +11,7 @@ export default async function ReviewerLayout({ children }: LayoutProps<"/reviewe
       <header className="border-b">
         <BrandStripe />
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <Link href="/reviewer/dashboard" className="text-brand-blue-deep font-semibold">
-            ASM Nigeria 2026 &middot; Reviewer
-          </Link>
+          <BrandMark href="/reviewer/dashboard" suffix="Nigeria 2026 · Reviewer" />
           <nav className="flex items-center gap-4 text-sm">
             <span className="text-muted-foreground hidden sm:inline">
               {session.profile.first_name} {session.profile.last_name}

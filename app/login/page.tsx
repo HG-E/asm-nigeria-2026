@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { LoginForm } from "@/components/auth/login-form"
+import { BrandMark } from "@/components/layout/brand-mark"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   Card,
@@ -24,7 +25,8 @@ export default async function LoginPage(props: PageProps<"/login">) {
     .maybeSingle()
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-4 bg-muted/30 px-4 py-12">
+    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted/30 px-4 py-12">
+      <BrandMark height={40} />
       {conference?.tagline && (
         <p className="text-muted-foreground text-center text-sm italic">
           &ldquo;{conference.tagline}&rdquo;
