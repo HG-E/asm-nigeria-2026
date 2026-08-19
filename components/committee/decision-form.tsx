@@ -68,20 +68,26 @@ export function DecisionForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Decision</FormLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a decision" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {DECISIONS.map((d) => (
-                    <SelectItem key={d.value} value={d.value}>
-                      {d.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {isLocked ? (
+                <p className="text-sm">
+                  {DECISIONS.find((d) => d.value === field.value)?.label ?? "—"}
+                </p>
+              ) : (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a decision" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {DECISIONS.map((d) => (
+                      <SelectItem key={d.value} value={d.value}>
+                        {d.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
               <FormMessage />
             </FormItem>
           )}
