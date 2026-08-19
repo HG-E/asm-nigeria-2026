@@ -37,13 +37,14 @@ type ActionResult = { error: string } | { success: true }
 
 export function DecisionForm({
   defaultValues,
-  isFinal,
+  lockReason,
   onSave,
 }: {
   defaultValues: Partial<DecisionInput>
-  isFinal: boolean
+  lockReason: "final" | "not_decidable" | null
   onSave: (data: DecisionInput) => Promise<ActionResult>
 }) {
+  const isLocked = lockReason !== null
   const form = useForm<DecisionInput>({
     resolver: zodResolver(decisionSchema),
     defaultValues,
@@ -60,7 +61,7 @@ export function DecisionForm({
 
   return (
     <Form {...form}>
-      <fieldset disabled={isFinal} className="space-y-4">
+      <fieldset disabled={isLocked} className="space-y-4">
         <FormField
           control={form.control}
           name="decision"
@@ -128,15 +129,21 @@ export function DecisionForm({
           )}
         />
 
-        {!isFinal && (
+        {!isLocked && (
           <Button type="button" onClick={form.handleSubmit(onSubmit)} disabled={form.formState.isSubmitting}>
             {form.formState.isSubmitting ? "Saving..." : "Save Decision"}
           </Button>
         )}
-        {isFinal && (
+        {lockReason === "final" && (
           <p className="text-muted-foreground text-sm">
             This decision has been finalized and the author notified. It can no longer be
             changed.
+          </p>
+        )}
+        {lockReason === "not_decidable" && (
+          <p className="text-muted-foreground text-sm">
+            Reviews are still in progress. A decision can be proposed once all reviews for
+            this submission are complete.
           </p>
         )}
       </fieldset>

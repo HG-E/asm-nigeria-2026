@@ -54,9 +54,14 @@ export default async function CommitteeSubmissionDetailPage(
   // A finalized decision from an earlier review round (the committee asked
   // for a revision, the author resubmitted) is history, not a lock on the
   // current round -- only the submission's own status says whether a new
-  // decision can be proposed right now.
+  // decision can be proposed right now. Distinguish "already decided" from
+  // "not decided yet, reviews still in progress" -- both lock the form, but
+  // showing the same "finalized and can no longer be changed" copy for a
+  // submission with zero decision history was actively misleading.
   const DECIDABLE_STATUSES = ["reviews_completed", "decision_pending"]
-  const isLocked = !DECIDABLE_STATUSES.includes(submission.status)
+  const hasFinalDecision = latestDecision?.is_final ?? false
+  const isNotYetDecidable = !hasFinalDecision && !DECIDABLE_STATUSES.includes(submission.status)
+  const lockReason = hasFinalDecision ? "final" : isNotYetDecidable ? "not_decidable" : null
   const draftDecision = latestDecision && !latestDecision.is_final ? latestDecision : null
 
   return (
@@ -179,7 +184,7 @@ export default async function CommitteeSubmissionDetailPage(
         </CardHeader>
         <CardContent>
           <DecisionForm
-            isFinal={isLocked}
+            lockReason={lockReason}
             defaultValues={{
               decision: draftDecision?.decision,
               decisionNotes: draftDecision?.decision_notes ?? "",

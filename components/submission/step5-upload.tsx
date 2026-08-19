@@ -96,7 +96,7 @@ export function Step5Upload({
   async function handleRemove() {
     if (!currentDocument) return
     setError(null)
-    const result = await deleteDocumentAction(submissionId, currentDocument.id, currentDocument.storage_path)
+    const result = await deleteDocumentAction(submissionId, currentDocument.id)
     if ("error" in result) {
       setError(result.error)
       return

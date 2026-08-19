@@ -265,8 +265,7 @@ export async function recordDocumentAction(
 
 export async function deleteDocumentAction(
   id: string,
-  documentId: string,
-  storagePath: string
+  documentId: string
 ): Promise<ActionResult> {
   const session = await requireAuth()
   const supabase = await createClient()
@@ -275,8 +274,27 @@ export async function deleteDocumentAction(
     return { error: "This draft is no longer editable." }
   }
 
-  await supabase.storage.from("abstracts").remove([storagePath])
-  const { error } = await supabase.from("submission_documents").delete().eq("id", documentId)
+  // Look up the document ourselves rather than trusting a caller-supplied
+  // storage path, and scope the delete to THIS submission -- documentId
+  // alone isn't enough to prove the file belongs to the submission the
+  // editability check just validated.
+  const { data: document } = await supabase
+    .from("submission_documents")
+    .select("id, storage_path")
+    .eq("id", documentId)
+    .eq("submission_id", id)
+    .maybeSingle()
+
+  if (!document) {
+    return { error: "Document not found." }
+  }
+
+  await supabase.storage.from("abstracts").remove([document.storage_path])
+  const { error } = await supabase
+    .from("submission_documents")
+    .delete()
+    .eq("id", documentId)
+    .eq("submission_id", id)
 
   if (error) {
     return { error: "Could not remove the file. Please try again." }

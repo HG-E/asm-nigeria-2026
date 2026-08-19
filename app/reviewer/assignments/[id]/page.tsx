@@ -103,8 +103,8 @@ export default async function ReviewAssignmentPage(
       {assignment.status === "conflict" && (
         <Card>
           <CardContent className="text-muted-foreground py-6 text-center text-sm">
-            You declared a conflict of interest for this abstract. No further action is needed —
-            the secretariat has been notified for reassignment.
+            You declared a conflict of interest for this abstract. No further action is needed
+            from you — it has been recorded.
           </CardContent>
         </Card>
       )}
