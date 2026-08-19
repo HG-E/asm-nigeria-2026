@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -273,7 +274,15 @@ export function RegisterForm() {
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel className="font-normal">
-                    I agree to the conference terms and declaration.
+                    I agree to the{" "}
+                    <Link
+                      href="/terms"
+                      target="_blank"
+                      className="underline underline-offset-4"
+                    >
+                      conference terms and declaration
+                    </Link>
+                    .
                   </FormLabel>
                   <FormMessage />
                 </div>
@@ -293,7 +302,15 @@ export function RegisterForm() {
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel className="font-normal">
-                    I acknowledge the privacy and data-use policy.
+                    I acknowledge the{" "}
+                    <Link
+                      href="/privacy"
+                      target="_blank"
+                      className="underline underline-offset-4"
+                    >
+                      privacy and data-use policy
+                    </Link>
+                    .
                   </FormLabel>
                   <FormMessage />
                 </div>
