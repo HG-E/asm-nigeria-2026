@@ -108,7 +108,7 @@ export default async function Home() {
   return (
     <div className="flex flex-1 flex-col">
       {/* Site header */}
-      <header className="border-b">
+      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/70 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <BrandMark suffix="Nigeria 2026" />
           <nav className="flex items-center gap-3 text-sm">
