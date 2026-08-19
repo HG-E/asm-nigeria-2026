@@ -8,10 +8,6 @@ import { Reveal } from "@/components/marketing/reveal"
 
 import "./landing.css"
 
-// TODO(hillary): replace with the real Google Form link for conference
-// registration once it exists -- see conversation for context.
-const CONFERENCE_REGISTRATION_FORM_URL = "https://forms.gle/REPLACE_WITH_REAL_FORM_LINK"
-
 const SECRETARIAT_EMAIL = "asmnigeriaonehealth@gmail.com"
 const CONFERENCE_DATE = new Date("2026-11-22T09:00:00+01:00").getTime()
 const EARLY_DEADLINE = new Date("2026-08-22T22:59:59+00:00").getTime()
@@ -648,9 +644,9 @@ export function LandingPage() {
               </Reveal>
               <Reveal>
                 <div className="reg-cta">
-                  <a href={CONFERENCE_REGISTRATION_FORM_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg">
+                  <Link href="/register-conference" className="btn btn-primary btn-lg">
                     🎟️ Register for the Conference →
-                  </a>
+                  </Link>
                 </div>
               </Reveal>
             </div>

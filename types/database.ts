@@ -94,6 +94,7 @@ export type Database = {
           secretariat_email: string | null
           website: string | null
           ref_sequence: number
+          registration_ref_sequence: number
           submission_fee_ngn: number | null
           submission_fee_usd: number | null
           payment_account_details: string | null
@@ -125,6 +126,7 @@ export type Database = {
           secretariat_email?: string | null
           website?: string | null
           ref_sequence?: number
+          registration_ref_sequence?: number
           submission_fee_ngn?: number | null
           submission_fee_usd?: number | null
           payment_account_details?: string | null
@@ -156,6 +158,7 @@ export type Database = {
           secretariat_email?: string | null
           website?: string | null
           ref_sequence?: number
+          registration_ref_sequence?: number
           submission_fee_ngn?: number | null
           submission_fee_usd?: number | null
           payment_account_details?: string | null
@@ -207,6 +210,87 @@ export type Database = {
             columns: ["conference_id"]
             isOneToOne: false
             referencedRelation: "conferences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conference_registrations: {
+        Row: {
+          id: string
+          conference_id: string
+          reference_number: string | null
+          full_name: string
+          email: string
+          phone: string | null
+          institution: string | null
+          participant_category: string
+          registration_period: string
+          amount_expected: string
+          payment_currency: string
+          payment_receipt_path: string
+          payment_status: string
+          payment_verified_by: string | null
+          payment_verified_at: string | null
+          payment_rejection_reason: string | null
+          ip_address: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          conference_id: string
+          reference_number?: string | null
+          full_name: string
+          email: string
+          phone?: string | null
+          institution?: string | null
+          participant_category: string
+          registration_period: string
+          amount_expected: string
+          payment_currency: string
+          payment_receipt_path: string
+          payment_status?: string
+          payment_verified_by?: string | null
+          payment_verified_at?: string | null
+          payment_rejection_reason?: string | null
+          ip_address?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          conference_id?: string
+          reference_number?: string | null
+          full_name?: string
+          email?: string
+          phone?: string | null
+          institution?: string | null
+          participant_category?: string
+          registration_period?: string
+          amount_expected?: string
+          payment_currency?: string
+          payment_receipt_path?: string
+          payment_status?: string
+          payment_verified_by?: string | null
+          payment_verified_at?: string | null
+          payment_rejection_reason?: string | null
+          ip_address?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conference_registrations_conference_id_fkey"
+            columns: ["conference_id"]
+            isOneToOne: false
+            referencedRelation: "conferences"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conference_registrations_payment_verified_by_fkey"
+            columns: ["payment_verified_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -983,6 +1067,10 @@ export type Database = {
       withdraw_submission: {
         Args: { p_submission_id: string; p_reason?: string | null }
         Returns: undefined
+      }
+      generate_registration_reference: {
+        Args: { p_conference_id: string }
+        Returns: string
       }
     }
     Enums: {

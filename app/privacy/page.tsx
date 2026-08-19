@@ -46,6 +46,11 @@ export default function PrivacyPage() {
                   the IP address your message was sent from (used only to prevent spam and abuse
                   of the form).
                 </li>
+                <li>
+                  Conference registration: name, email, phone and institution if provided,
+                  participant category, and your payment receipt or screenshot, if you register
+                  to attend the conference. Registration does not require creating an account.
+                </li>
               </ul>
             </Clause>
             <Clause number={2} title="How we use it">
@@ -53,8 +58,9 @@ export default function PrivacyPage() {
                 To route your abstract to the right reviewers, communicate submission and
                 decision status, verify payment, compile the Book of Abstracts, respond to
                 enquiries submitted through the contact form (including an automatic
-                acknowledgement email), and keep an audit record of conference decisions. We
-                don&apos;t use your information for anything beyond running this conference.
+                acknowledgement email), confirm conference registrations, and keep an audit
+                record of conference decisions. We don&apos;t use your information for anything
+                beyond running this conference.
               </p>
             </Clause>
             <Clause number={3} title="Who can see what">
@@ -70,14 +76,15 @@ export default function PrivacyPage() {
                   submission details, including author identity, to make a final decision.
                 </li>
                 <li>
-                  <strong className="text-foreground">Payment receipts</strong> are visible
-                  only to you and the administrator who verifies them — never to reviewers or
+                  <strong className="text-foreground">Payment and registration receipts</strong>{" "}
+                  are visible only to you and the administrator who verifies them — never to
+                  reviewers or
                   the committee.
                 </li>
                 <li>
                   <strong className="text-foreground">Administrators</strong> have full
                   access, needed to run the conference and support authors and reviewers
-                  directly, including contact form messages.
+                  directly, including contact form messages and conference registrations.
                 </li>
               </ul>
             </Clause>

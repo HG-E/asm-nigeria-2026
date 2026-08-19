@@ -8,6 +8,7 @@ import { requireRole } from "@/lib/auth"
 const NAV = [
   { href: "/admin/dashboard", label: "Dashboard" },
   { href: "/admin/submissions", label: "Submissions" },
+  { href: "/admin/registrations", label: "Registrations" },
   { href: "/admin/reviewers", label: "Reviewers" },
   { href: "/admin/committee", label: "Committee" },
   { href: "/admin/subthemes", label: "Subthemes" },
