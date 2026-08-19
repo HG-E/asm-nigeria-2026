@@ -39,6 +39,7 @@ export default async function AdminSubthemesPage() {
             defaultValues={{
               name: subtheme.name,
               description: subtheme.description ?? "",
+              code: subtheme.code,
               isActive: subtheme.is_active,
             }}
             onSave={updateSubthemeAction.bind(null, subtheme.id)}
@@ -52,7 +53,7 @@ export default async function AdminSubthemesPage() {
         </CardHeader>
         <CardContent>
           <SubthemeEditor
-            defaultValues={{ name: "", description: "", isActive: true }}
+            defaultValues={{ name: "", description: "", code: "", isActive: true }}
             onSave={createSubthemeAction}
             submitLabel="Create"
             resetOnSuccess

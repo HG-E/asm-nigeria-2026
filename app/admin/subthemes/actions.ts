@@ -22,11 +22,15 @@ export async function updateSubthemeAction(id: string, input: SubthemeInput): Pr
     .update({
       name: parsed.data.name,
       description: parsed.data.description || null,
+      code: parsed.data.code,
       is_active: parsed.data.isActive,
     })
     .eq("id", id)
 
   if (error) {
+    if (error.code === "23505") {
+      return { error: "This code is already used by another subtheme." }
+    }
     return { error: "Could not save. Please try again." }
   }
 
@@ -56,11 +60,15 @@ export async function createSubthemeAction(input: SubthemeInput): Promise<Action
     conference_id: conference.id,
     name: parsed.data.name,
     description: parsed.data.description || null,
+    code: parsed.data.code,
     is_active: parsed.data.isActive,
     sort_order: (count ?? 0) + 1,
   })
 
   if (error) {
+    if (error.code === "23505") {
+      return { error: "This code is already used by another subtheme." }
+    }
     return { error: "Could not create. Please try again." }
   }
 

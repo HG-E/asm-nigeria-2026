@@ -161,6 +161,8 @@ export type Database = {
           conference_id: string
           name: string
           description: string | null
+          code: string
+          ref_sequence: number
           sort_order: number
           is_active: boolean
           created_at: string
@@ -171,6 +173,8 @@ export type Database = {
           conference_id: string
           name: string
           description?: string | null
+          code: string
+          ref_sequence?: number
           sort_order?: number
           is_active?: boolean
           created_at?: string
@@ -181,6 +185,8 @@ export type Database = {
           conference_id?: string
           name?: string
           description?: string | null
+          code?: string
+          ref_sequence?: number
           sort_order?: number
           is_active?: boolean
           created_at?: string
@@ -890,7 +896,7 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_role"]
       }
       generate_reference_number: {
-        Args: { p_conference_id: string }
+        Args: { p_conference_id: string; p_subtheme_id: string }
         Returns: string
       }
       submit_abstract: {

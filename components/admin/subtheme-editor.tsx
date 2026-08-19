@@ -93,6 +93,22 @@ export function SubthemeEditor({
             />
             <FormField
               control={form.control}
+              name="code"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Reference code</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="e.g. AMR" className="max-w-32 uppercase" />
+                  </FormControl>
+                  <p className="text-muted-foreground text-xs">
+                    Used in abstract reference numbers for this subtheme, e.g. ASM-ABJ-2026-AMR-001.
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="isActive"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center gap-2 space-y-0">
