@@ -60,15 +60,16 @@
   /* ASM Nigeria 2026 brand palette -- red, blue, golden yellow, white only.
      Blue carries the UI (trustworthy, scientific); gold is the accent for
      warmth and positive/finalized states; red is reserved for destructive
-     and rejected states so it doesn't compete with blue for attention. */
-  --brand-blue: #1d4e89;
-  --brand-blue-deep: #123863;
-  --brand-blue-tint: #eaf1fa;
-  --brand-gold: #c9971f;
-  --brand-gold-deep: #8a6415;
-  --brand-gold-tint: #fbf1dc;
-  --brand-red: #6e101c;
-  --brand-red-tint: #f7e9eb;
+     and rejected states so it doesn't compete with blue for attention.
+     Values match the conference landing page's official palette exactly. */
+  --brand-blue: #003087;
+  --brand-blue-deep: #001f5b;
+  --brand-blue-tint: #eef2fa;
+  --brand-gold: #f5a800;
+  --brand-gold-deep: #c98800;
+  --brand-gold-tint: #fff8e7;
+  --brand-red: #cc2229;
+  --brand-red-tint: #fdf1f1;
 
   --background: #ffffff;
   --foreground: #14181f;
@@ -105,14 +106,14 @@
 }
 
 .dark {
-  --brand-blue: #5b8fd6;
-  --brand-blue-deep: #cfe0f5;
-  --brand-blue-tint: #16233a;
-  --brand-gold: #e0b24a;
-  --brand-gold-deep: #f6dfa4;
-  --brand-gold-tint: #2b2312;
-  --brand-red: #c05a67;
-  --brand-red-tint: #2e1416;
+  --brand-blue: #6f9fe0;
+  --brand-blue-deep: #d7e6f7;
+  --brand-blue-tint: #0d1c33;
+  --brand-gold: #ffc34d;
+  --brand-gold-deep: #ffe1a3;
+  --brand-gold-tint: #332705;
+  --brand-red: #e37077;
+  --brand-red-tint: #3a1416;
 
   --background: #0b1220;
   --foreground: #f3f5f8;

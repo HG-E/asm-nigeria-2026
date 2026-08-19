@@ -6,10 +6,12 @@ export function Reveal({
   children,
   delay = 0,
   className,
+  style,
 }: {
   children: React.ReactNode
   delay?: number
   className?: string
+  style?: React.CSSProperties
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
@@ -20,8 +22,12 @@ export function Reveal({
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     if (reduceMotion || typeof IntersectionObserver === "undefined") {
-      setVisible(true)
-      return
+      // Defer to a callback rather than calling setState synchronously in
+      // the effect body -- functionally identical (fires next frame) but
+      // keeps this a "callback reacting to an external check" rather than
+      // an unconditional render-time state update.
+      const frame = requestAnimationFrame(() => setVisible(true))
+      return () => cancelAnimationFrame(frame)
     }
 
     const observer = new IntersectionObserver(
@@ -42,6 +48,7 @@ export function Reveal({
       ref={ref}
       className={className}
       style={{
+        ...style,
         transitionProperty: "opacity, transform",
         transitionDuration: "700ms",
         transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
