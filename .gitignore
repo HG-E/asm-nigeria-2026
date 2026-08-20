@@ -43,3 +43,6 @@ next-env.d.ts
 
 # smoke test output
 scripts/.smoke-screenshots/
+
+# supabase CLI local cache
+supabase/.temp/
