@@ -652,7 +652,7 @@
   margin: 0 auto;
   padding: 0 24px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   border-left: 1px solid rgba(255, 255, 255, 0.08);
 }
 .asm-landing .stat-item {
@@ -677,32 +677,16 @@
   color: rgba(255, 255, 255, 0.5);
   font-weight: 500;
 }
-.asm-landing .stat-item-combo {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 10px;
-}
-.asm-landing .stat-combo-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 8px;
-}
-.asm-landing .stat-num-sm {
-  font-size: clamp(18px, 2vw, 24px);
-  margin-bottom: 0;
-}
-.asm-landing .stat-combo-row .stat-desc {
-  text-align: left;
-}
 
 /* ════ WHY ATTEND ════ */
 .asm-landing #why {
   background: #fff;
 }
-.asm-landing .about-conference {
-  max-width: 860px;
+.asm-landing .about-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: stretch;
   margin: 0 0 64px;
   padding-bottom: 48px;
   border-bottom: 1px solid var(--line);
@@ -710,23 +694,20 @@
 .asm-landing .about-conference p + p {
   margin-top: 14px;
 }
-.asm-landing .convener-block {
+.asm-landing .convener-side {
   display: flex;
-  align-items: center;
-  gap: 32px;
-  max-width: 860px;
-  margin: 0 0 64px;
-  padding-bottom: 48px;
-  border-bottom: 1px solid var(--line);
+  flex-direction: column;
 }
-.asm-landing .convener-photo {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
+.asm-landing .convener-photo-full {
+  width: 100%;
+  flex: 1;
+  min-height: 220px;
   object-fit: cover;
   object-position: top center;
-  border: 3px solid var(--gold);
-  flex-shrink: 0;
+  border-radius: var(--r-lg);
+}
+.asm-landing .convener-side-details {
+  padding-top: 20px;
 }
 .asm-landing .convener-name {
   font-size: 20px;
@@ -746,10 +727,12 @@
   color: var(--muted);
   line-height: 1.7;
 }
-@media (max-width: 640px) {
-  .asm-landing .convener-block {
-    flex-direction: column;
-    text-align: center;
+@media (max-width: 900px) {
+  .asm-landing .about-row {
+    grid-template-columns: 1fr;
+  }
+  .asm-landing .convener-photo-full {
+    max-height: 320px;
   }
 }
 .asm-landing .why-grid {
@@ -1930,6 +1913,34 @@
   text-decoration: underline;
 }
 
+/* ════ PARTNERSHIP & SPONSORSHIP ════ */
+.asm-landing .section-dark {
+  background: var(--blue-d);
+}
+.asm-landing #partners .rule {
+  background: linear-gradient(90deg, var(--gold), var(--red));
+}
+.asm-landing .why-card-dark {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.asm-landing .why-card-dark::before {
+  background: linear-gradient(90deg, var(--gold), var(--red));
+}
+.asm-landing .why-card-dark:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: transparent;
+}
+.asm-landing .partners-cta {
+  margin-top: 48px;
+  text-align: center;
+}
+.asm-landing .partners-cta p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
 /* ════ FOOTER ════ */
 .asm-landing footer {
   background: #000e30;
@@ -2175,9 +2186,6 @@
   }
   .asm-landing .hamburger {
     display: flex;
-  }
-  .asm-landing .stats-wrap {
-    grid-template-columns: repeat(2, 1fr);
   }
   .asm-landing .prog-days {
     grid-template-columns: 1fr;

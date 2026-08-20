@@ -45,6 +45,13 @@ const WHY_CARDS = [
   { icon: "💡", accent: "wi-gold", title: "AI & Innovation", desc: "Explore how biotechnology and artificial intelligence are revolutionising sustainable microbiology in Africa and beyond." },
 ]
 
+const PARTNER_BENEFITS = [
+  { icon: "🎯", accent: "wi-red", title: "Brand Visibility", desc: "Logo and brand placement across the venue, programme, and digital materials in front of a national scientific audience." },
+  { icon: "🤝", accent: "wi-blue", title: "Direct Networking", desc: "Exhibition space and direct access to researchers, clinicians, students, and decision-makers attending the conference." },
+  { icon: "🎤", accent: "wi-gold", title: "Thought Leadership", desc: "Speaking and panel opportunities to position your organization at the center of One Health conversations in Nigeria." },
+  { icon: "🌱", accent: "wi-red", title: "CSR & Community Impact", desc: "Support mentorship, student attendance, and scientific capacity-building as part of your organization's community impact." },
+]
+
 const SPEAKERS = [
   {
     accent: "var(--red)",
@@ -258,6 +265,7 @@ const NAV_LINKS = [
   { href: "#accommodation", label: "Stay" },
   { href: "#faq", label: "FAQ" },
   { href: "#contacts", label: "Contact" },
+  { href: "#partners", label: "Partners" },
 ]
 
 // Proposed subcommittee membership and terms of reference, as supplied by
@@ -785,21 +793,11 @@ export function LandingPage() {
               <div className="stat-num">1<span className="unit">st</span></div>
               <div className="stat-desc">ASM Conference in Nigeria</div>
             </Reveal>
-            <Reveal delay={80} className="stat-item stat-item-combo">
-              <div className="stat-combo-row">
-                <span className="stat-num stat-num-sm">1</span>
-                <span className="stat-desc">Conference Theme</span>
-              </div>
-              <div className="stat-combo-row">
-                <span className="stat-num stat-num-sm">5</span>
-                <span className="stat-desc">One Health Sub-Themes</span>
-              </div>
-            </Reveal>
-            <Reveal delay={160} className="stat-item">
+            <Reveal delay={80} className="stat-item">
               <div className="stat-num">4</div>
               <div className="stat-desc">Days of Science &amp; Dialogue</div>
             </Reveal>
-            <Reveal delay={240} className="stat-item">
+            <Reveal delay={160} className="stat-item">
               <div className="stat-num">250<span className="unit">+</span></div>
               <div className="stat-desc">Expected Delegates</div>
             </Reveal>
@@ -809,50 +807,52 @@ export function LandingPage() {
         {/* ═══ WHY ATTEND ═══ */}
         <section id="why" className="section" aria-labelledby="why-heading">
           <div className="wrap">
-            <Reveal className="about-conference">
-              <span className="caption eyebrow" style={{ color: "var(--red)" }}>About the Conference</span>
-              <h2 className="headline">A National Platform for Scientific Exchange</h2>
-              <div className="rule" />
-              <p className="body-lg">
-                The ASM One Health Scientific Conference is the maiden ASM scientific conference in
-                Nigeria, serving as a national platform for scientific exchange. It is a landmark
-                scientific gathering bringing together microbiologists, researchers, clinicians,
-                veterinarians, environmental scientists, public health professionals, students,
-                policymakers, industry professionals, and One Health stakeholders from Nigeria and
-                beyond. The conference will provide a dynamic platform for sharing cutting-edge
-                research, advancing scientific collaboration, strengthening capacity, and translating
-                microbial science into solutions for human, animal, and environmental health.
-              </p>
-              <p className="body-lg">
-                Through keynote address, plenary cum scientific sessions, practical workshops,
-                innovation showcases, mentorship, networking, and policy dialogue, the conference will
-                spotlight the transformative role of microbiology in addressing antimicrobial
-                resistance, emerging infectious diseases, biotechnology, artificial intelligence, food
-                security, climate change, and sustainable/resilient health systems.
-              </p>
-              <p className="body-lg">
-                Under the theme &ldquo;One Health in Action: Advancing Microbial Science for Human,
-                Animal, Environmental, and Global Health,&rdquo; the conference seeks to inspire
-                collaboration, nurture the next generation of microbial scientists, and strengthen the
-                contribution of microbiology to Nigeria&apos;s health, research, innovation, and
-                sustainable development agenda.
-              </p>
-            </Reveal>
+            <div className="about-row">
+              <Reveal className="about-conference">
+                <span className="caption eyebrow" style={{ color: "var(--red)" }}>About the Conference</span>
+                <h2 className="headline">A National Platform for Scientific Exchange</h2>
+                <div className="rule" />
+                <p className="body-lg">
+                  The ASM One Health Scientific Conference is the maiden ASM scientific conference in
+                  Nigeria, serving as a national platform for scientific exchange. It is a landmark
+                  scientific gathering bringing together microbiologists, researchers, clinicians,
+                  veterinarians, environmental scientists, public health professionals, students,
+                  policymakers, industry professionals, and One Health stakeholders from Nigeria and
+                  beyond. The conference will provide a dynamic platform for sharing cutting-edge
+                  research, advancing scientific collaboration, strengthening capacity, and translating
+                  microbial science into solutions for human, animal, and environmental health.
+                </p>
+                <p className="body-lg">
+                  Through keynote address, plenary cum scientific sessions, practical workshops,
+                  innovation showcases, mentorship, networking, and policy dialogue, the conference will
+                  spotlight the transformative role of microbiology in addressing antimicrobial
+                  resistance, emerging infectious diseases, biotechnology, artificial intelligence, food
+                  security, climate change, and sustainable/resilient health systems.
+                </p>
+                <p className="body-lg">
+                  Under the theme &ldquo;One Health in Action: Advancing Microbial Science for Human,
+                  Animal, Environmental, and Global Health,&rdquo; the conference seeks to inspire
+                  collaboration, nurture the next generation of microbial scientists, and strengthen the
+                  contribution of microbiology to Nigeria&apos;s health, research, innovation, and
+                  sustainable development agenda.
+                </p>
+              </Reveal>
 
-            <Reveal delay={40} className="convener-block">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/speakers/sylvia-anyadoh-nwadike.jpg"
-                alt="Sylvia O. Anyadoh-Nwadike, PhD"
-                className="convener-photo"
-              />
-              <div>
-                <span className="caption eyebrow" style={{ color: "var(--gold-d)" }}>Conference Convener</span>
-                <h3 className="convener-name">Sylvia O. Anyadoh-Nwadike, PhD</h3>
-                <p className="convener-title">ASM Country Ambassador to Nigeria</p>
-                <p className="convener-bio">Full biography coming soon.</p>
-              </div>
-            </Reveal>
+              <Reveal delay={40} className="convener-side">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/speakers/sylvia-anyadoh-nwadike.jpg"
+                  alt="Sylvia O. Anyadoh-Nwadike, PhD"
+                  className="convener-photo-full"
+                />
+                <div className="convener-side-details">
+                  <span className="caption eyebrow" style={{ color: "var(--gold-d)" }}>Conference Convener</span>
+                  <h3 className="convener-name">Sylvia O. Anyadoh-Nwadike, PhD</h3>
+                  <p className="convener-title">ASM Country Ambassador to Nigeria</p>
+                  <p className="convener-bio">Full biography coming soon.</p>
+                </div>
+              </Reveal>
+            </div>
 
             <Reveal delay={80}>
               <span className="caption eyebrow" style={{ color: "var(--red)" }}>Why Attend</span>
@@ -1354,6 +1354,38 @@ export function LandingPage() {
                 </div>
               </Reveal>
             </div>
+          </div>
+        </section>
+
+        {/* ═══ PARTNERSHIP & SPONSORSHIP ═══ */}
+        <section id="partners" className="section section-dark" aria-labelledby="partners-heading">
+          <div className="wrap">
+            <Reveal>
+              <span className="caption eyebrow" style={{ color: "var(--gold)" }}>Partner With Us</span>
+              <h2 className="headline" id="partners-heading" style={{ color: "#fff" }}>
+                Partnership &amp; Sponsorship
+              </h2>
+              <div className="rule" />
+              <p className="body-lg" style={{ color: "rgba(255,255,255,.7)" }}>
+                ASM Nigeria 2026 brings together researchers, clinicians, policymakers, and industry
+                leaders from across Nigeria and beyond. Partnering with the conference puts your
+                organization in front of this community — through exhibition space, brand visibility,
+                and direct engagement with the next generation of microbial scientists.
+              </p>
+            </Reveal>
+            <div className="why-grid" style={{ marginTop: 40 }}>
+              {PARTNER_BENEFITS.map((b, i) => (
+                <Reveal key={b.title} delay={(i % 4) * 80} className="why-card why-card-dark">
+                  <div className={`why-icon ${b.accent}`}>{b.icon}</div>
+                  <h3 className="why-title" style={{ color: "#fff" }}>{b.title}</h3>
+                  <p className="why-desc" style={{ color: "rgba(255,255,255,.6)" }}>{b.desc}</p>
+                </Reveal>
+              ))}
+            </div>
+            <Reveal delay={160} className="partners-cta">
+              <p>Interested in partnering or sponsoring? We&apos;ll share tiers, packages, and pricing directly.</p>
+              <button className="btn btn-primary" onClick={openContactModal}>🤝 Become a Partner</button>
+            </Reveal>
           </div>
         </section>
       </main>
