@@ -1037,7 +1037,7 @@ export function LandingPage() {
             </div>
             <p className="pd-note">
               Full programme details will be announced. Follow{" "}
-              <a href="https://www.asm.org" target="_blank" rel="noopener noreferrer" style={{ color: "var(--blue)", fontWeight: 600 }}>asm.org</a> for updates.
+              <a href="/" style={{ color: "var(--blue)", fontWeight: 600 }}>asmnigeriaconference.com.ng</a> for updates.
             </p>
           </div>
         </section>
