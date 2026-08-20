@@ -242,7 +242,7 @@ export function RegistrationForm() {
           name="attendanceMode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Will you attend virtually or physically?</FormLabel>
+              <FormLabel>Will you attend virtually or in-person?</FormLabel>
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger className="w-full">
@@ -306,7 +306,7 @@ export function RegistrationForm() {
         />
 
         <FileUploadField
-          label="Recent ASM Membership ID Certificate (optional)"
+          label="Recent ASM Membership Certificate (optional)"
           hint="Only if you're a member and are registering at the member rate. PDF, JPG, or PNG, maximum size 1MB."
           accept=".pdf,.jpg,.jpeg,.png"
           file={certificateFile}

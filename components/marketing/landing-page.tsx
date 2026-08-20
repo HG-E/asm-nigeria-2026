@@ -11,7 +11,15 @@ import "./landing.css"
 const BANNER_DISMISS_KEY = "asm-2026-urgency-banner-dismissed-aug22"
 const SECRETARIAT_EMAIL = "asmnigeriaonehealth@gmail.com"
 const CONFERENCE_DATE = new Date("2026-11-22T09:00:00+01:00").getTime()
-const EARLY_DEADLINE = new Date("2026-08-22T22:59:59+00:00").getTime()
+const EARLY_DEADLINE = new Date("2026-08-30T22:59:59+00:00").getTime()
+
+const HASHTAGS = [
+  "#ASMAmbassadorProjectFundNigeria",
+  "#ASMConferenceOneHealthNigeria",
+  "#MaidenASMNigeriaConference2026",
+  "#OneHealthNigeria2026",
+  "#ASMNigeria2026",
+]
 
 function pad(n: number) {
   return String(Math.max(0, n)).padStart(2, "0")
@@ -247,10 +255,10 @@ const AES_ROOMS = [
 const FAQS = [
   { q: "Who can attend the ASM Nigeria Conference?", a: "The conference is open to microbiologists, researchers, clinicians, veterinarians, environmental scientists, public health professionals, students, policymakers, industry experts, and One Health stakeholders from Nigeria and beyond." },
   { q: "Can I attend online?", a: "Yes! The conference is hybrid. Local online participants pay ₦25,000 (early rate) and foreign online participants pay $25 USD. You'll receive a link to the virtual platform after registration is confirmed." },
-  { q: "What is the abstract submission fee and what does it cover?", a: <>The abstract processing fee is ₦3,000 (or $5 USD). This is separate from your conference registration fee. Payment should be made to the ASM Nigeria Chapter account at First Bank (2047664724) before or alongside your abstract submission via the <Link href="/register">official portal</Link>.</> },
+  { q: "What is the abstract submission fee and what does it cover?", a: <>The abstract processing fee is ₦3,000 (or $5 USD). This is separate from your conference registration fee. Payment should be made to the ASM Nigeria account at First Bank (2047664724) before or alongside your abstract submission via the <Link href="/register">official portal</Link>.</> },
   { q: "What is the difference between Early and Late registration?", a: "Early/Regular registration is available until October 22, 2026, and offers significantly lower rates (e.g., ASM Members ₦25,000 vs ₦30,000 late). Registering early saves you money and helps the organizers plan effectively. We strongly recommend registering before October 22." },
   { q: "What is the Pre-Conference Hands-On Workshop?", a: "The pre-conference workshop on November 22 is an additional paid session (₦4,000 early / ₦8,000 late) offering practical, skills-based training. It is particularly valuable for students and early-career researchers and requires separate registration." },
-  { q: "How do I confirm my payment was received?", a: <>After making your bank transfer to First Bank (Acc: 2047664724, ASM Nigeria Chapter), email your payment receipt to <a href={`mailto:${SECRETARIAT_EMAIL}`}>{SECRETARIAT_EMAIL}</a>. The secretariat will confirm your registration within 2–3 working days.</> },
+  { q: "How do I confirm my payment was received?", a: <>After making your bank transfer to First Bank (Acc: 2047664724, ASM Nigeria), email your payment receipt to <a href={`mailto:${SECRETARIAT_EMAIL}`}>{SECRETARIAT_EMAIL}</a>. The secretariat will confirm your registration within 2–3 working days.</> },
   { q: "Can I submit more than one abstract?", a: "Yes, you may submit multiple abstracts. Each abstract requires a separate processing fee of ₦3,000. Each submission must meet all guidelines and address one or two of the five stated sub-themes." },
 ]
 
@@ -643,7 +651,7 @@ export function LandingPage() {
         <div id="urgency-bar" role="alert" aria-label="Urgent deadline notice">
           <div className="inner">
             <span className="label">
-              🚨 <strong>Early Abstract Submission closes August 22, 2026</strong> — only
+              🚨 <strong>Early Abstract Submission closes August 30, 2026</strong> — only
             </span>
             <div className="countdown-inline" aria-live="polite">
               <span className="ci-box">{earlyCountdown.d}</span>
@@ -733,6 +741,10 @@ export function LandingPage() {
                 <span>CONFERENCE</span>
               </h1>
               <p className="hero-tagline">One Health · One Future · One Scientific Community</p>
+              <div className="one-health-badge">
+                <span className="ohb-ring" aria-hidden="true">🌍</span>
+                <span className="ohb-text"><strong>ONE HEALTH</strong><br />Human · Animal · Environment</span>
+              </div>
               <div className="hero-theme">
                 <strong>Theme:</strong> One Health in Action — Advancing Microbial Science for Global Health,
                 Animal &amp; Environmental Health
@@ -744,7 +756,7 @@ export function LandingPage() {
                 </div>
                 <div className="hero-meta-row" role="listitem">
                   <div className="hero-meta-icon" aria-hidden="true">📍</div>
-                  <span>Conference Centre, <strong>NOUN Abuja</strong>, Nigeria</span>
+                  <span>Conference Centre, <strong>National Open University of Nigeria</strong>, Abuja</span>
                 </div>
                 <div className="hero-meta-row" role="listitem">
                   <div className="hero-meta-icon" aria-hidden="true">🌐</div>
@@ -756,6 +768,12 @@ export function LandingPage() {
                 <Link href="/register" className="btn btn-secondary btn-lg">📄 Submit Abstract</Link>
               </div>
               <a href="#why" className="hero-learn-more">Learn more about the conference ↓</a>
+              <div className="hero-powered-by">Powered by the ASM Ambassador to Nigeria Project Fund</div>
+              <div className="hero-hashtags">
+                {HASHTAGS.map((h) => (
+                  <span key={h} className="hashtag-pill">{h}</span>
+                ))}
+              </div>
             </div>
 
             <div>
@@ -775,9 +793,9 @@ export function LandingPage() {
                     <div className="cd-box"><div className="cd-num">{confCountdown.s}</div><div className="cd-label">Secs</div></div>
                   </div>
                   <div className="hero-card-divider" />
-                  <div className="hero-card-stat"><span className="hcs-label">📅 Abstract Early Deadline</span><span className="hcs-val">Aug 22, 2026</span></div>
+                  <div className="hero-card-stat"><span className="hcs-label">📅 Abstract Early Deadline</span><span className="hcs-val">Aug 30, 2026</span></div>
                   <div className="hero-card-stat"><span className="hcs-label">📅 Final Abstract Deadline</span><span className="hcs-val">Nov 2, 2026</span></div>
-                  <div className="hero-card-stat"><span className="hcs-label">💳 Early Reg. Cutoff</span><span className="hcs-val">Oct 22, 2026</span></div>
+                  <div className="hero-card-stat"><span className="hcs-label">💳 Early Registration Cutoff</span><span className="hcs-val">Oct 22, 2026</span></div>
                   <div className="hero-card-stat"><span className="hcs-label">🎤 Presentation Mode</span><span className="hcs-val">Oral / Poster</span></div>
                   <div className="hero-card-stat"><span className="hcs-label">🌐 Format</span><span className="hcs-val">Hybrid</span></div>
                 </div>
@@ -798,8 +816,8 @@ export function LandingPage() {
               <div className="stat-desc">Days of Science &amp; Dialogue</div>
             </Reveal>
             <Reveal delay={160} className="stat-item">
-              <div className="stat-num">250<span className="unit">+</span></div>
-              <div className="stat-desc">Expected Delegates</div>
+              <div className="stat-num">500<span className="unit">+</span></div>
+              <div className="stat-desc">Scientists, Clinicians &amp; Students</div>
             </Reveal>
           </div>
         </div>
@@ -1049,7 +1067,7 @@ export function LandingPage() {
               <span className="caption eyebrow" style={{ color: "var(--red)" }}>Abstract Submission</span>
               <h2 className="headline" id="abstract-heading">Share Your Research</h2>
               <div className="rule" />
-              <p className="body-lg">Submit your abstract for oral or poster presentation. Early submissions close <strong style={{ color: "var(--red)" }}>August 22, 2026</strong>.</p>
+              <p className="body-lg">Submit your abstract for oral or poster presentation. Early submissions close <strong style={{ color: "var(--red)" }}>August 30, 2026</strong>.</p>
             </Reveal>
             <div className="abstract-grid">
               <Reveal delay={80}>
@@ -1057,7 +1075,7 @@ export function LandingPage() {
                 <div className="deadline-stack">
                   <div className="dl-card" style={{ "--accent": "var(--red)" } as React.CSSProperties}>
                     <div className="dl-icon">🚨</div>
-                    <div><div className="dl-label">Early Submission Closes</div><div className="dl-date">August 22, 2026</div></div>
+                    <div><div className="dl-label">Early Submission Closes</div><div className="dl-date">August 30, 2026</div></div>
                     {!earlyExpired && earlyDaysLeft !== null && (
                       <span className="dl-badge db-red">{earlyDaysLeft} Day{earlyDaysLeft === 1 ? "" : "s"} Left!</span>
                     )}
@@ -1183,7 +1201,7 @@ export function LandingPage() {
                 </div>
                 <div className="pay-field">
                   <div className="pay-field-name">Account Name</div>
-                  <div className="pay-field-val" style={{ fontSize: 15, lineHeight: 1.5 }}>American Society for Microbiology<br />(ASM) Nigeria Chapter</div>
+                  <div className="pay-field-val" style={{ fontSize: 15, lineHeight: 1.5 }}>American Society for Microbiology<br />(ASM) Nigeria</div>
                 </div>
                 <div className="pay-field">
                   <div className="pay-field-name">Account Number</div>
@@ -1195,11 +1213,31 @@ export function LandingPage() {
                 <h3 className="subhead" style={{ color: "var(--ink)", marginBottom: 4 }}>4-Step Payment Process</h3>
                 <p className="body" style={{ marginBottom: 20 }}>Simple, straightforward, and secure.</p>
                 <div className="step-card"><div className="step-n">1</div><div><div className="step-h">Select your category</div><div className="step-p">Identify your participant category and the applicable fee from the registration table above.</div></div></div>
-                <div className="step-card"><div className="step-n">2</div><div><div className="step-h">Transfer to ASM Nigeria</div><div className="step-p">Send payment to First Bank — Acc No: <strong>2047664724</strong>, ASM Nigeria Chapter.</div></div></div>
+                <div className="step-card"><div className="step-n">2</div><div><div className="step-h">Transfer to ASM Nigeria</div><div className="step-p">Send payment to First Bank — Acc No: <strong>2047664724</strong>, ASM Nigeria.</div></div></div>
                 <div className="step-card"><div className="step-n">3</div><div><div className="step-h">Save your receipt</div><div className="step-p">Keep a copy of your bank receipt/teller for verification at the conference gate.</div></div></div>
                 <div className="step-card"><div className="step-n">4</div><div><div className="step-h">Email the secretariat</div><div className="step-p">Send receipt to <a href={`mailto:${SECRETARIAT_EMAIL}`}>{SECRETARIAT_EMAIL}</a> to confirm your registration.</div></div></div>
               </Reveal>
             </div>
+          </div>
+        </section>
+
+        {/* ═══ TRAVEL GRANT ═══ */}
+        <section id="travel-grant" className="section-sm" aria-labelledby="travel-grant-heading">
+          <div className="wrap">
+            <Reveal className="travel-grant-card">
+              <div className="tg-icon" aria-hidden="true">✈️</div>
+              <div className="tg-body">
+                <span className="caption eyebrow" style={{ color: "var(--gold)" }}>Travel Support</span>
+                <h3 className="tg-title" id="travel-grant-heading">Professor KIT Eniola Travel Grant</h3>
+                <p className="tg-desc">
+                  For Early Career Microbiologists. Travel support available for eligible early
+                  career participants. Selection criteria apply.
+                </p>
+              </div>
+              <a href={`mailto:${SECRETARIAT_EMAIL}?subject=Professor%20KIT%20Eniola%20Travel%20Grant%20Enquiry`} className="btn btn-secondary">
+                ✉️ Enquire About the Grant
+              </a>
+            </Reveal>
           </div>
         </section>
 
@@ -1268,7 +1306,7 @@ export function LandingPage() {
               </Reveal>
               <Reveal delay={160} className="map-placeholder">
                 <div className="mp-icon" aria-hidden="true">🗺️</div>
-                <div className="mp-name">NOUN Abuja Headquarters</div>
+                <div className="mp-name">National Open University of Nigeria, Abuja Headquarters</div>
                 <div className="mp-addr">Conference Centre · FCT, Nigeria</div>
                 <a href="https://maps.google.com/?q=National+Open+University+of+Nigeria+Abuja" target="_blank" rel="noopener noreferrer" aria-label="View NOUN Abuja on Google Maps">📍 Open in Google Maps →</a>
               </Reveal>
@@ -1402,7 +1440,13 @@ export function LandingPage() {
                   style={{ height: 36, width: "auto", objectFit: "contain", filter: "brightness(0) invert(1)", marginBottom: 12, display: "block" }}
                 />
                 <div className="fb-tagline">One Health. One Future. One Scientific Community.</div>
-                <div className="fb-desc">The First ASM Nigeria Conference brings together One Health scientists and stakeholders for four days of science, dialogue, and discovery in Abuja.</div>
+                <div className="fb-desc">The Maiden ASM Nigeria Conference brings together One Health scientists and stakeholders for four days of science, dialogue, and discovery in Abuja.</div>
+                <div className="fb-powered">Powered by the ASM Ambassador to Nigeria Project Fund</div>
+                <div className="fb-hashtags">
+                  {HASHTAGS.map((h) => (
+                    <span key={h} className="hashtag-pill hashtag-pill-footer">{h}</span>
+                  ))}
+                </div>
               </div>
               <div className="footer-col">
                 <h4>Conference</h4>
@@ -1439,7 +1483,7 @@ export function LandingPage() {
         </div>
         <div className="footer-bottom">
           <div className="wrap">
-            &copy; 2026 American Society for Microbiology (ASM) Nigeria Chapter · All rights reserved ·{" "}
+            &copy; 2026 American Society for Microbiology (ASM) Nigeria · All rights reserved ·{" "}
             <a href={`mailto:${SECRETARIAT_EMAIL}`}>{SECRETARIAT_EMAIL}</a>
           </div>
         </div>

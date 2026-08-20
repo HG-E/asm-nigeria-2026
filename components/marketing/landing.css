@@ -493,6 +493,37 @@
   text-transform: uppercase;
   margin-bottom: 20px;
 }
+.asm-landing .one-health-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(245, 168, 0, 0.12);
+  border: 1px solid rgba(245, 168, 0, 0.4);
+  border-radius: 99px;
+  padding: 8px 20px 8px 8px;
+  margin-bottom: 24px;
+}
+.asm-landing .ohb-ring {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.asm-landing .ohb-text {
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.85);
+}
+.asm-landing .ohb-text strong {
+  color: var(--gold);
+  letter-spacing: 1px;
+  font-size: 12.5px;
+}
 .asm-landing .hero-theme {
   background: rgba(204, 34, 41, 0.18);
   border-left: 4px solid var(--red);
@@ -554,6 +585,45 @@
 }
 .asm-landing .hero-learn-more:hover {
   color: var(--gold);
+}
+.asm-landing .hero-powered-by {
+  margin-top: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.3px;
+}
+.asm-landing .hero-hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.asm-landing .hashtag-pill {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gold);
+  background: rgba(245, 168, 0, 0.1);
+  border: 1px solid rgba(245, 168, 0, 0.25);
+  border-radius: 99px;
+  padding: 4px 10px;
+}
+.asm-landing .fb-powered {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  margin-top: 10px;
+}
+.asm-landing .fb-hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.asm-landing .hashtag-pill-footer {
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 /* Hero Right — Card */
@@ -1906,6 +1976,51 @@
 }
 .asm-landing .sec-row a:hover {
   text-decoration: underline;
+}
+
+/* ════ TRAVEL GRANT ════ */
+.asm-landing .travel-grant-card {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  background: linear-gradient(120deg, var(--blue) 0%, var(--blue-d) 100%);
+  border-radius: var(--r-lg);
+  padding: 32px 36px;
+  box-shadow: var(--shadow);
+}
+.asm-landing .tg-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+}
+.asm-landing .tg-body {
+  flex: 1;
+}
+.asm-landing .tg-title {
+  font-size: 21px;
+  font-weight: 800;
+  color: #fff;
+  margin: 4px 0 8px;
+  line-height: 1.3;
+}
+.asm-landing .tg-desc {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
+  max-width: 640px;
+}
+@media (max-width: 700px) {
+  .asm-landing .travel-grant-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 28px 24px;
+  }
 }
 
 /* ════ PARTNERSHIP & SPONSORSHIP ════ */
