@@ -849,7 +849,6 @@ export function LandingPage() {
                   <span className="caption eyebrow" style={{ color: "var(--gold-d)" }}>Conference Convener</span>
                   <h3 className="convener-name">Sylvia O. Anyadoh-Nwadike, PhD</h3>
                   <p className="convener-title">ASM Country Ambassador to Nigeria</p>
-                  <p className="convener-bio">Full biography coming soon.</p>
                 </div>
               </Reveal>
             </div>

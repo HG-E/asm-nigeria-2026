@@ -722,11 +722,6 @@
   font-weight: 600;
   margin-bottom: 10px;
 }
-.asm-landing .convener-bio {
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.7;
-}
 @media (max-width: 900px) {
   .asm-landing .about-row {
     grid-template-columns: 1fr;
