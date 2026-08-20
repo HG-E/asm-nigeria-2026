@@ -773,11 +773,9 @@ export function LandingPage() {
                 <a href="#registration" className="btn btn-primary btn-lg">🎟️ Register Now</a>
                 <Link href="/register" className="btn btn-secondary btn-lg">📄 Submit Abstract</Link>
               </div>
-              <a href="#why" className="hero-learn-more">Learn more about the conference ↓</a>
-              <div className="hero-powered-by">Powered by the ASM Country Ambassador to Nigeria Project Fund</div>
             </div>
 
-            <div>
+            <div className="hero-right">
               <div className="hero-card" role="complementary" aria-label="Conference countdown">
                 <div className="hero-card-header">
                   <span className="hch-icon" aria-hidden="true">⏱️</span>
@@ -801,6 +799,8 @@ export function LandingPage() {
                   <div className="hero-card-stat"><span className="hcs-label">🌐 Format</span><span className="hcs-val">Hybrid</span></div>
                 </div>
               </div>
+              <a href="#why" className="hero-learn-more hero-learn-more-right">Learn more about the conference ↓</a>
+              <div className="hero-powered-by hero-powered-by-right">Powered by the ASM Country Ambassador to Nigeria Project Fund</div>
             </div>
           </div>
         </section>
@@ -1211,12 +1211,11 @@ export function LandingPage() {
                 </div>
               </Reveal>
               <Reveal delay={160} className="steps-col">
-                <h3 className="subhead" style={{ color: "var(--ink)", marginBottom: 4 }}>4-Step Payment Process</h3>
+                <h3 className="subhead" style={{ color: "var(--ink)", marginBottom: 4 }}>3-Step Payment Process</h3>
                 <p className="body" style={{ marginBottom: 20 }}>Simple, straightforward, and secure.</p>
                 <div className="step-card"><div className="step-n">1</div><div><div className="step-h">Select your category</div><div className="step-p">Identify your participant category and the applicable fee from the registration table above.</div></div></div>
                 <div className="step-card"><div className="step-n">2</div><div><div className="step-h">Transfer to ASM Nigeria</div><div className="step-p">Send payment to First Bank — Acc No: <strong>2047664724</strong>, ASM Nigeria.</div></div></div>
-                <div className="step-card"><div className="step-n">3</div><div><div className="step-h">Save your receipt</div><div className="step-p">Keep a copy of your bank receipt/teller for verification at the conference gate.</div></div></div>
-                <div className="step-card"><div className="step-n">4</div><div><div className="step-h">Email the secretariat</div><div className="step-p">Send receipt to <a href={`mailto:${SECRETARIAT_EMAIL}`}>{SECRETARIAT_EMAIL}</a> to confirm your registration.</div></div></div>
+                <div className="step-card"><div className="step-n">3</div><div><div className="step-h">Upload your receipt</div><div className="step-p">Attach your bank receipt/teller when you register or submit your abstract — the secretariat confirms it from your account, no separate email needed.</div></div></div>
               </Reveal>
             </div>
           </div>
