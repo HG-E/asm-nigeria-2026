@@ -442,7 +442,7 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding: 100px 0 80px;
+  padding: 64px 0 80px;
 }
 .asm-landing .hero-bg {
   position: absolute;
@@ -592,38 +592,6 @@
   font-weight: 600;
   color: rgba(255, 255, 255, 0.45);
   letter-spacing: 0.3px;
-}
-.asm-landing .hero-hashtags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
-}
-.asm-landing .hashtag-pill {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--gold);
-  background: rgba(245, 168, 0, 0.1);
-  border: 1px solid rgba(245, 168, 0, 0.25);
-  border-radius: 99px;
-  padding: 4px 10px;
-}
-.asm-landing .fb-powered {
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.55);
-  margin-top: 10px;
-}
-.asm-landing .fb-hashtags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
-}
-.asm-landing .hashtag-pill-footer {
-  color: rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 /* Hero Right — Card */
@@ -2323,6 +2291,15 @@
   }
   .asm-landing .wrap {
     padding: 0 16px;
+  }
+  /* On mobile the stacked hero content is often shorter than 100vh, so
+     centering it (the desktop behavior) leaves a dead gap between the nav
+     and the hero badge instead of the visible content starting right
+     after the nav. */
+  .asm-landing #hero {
+    min-height: auto;
+    align-items: flex-start;
+    padding: 28px 0 56px;
   }
 }
 @media (max-width: 480px) {

@@ -13,14 +13,6 @@ const SECRETARIAT_EMAIL = "asmnigeriaonehealth@gmail.com"
 const CONFERENCE_DATE = new Date("2026-11-22T09:00:00+01:00").getTime()
 const EARLY_DEADLINE = new Date("2026-08-30T22:59:59+00:00").getTime()
 
-const HASHTAGS = [
-  "#ASMAmbassadorProjectFundNigeria",
-  "#ASMConferenceOneHealthNigeria",
-  "#MaidenASMNigeriaConference2026",
-  "#OneHealthNigeria2026",
-  "#ASMNigeria2026",
-]
-
 function pad(n: number) {
   return String(Math.max(0, n)).padStart(2, "0")
 }
@@ -732,7 +724,7 @@ export function LandingPage() {
               <div className="hero-chip">
                 <span className="chip chip-white">
                   <span className="dot" />
-                  🇳🇬 ASM Nigeria Maiden Conference · Abuja 2026
+                  🇳🇬 Maiden ASM Nigeria Conference · Abuja 2026
                 </span>
               </div>
               <h1 className="display hero-title">
@@ -769,11 +761,6 @@ export function LandingPage() {
               </div>
               <a href="#why" className="hero-learn-more">Learn more about the conference ↓</a>
               <div className="hero-powered-by">Powered by the ASM Ambassador to Nigeria Project Fund</div>
-              <div className="hero-hashtags">
-                {HASHTAGS.map((h) => (
-                  <span key={h} className="hashtag-pill">{h}</span>
-                ))}
-              </div>
             </div>
 
             <div>
@@ -978,7 +965,7 @@ export function LandingPage() {
           <div className="wrap">
             <Reveal className="reveal-center" style={{ textAlign: "center" } as React.CSSProperties}>
               <span className="caption eyebrow" style={{ color: "var(--red)" }}>Planning Committee</span>
-              <h2 className="headline" id="committee-heading">ASM Nigeria Maiden Conference<br />Abuja 2026 — Subcommittees</h2>
+              <h2 className="headline" id="committee-heading">Maiden ASM Nigeria Conference<br />Abuja 2026 — Subcommittees</h2>
               <div className="rule rule-center" />
               <p className="body-lg">Ten subcommittees, drawn from institutions and organizations across Nigeria, plan and run every part of the conference.</p>
             </Reveal>
@@ -1441,12 +1428,6 @@ export function LandingPage() {
                 />
                 <div className="fb-tagline">One Health. One Future. One Scientific Community.</div>
                 <div className="fb-desc">The Maiden ASM Nigeria Conference brings together One Health scientists and stakeholders for four days of science, dialogue, and discovery in Abuja.</div>
-                <div className="fb-powered">Powered by the ASM Ambassador to Nigeria Project Fund</div>
-                <div className="fb-hashtags">
-                  {HASHTAGS.map((h) => (
-                    <span key={h} className="hashtag-pill hashtag-pill-footer">{h}</span>
-                  ))}
-                </div>
               </div>
               <div className="footer-col">
                 <h4>Conference</h4>
@@ -1483,7 +1464,8 @@ export function LandingPage() {
         </div>
         <div className="footer-bottom">
           <div className="wrap">
-            &copy; 2026 American Society for Microbiology (ASM) Nigeria · All rights reserved ·{" "}
+            &copy; 2026 American Society for Microbiology (ASM) Nigeria · Powered by the ASM
+            Ambassador to Nigeria Project Fund ·{" "}
             <a href={`mailto:${SECRETARIAT_EMAIL}`}>{SECRETARIAT_EMAIL}</a>
           </div>
         </div>
