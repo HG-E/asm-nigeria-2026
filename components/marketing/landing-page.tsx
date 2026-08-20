@@ -760,7 +760,7 @@ export function LandingPage() {
                 <Link href="/register" className="btn btn-secondary btn-lg">📄 Submit Abstract</Link>
               </div>
               <a href="#why" className="hero-learn-more">Learn more about the conference ↓</a>
-              <div className="hero-powered-by">Powered by the ASM Ambassador to Nigeria Project Fund</div>
+              <div className="hero-powered-by">Powered by the ASM Country Ambassador to Nigeria Project Fund</div>
             </div>
 
             <div>
@@ -1465,7 +1465,7 @@ export function LandingPage() {
         <div className="footer-bottom">
           <div className="wrap">
             &copy; 2026 American Society for Microbiology (ASM) Nigeria · Powered by the ASM
-            Ambassador to Nigeria Project Fund ·{" "}
+            Country Ambassador to Nigeria Project Fund ·{" "}
             <a href={`mailto:${SECRETARIAT_EMAIL}`}>{SECRETARIAT_EMAIL}</a>
           </div>
         </div>
