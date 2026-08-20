@@ -1464,9 +1464,7 @@ export function LandingPage() {
         </div>
         <div className="footer-bottom">
           <div className="wrap">
-            &copy; 2026 American Society for Microbiology (ASM) Nigeria · Powered by the ASM
-            Country Ambassador to Nigeria Project Fund ·{" "}
-            <a href={`mailto:${SECRETARIAT_EMAIL}`}>{SECRETARIAT_EMAIL}</a>
+            &copy; 2026 ASM Country Ambassador to Nigeria Project Fund
           </div>
         </div>
       </footer>
