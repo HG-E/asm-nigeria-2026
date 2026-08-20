@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const metadata = {
   title: "Privacy & Data-Use Policy — ASM Nigeria 2026",
+  description: "How the First ASM Nigeria Conference 2026 collects, uses, and protects data submitted during abstract submission and conference registration.",
+  alternates: { canonical: "/privacy" },
 }
 
 export default function PrivacyPage() {

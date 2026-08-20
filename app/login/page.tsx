@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 
 import { LoginForm } from "@/components/auth/login-form"
@@ -11,6 +12,13 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/server"
+
+export const metadata: Metadata = {
+  title: "Log In | ASM Nigeria 2026",
+  description: "Log in to the ASM Nigeria 2026 Abstract Management System.",
+  alternates: { canonical: "/login" },
+  robots: { index: false, follow: true },
+}
 
 export default async function LoginPage(props: PageProps<"/login">) {
   const searchParams = await props.searchParams

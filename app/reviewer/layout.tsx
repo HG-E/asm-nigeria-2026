@@ -1,7 +1,13 @@
+import type { Metadata } from "next"
+
 import { BrandMark } from "@/components/layout/brand-mark"
 import { BrandStripe } from "@/components/layout/brand-stripe"
 import { Button } from "@/components/ui/button"
 import { requireRole } from "@/lib/auth"
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
 
 export default async function ReviewerLayout({ children }: LayoutProps<"/reviewer">) {
   const session = await requireRole("reviewer")

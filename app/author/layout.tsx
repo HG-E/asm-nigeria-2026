@@ -1,9 +1,14 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 
 import { BrandMark } from "@/components/layout/brand-mark"
 import { BrandStripe } from "@/components/layout/brand-stripe"
 import { Button } from "@/components/ui/button"
 import { requireAuth } from "@/lib/auth"
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
 
 export default async function AuthorLayout({ children }: LayoutProps<"/author">) {
   const session = await requireAuth()

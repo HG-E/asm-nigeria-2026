@@ -1,9 +1,14 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 
 import { BrandMark } from "@/components/layout/brand-mark"
 import { BrandStripe } from "@/components/layout/brand-stripe"
 import { Button } from "@/components/ui/button"
 import { requireRole } from "@/lib/auth"
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
 
 const NAV = [
   { href: "/admin/dashboard", label: "Dashboard" },

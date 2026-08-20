@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 
 import { ResetPasswordForm } from "@/components/auth/reset-password-form"
@@ -9,6 +10,10 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/server"
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
 
 export default async function ResetPasswordPage() {
   const supabase = await createClient()

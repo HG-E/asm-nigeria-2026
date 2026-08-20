@@ -1050,6 +1050,27 @@ export type Database = {
         }
         Relationships: []
       }
+      login_attempts: {
+        Row: {
+          id: string
+          ip_address: string | null
+          email: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          ip_address?: string | null
+          email: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          ip_address?: string | null
+          email?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: {

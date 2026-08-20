@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form"
@@ -8,6 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+
+export const metadata: Metadata = {
+  title: "Reset Your Password | ASM Nigeria 2026",
+  description: "Request a password reset link for your ASM Nigeria 2026 account.",
+  alternates: { canonical: "/forgot-password" },
+  robots: { index: false, follow: true },
+}
 
 export default function ForgotPasswordPage() {
   return (

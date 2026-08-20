@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 
 import { RegisterForm } from "@/components/auth/register-form"
@@ -10,6 +11,12 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/server"
+
+export const metadata: Metadata = {
+  title: "Create an Author Account | ASM Nigeria 2026",
+  description: "Register an author account to submit and track abstracts for the First ASM Nigeria Conference 2026.",
+  alternates: { canonical: "/register" },
+}
 
 export default async function RegisterPage() {
   const supabase = await createClient()

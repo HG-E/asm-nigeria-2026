@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const metadata = {
   title: "Terms & Declaration — ASM Nigeria 2026",
+  description: "Terms, declarations, and fee policy for abstract submission and registration at the First ASM Nigeria Conference 2026.",
+  alternates: { canonical: "/terms" },
 }
 
 export default function TermsPage() {
