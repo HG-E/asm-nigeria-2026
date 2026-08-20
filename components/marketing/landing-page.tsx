@@ -8,6 +8,7 @@ import { Reveal } from "@/components/marketing/reveal"
 
 import "./landing.css"
 
+const BANNER_DISMISS_KEY = "asm-2026-urgency-banner-dismissed-aug22"
 const SECRETARIAT_EMAIL = "asmnigeriaonehealth@gmail.com"
 const CONFERENCE_DATE = new Date("2026-11-22T09:00:00+01:00").getTime()
 const EARLY_DEADLINE = new Date("2026-08-22T22:59:59+00:00").getTime()
@@ -45,16 +46,101 @@ const WHY_CARDS = [
 ]
 
 const SPEAKERS = [
-  { accent: "var(--red)", initials: "KE", chip: "chip-red", chipLabel: "Keynote Speaker", name: "Prof. Kehinde I.T. Eniola", title: "Vice Chancellor", sub: "Kogi State University, Kabba" },
-  { accent: "var(--gold)", initials: "SA", chip: "chip-gold", chipLabel: "Conference Convener", name: "Sylvia O. Anyadoh-Nwadike, PhD", title: "ASM Country Ambassador to Nigeria", sub: null },
+  {
+    accent: "var(--red)",
+    initials: "KE",
+    image: "/speakers/kehinde-eniola.jpg",
+    chip: "chip-red",
+    chipLabel: "Keynote Speaker",
+    name: "Prof. Kehinde I.T. Eniola",
+    title: "Vice Chancellor",
+    sub: "Kogi State University, Kabba",
+  },
+  {
+    accent: "var(--gold)",
+    initials: "SA",
+    image: "/speakers/sylvia-anyadoh-nwadike.jpg",
+    chip: "chip-gold",
+    chipLabel: "Conference Convener",
+    name: "Sylvia O. Anyadoh-Nwadike, PhD",
+    title: "ASM Country Ambassador to Nigeria",
+    sub: null,
+  },
 ]
 
 const THEMES = [
-  { num: 1, bg: "var(--red)", title: "Combating Antimicrobial Resistance through One Health", desc: "Integrated surveillance and response strategies at the human-animal-environment interface." },
-  { num: 2, bg: null, title: "Emerging & Re-emerging Infectious Diseases: Preparedness, Surveillance & Response", desc: "Early detection systems and rapid cross-sector response to infectious disease threats." },
-  { num: 3, bg: "rgba(255,255,255,.15)", title: "Translating Microbial Science into Resilient Systems & Governance", desc: "Bridging research and policy implementation for stronger, more resilient health systems." },
-  { num: 4, bg: "var(--red)", title: "Innovation, Biotechnology & AI for Sustainable Microbiology", desc: "AI, genomics and biotech driving next-generation microbiology solutions in Africa." },
-  { num: 5, bg: null, title: "Building the Next Generation of Microbial Scientists through Mentorship & Leadership", desc: "Structured mentorship and scientific leadership for One Health sustainability." },
+  {
+    num: 1,
+    bg: "var(--red)",
+    title: "Combating Antimicrobial Resistance through One Health Approaches",
+    desc: "Antimicrobial resistance remains one of the most urgent threats to global health, cutting across human medicine, veterinary practice, agriculture, and the environment. This subtheme invites contributions on AMR surveillance and stewardship, novel antimicrobials and diagnostics, and the environmental and food-chain reservoirs that sustain resistance, with particular attention to integrated, cross-sectoral strategies for containment.",
+    topics: [
+      "AMR surveillance",
+      "Antimicrobial stewardship",
+      "Novel antimicrobials and diagnostics",
+      "Environmental reservoirs of resistance",
+      "Antimicrobial resistance along the food chain",
+      "One Health approaches to AMR in agriculture",
+      "Veterinary antibiotic use and food safety",
+    ],
+  },
+  {
+    num: 2,
+    bg: null,
+    title: "Emerging and Re-emerging Infectious Diseases: Preparedness, Surveillance and Response",
+    desc: "As zoonotic spillover and outbreak risk intensify globally, this sub-theme focuses on the science and systems needed for early detection and rapid response. Topics include genomic epidemiology, public health microbiology, laboratory strengthening, wastewater-based surveillance, and WASH interventions that build community-level resilience against infectious threats.",
+    topics: [
+      "Outbreak preparedness",
+      "Zoonotic diseases",
+      "Genomic epidemiology",
+      "Public health microbiology",
+      "Laboratory strengthening",
+      "Wastewater surveillance for public health and disease monitoring",
+      "WASH interventions for sustainable communities",
+    ],
+  },
+  {
+    num: 3,
+    bg: "rgba(255,255,255,.15)",
+    title: "From Lab to Landscape — Translating Microbial Science into Resilient One Health Systems and Governance",
+    desc: "Laboratory discovery only delivers public value when it is translated into policy, regulation, and ecological stewardship. This sub-theme welcomes work on science-to-policy translation and One Health governance frameworks, alongside research treating soil, water, and gut microbiomes as shared infrastructure whose resilience underpins both ecosystem stability and human/animal health outcomes.",
+    topics: [
+      "Science-to-policy translation and evidence-based One Health governance",
+      "Soil, water, and gut microbiomes as shared ecological infrastructure",
+      "Cross-sectoral regulatory frameworks linking environmental and human/animal health",
+      "Microbiome resilience as an indicator of ecosystem and public health stability",
+      "Policy instruments for protecting environmental microbial reservoirs",
+      "Multisectoral coordination mechanisms (human, animal, environmental sectors)",
+    ],
+  },
+  {
+    num: 4,
+    bg: "var(--red)",
+    title: "Innovation, Biotechnology and Artificial Intelligence for Sustainable Microbiology",
+    desc: "Emerging technologies are reshaping how microbial science is discovered, diagnosed, and deployed. This sub-theme covers AI and big-data applications in microbiology and food/environmental safety, synthetic biology and biotechnology, precision medicine and genomics, and innovations that advance progress toward the Sustainable Development Goals.",
+    topics: [
+      "AI in microbial sciences and diagnostics",
+      "Biotechnology and synthetic biology",
+      "Environmental and industrial microbiology",
+      "Precision medicine and genomics",
+      "Digital health and bioinformatics",
+      "Artificial intelligence and big data in food and environmental microbiology",
+      "Microbial innovations for achieving the Sustainable Development Goals",
+    ],
+  },
+  {
+    num: 5,
+    bg: null,
+    title: "Building the Next Generation of Microbial Scientists through Mentorship, Research and Scientific Leadership for One Health Sustainability",
+    desc: "A sustainable One Health agenda depends on a well-supported pipeline of scientists equipped to lead across disciplines and sectors. This sub-theme addresses scientific writing and publishing, career development, entrepreneurship, and industry–academia partnerships, with emphasis on mentorship structures that nurture early-career microbiologists.",
+    topics: [
+      "Scientific writing and publishing",
+      "Career development",
+      "Entrepreneurship and innovation",
+      "Industry–academia partnerships",
+      "Student and early-career microbiologist development",
+    ],
+  },
 ]
 
 const PROGRAMME_DAYS = [
@@ -163,11 +249,238 @@ const NAV_LINKS = [
   { href: "#why", label: "Why Attend" },
   { href: "#speakers", label: "Speakers" },
   { href: "#themes", label: "Themes" },
+  { href: "#planning-committee", label: "Committee" },
   { href: "#abstract", label: "Abstract" },
   { href: "#registration", label: "Register" },
   { href: "#accommodation", label: "Stay" },
   { href: "#faq", label: "FAQ" },
   { href: "#contacts", label: "Contact" },
+]
+
+// Proposed subcommittee membership and terms of reference, as supplied by
+// the organizing committee. One TOR is intentionally omitted below (Finance
+// and Budget) -- the source document repeats the Scientific Programme
+// Committee's TOR there verbatim, which reads as a copy/paste error rather
+// than this committee's actual mandate; flagged back rather than guessed at.
+const SUBCOMMITTEES = [
+  {
+    name: "Scientific Programme Committee",
+    members: [
+      { position: "Chairman", name: "Prof. Nura Muhammad Sani", institution: "Federal University Dutse" },
+      { position: "Secretary", name: "Dr. Stephen Dare Oloninefa", institution: "Kogi State University, Kabba" },
+      { position: "Member", name: "Prof. Maureen Okwu", institution: "Igbinedion University, Benin" },
+      { position: "Member", name: "Dr. Onyinyechi N. Akomah-Abadaike", institution: "University of Port Harcourt" },
+      { position: "Member", name: "Dr. Gloria Ezeagu", institution: "Nile University Abuja" },
+      { position: "Member", name: "Dr. Constance Ezemba", institution: "California" },
+      { position: "Member", name: "Dr. Amaka Olivia Obianom", institution: "Nnamdi Azikiwe University, Awka" },
+      { position: "Member", name: "Dr. Ndidiamaka Daniella Ugo-Nkwoala", institution: "Clipstone Research Consulting" },
+      { position: "Member", name: "Dr. Abumhere Samuel Aziegbemhin", institution: "University of Benin" },
+    ],
+    tor: [
+      "Develop the scientific programme in line with the conference theme and objectives.",
+      "Identify and recommend keynote speakers, plenary speakers, panelists, and moderators.",
+      "Develop guidelines for abstract submission, review, and acceptance.",
+      "Coordinate the review and selection of abstracts, papers, posters, and presentations.",
+      "Prepare the conference schedule, including plenary, parallel, and special sessions.",
+      "Coordinate awards, recognitions, and scientific competitions where applicable.",
+      "Liaise with invited speakers and resource persons regarding presentation requirements.",
+      "Ensure the scientific quality and relevance of conference content.",
+    ],
+  },
+  {
+    name: "Finance and Budget Committee",
+    members: [
+      { position: "Chairman", name: "Dr. Sylvia O. Anyadoh-Nwadike", institution: "ASM Nigeria Ambassador/Convener" },
+      { position: "Secretary", name: "Dr. Ndidiamaka Daniella Ugo-Nkwoala", institution: "Clipstone Research Consulting" },
+      { position: "Member", name: "Prof. Braide Wesley", institution: "FUTO" },
+      { position: "Member", name: "Dr. Daniel Makolo", institution: "Baze University Abuja" },
+      { position: "Member", name: "Dr. Abumhere Samuel Aziegbemhin", institution: "University of Benin" },
+      { position: "Member", name: "Mercy Abosede Olaniyi", institution: "NIHORT" },
+    ],
+    tor: null,
+  },
+  {
+    name: "Sponsorship and Fundraising Committee",
+    members: [
+      { position: "Chairman", name: "Dr. Stephen Dare Oloninefa", institution: "Kogi State University" },
+      { position: "Co-Chairman", name: "Dr. Abiodun Aransiola", institution: "University of Abuja" },
+      { position: "Secretary", name: "Mr. Taiwo Joshua", institution: "Sightsavers Abuja" },
+      { position: "Member", name: "Dr. Japhet Aisoni", institution: "NGO Abuja" },
+      { position: "Member", name: "Dr. Gloria Ezeagu", institution: "Nile University Abuja" },
+      { position: "Member", name: "Mercy Abosede Olaniyi", institution: "NIHORT Ibadan" },
+      { position: "Member", name: "Dr. Constance Ezemba", institution: "California" },
+      { position: "Member", name: "Dr. Amaka Olivia Obianom", institution: "Nnamdi Azikiwe University, Awka" },
+      { position: "Member", name: "Mr. Musa Mujahid", institution: "FUDMA/Chigari Foundation" },
+      { position: "Member", name: "Mrs. Martha Ikpeamanze", institution: "Abuja" },
+      { position: "Member", name: "Miss Prisca Anyadoh", institution: "BusinessDay Newspaper, Abuja" },
+    ],
+    tor: [
+      "Develop and implement a resource mobilization strategy for the conference.",
+      "Identify prospective sponsors, donors, exhibitors, and partners.",
+      "Prepare sponsorship packages and promotional materials.",
+      "Engage corporate organizations, development partners, government agencies, and professional bodies for support.",
+      "Negotiate sponsorship agreements and partnership arrangements.",
+      "Maintain records of sponsorship commitments and donations.",
+      "Ensure sponsors receive agreed visibility and benefits.",
+      "Provide periodic reports on funds raised and sponsorship activities.",
+    ],
+  },
+  {
+    name: "Publicity, Media and Communications Committee",
+    members: [
+      { position: "Chairman", name: "Prof. Maureen Okwu", institution: "Igbinedion University" },
+      { position: "Member", name: "Miss Prisca Nwanyibuife Anyadoh", institution: "BusinessDay Newspaper, Abuja" },
+      { position: "Secretary", name: "Mr. Halilu Hafiz", institution: "ATBUTH Bauchi" },
+      { position: "Member", name: "Dr. Gloria Ezeagu", institution: "Nile University Abuja" },
+      { position: "Member", name: "Dr. Japhet Erasmus Aisoni", institution: "Deep K.Tyagi Foundation International (DKT Nigeria), Abuja" },
+      { position: "Member", name: "Dr. Onyinyechi N. Akomah-Abadaike", institution: "University of Port Harcourt" },
+      { position: "Member", name: "Mr. Musa Mujahid", institution: "FUDMA/Chigari Foundation" },
+      { position: "Member", name: "Mr. Ekene Hillary", institution: "FUTO" },
+      { position: "Member", name: "Mercy Abosede Olaniyi", institution: "NIHORT" },
+    ],
+    tor: [
+      "Develop and implement a comprehensive publicity and communication strategy.",
+      "Create and disseminate conference promotional materials across various platforms.",
+      "Manage the conference website and social media platforms.",
+      "Coordinate media engagements, press releases, and public announcements.",
+      "Promote conference participation among target audiences.",
+      "Develop branding materials and ensure consistency in conference messaging.",
+      "Coordinate media coverage before, during, and after the conference.",
+      "Document conference highlights and prepare post-conference publicity reports.",
+    ],
+  },
+  {
+    name: "Registration and Accreditation Committee",
+    members: [
+      { position: "Chairman", name: "Dr. Ngozika Okey-Ndeche", institution: "Veritas University Abuja" },
+      { position: "Secretary", name: "Mrs. Precious Ishaku", institution: "Bingham University" },
+      { position: "Member", name: "Mr. Halilu Hafiz", institution: "ATBUTH Bauchi" },
+      { position: "Member", name: "Mr. Omada Stephen", institution: "NOUN Abuja" },
+      { position: "Member", name: "Volunteers", institution: "Abuja" },
+    ],
+    tor: [
+      "Develop and manage the conference registration process.",
+      "Coordinate participant registration, confirmation, and accreditation.",
+      "Maintain an accurate database of conference participants.",
+      "Manage registration inquiries and participant support services.",
+      "Prepare registration materials, badges, certificates, and participant packs.",
+      "Coordinate on-site registration and help desk services.",
+      "Provide periodic registration statistics and reports.",
+      "Ensure a seamless registration experience for all participants.",
+    ],
+  },
+  {
+    name: "Protocol and Hospitality Committee",
+    members: [
+      { position: "Chairman", name: "Mrs. Martha Ikpeamanze", institution: "Abuja" },
+      { position: "Secretary", name: "Mrs. Precious Ishaku", institution: "Bingham University" },
+      { position: "Member", name: "Dr. Gloria Ezeagu", institution: "Nile University Abuja" },
+      { position: "Member", name: "Mr. Halilu Hafiz", institution: "ATBUTH Bauchi" },
+      { position: "Member", name: "Mr. Taiwo Joshua", institution: "Sightsavers Abuja" },
+      { position: "Member", name: "Dr. Ibangha Ini-Abasi", institution: "Baze University Abuja" },
+    ],
+    tor: [
+      "Coordinate reception and hospitality arrangements for guests and participants.",
+      "Develop and implement protocol procedures for dignitaries and special guests.",
+      "Manage welcome, reception, and ceremonial activities.",
+      "Coordinate refreshments, meals, and hospitality services during the conference.",
+      "Ensure the comfort and welfare of conference guests.",
+      "Address hospitality-related concerns promptly and professionally.",
+    ],
+  },
+  {
+    name: "Logistics, Transportation and Venue Committee",
+    members: [
+      { position: "Chairman", name: "Dr. Gloria Ezeagu", institution: "Nile University Abuja" },
+      { position: "Secretary", name: "Mr. Uchechukwu Mbonu", institution: "Nile University Abuja" },
+      { position: "Member", name: "Dr. Abiodun Aransiola", institution: "University of Abuja" },
+      { position: "Member", name: "Dr. Japhet Erasmus Aisoni", institution: "Deep K.Tyagi Foundation International (DKT Nigeria), Abuja" },
+      { position: "Member", name: "Mr. Omada Stephen", institution: "NOUN Abuja" },
+      { position: "Member", name: "Mr. Taiwo Joshua", institution: "Sightsavers Abuja" },
+      { position: "Member", name: "Mr. Musa Mujahid", institution: "FUDMA/Chigari Foundation" },
+      { position: "Member", name: "Mrs. Chinonso Ikpeamanze", institution: "Utako, Abuja" },
+    ],
+    tor: [
+      "Coordinate venue preparation and physical arrangements for the conference.",
+      "Ensure availability of furniture, equipment, signage, and conference materials.",
+      "Coordinate transportation arrangements for conference activities.",
+      "Arrange accommodation and welfare support for invited guests and speakers.",
+      "Coordinate airport transfers and local transportation for designated guests.",
+      "Supervise venue setup and breakdown activities.",
+      "Liaise with vendors and service providers on logistical matters.",
+      "Coordinate security, emergency response, and safety arrangements.",
+      "Ensure uninterrupted logistical support throughout the conference.",
+    ],
+  },
+  {
+    name: "Technical and ICT Committee",
+    members: [
+      { position: "Chairman", name: "Dr. Abiodun Aransiola", institution: "University of Abuja" },
+      { position: "Secretary", name: "Mr. Taiwo Joshua", institution: "Sightsavers Abuja" },
+      { position: "Member", name: "Dr. Abumhere Samuel Aziegbemhin", institution: "University of Benin" },
+      { position: "Member", name: "Dr. Ibangha Ini-Abasi", institution: "Baze University Abuja" },
+      { position: "Member", name: "Mr. Ekene Hillary", institution: "FUTO" },
+      { position: "Member", name: "Mr. Uchechukwu Mbonu", institution: "Nile University Abuja" },
+    ],
+    tor: [
+      "Provide technical support for all conference sessions and activities.",
+      "Manage audiovisual equipment, projection systems, and sound systems.",
+      "Coordinate virtual participation platforms where applicable.",
+      "Ensure stable internet connectivity and ICT infrastructure.",
+      "Support online abstract submission and registration systems.",
+      "Troubleshoot technical issues before and during conference sessions.",
+      "Coordinate recording, streaming, and archiving of conference proceedings where applicable.",
+      "Ensure data security and proper management of digital conference resources.",
+    ],
+  },
+  {
+    name: "Volunteer Coordination Committee",
+    members: [
+      { position: "Chairman", name: "Dr. Ibangha Ini-Abasi", institution: "Baze University Abuja" },
+      { position: "Secretary", name: "Mr. Omada Stephen", institution: "NOUN Abuja" },
+      { position: "Member", name: "Mr. Taiwo Joshua", institution: "Sightsavers Abuja" },
+      { position: "Member", name: "Mr. Uchechukwu Mbonu", institution: "Nile University Abuja" },
+      { position: "Member", name: "Miss Prisca Nwanyibuife Anyadoh", institution: "BusinessDay Newspaper, Abuja" },
+      { position: "Member", name: "Mrs. Precious Ishaku", institution: "Bingham University, Karu" },
+    ],
+    tor: [
+      "Recruit and screen conference volunteers.",
+      "Assign volunteers to appropriate conference duties and locations.",
+      "Organize orientation and training programmes for volunteers.",
+      "Develop volunteer schedules and duty rosters.",
+      "Supervise volunteer activities before, during, and after the conference.",
+      "Ensure effective communication between volunteers and committee leadership.",
+      "Address volunteer welfare, motivation, and performance issues.",
+      "Prepare reports on volunteer engagement and contributions to the conference.",
+    ],
+  },
+  {
+    name: "Exhibition, Partnerships and Industry Engagement Committee",
+    members: [
+      { position: "Chairman", name: "Miss Prisca Anyadoh", institution: "BusinessDay Newspaper, Abuja" },
+      { position: "Member", name: "Dr. Japhet Erasmus Aisoni", institution: "Deep K.Tyagi Foundation International (DKT Nigeria), Abuja" },
+      { position: "Secretary", name: "Mr. Ekene Hillary", institution: "FUTO" },
+      { position: "Member", name: "Prof. Nura Muhammad Sani", institution: "Federal University Dutse" },
+      { position: "Member", name: "Prof. Maureen Okwu", institution: "Igbinedion University" },
+      { position: "Member", name: "Dr. Abiodun Aransiola", institution: "University of Abuja" },
+      { position: "Member", name: "Dr. Stephen Dare Oloninefa", institution: "Kogi State University" },
+      { position: "Member", name: "Dr. Amaka Olivia Obianom", institution: "Nnamdi Azikiwe University" },
+      { position: "Member", name: "Dr. Constance Ezemba", institution: "California" },
+      { position: "Member", name: "Dr. Onyinyechi N. Akomah-Abadaike", institution: "University of Port Harcourt" },
+      { position: "Member", name: "Mrs. Precious Ishaku", institution: "Bingham University, Karu" },
+      { position: "Member", name: "Mercy Abosede Olaniyi", institution: "NIHORT" },
+    ],
+    tor: [
+      "Identify and recruit exhibitors from academia, industry, government, and development organizations.",
+      "Develop exhibition packages and guidelines.",
+      "Coordinate exhibition space allocation and setup.",
+      "Facilitate engagement between exhibitors and conference participants.",
+      "Promote industry-academia partnerships through the exhibition platform.",
+      "Coordinate exhibition logistics and support services.",
+      "Ensure compliance with exhibition policies and standards.",
+      "Prepare reports on exhibition participation and outcomes.",
+    ],
+  },
 ]
 
 const COMMITTEE = [
@@ -188,10 +501,12 @@ export function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [regTab, setRegTab] = useState<"early" | "late">("early")
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [openCommittee, setOpenCommittee] = useState<number | null>(null)
   const [confCountdown, setConfCountdown] = useState(PENDING_COUNTDOWN)
   const [earlyCountdown, setEarlyCountdown] = useState(PENDING_COUNTDOWN)
   const [earlyExpired, setEarlyExpired] = useState(false)
   const [earlyDaysLeft, setEarlyDaysLeft] = useState<number | null>(null)
+  const [bannerDismissed, setBannerDismissed] = useState(false)
 
   const [toast, setToast] = useState<string | null>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -208,6 +523,27 @@ export function LandingPage() {
       document.documentElement.style.scrollBehavior = ""
     }
   }, [])
+
+  // Dismissal is per-deadline (keyed to the date in the banner copy) so a
+  // visitor who closes it doesn't have it reappear on their next visit, but
+  // it does come back if the deadline text is ever updated.
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    if (window.localStorage.getItem(BANNER_DISMISS_KEY) !== "1") return
+    // Deferred to a callback rather than an unconditional setState in the
+    // effect body -- see the identical pattern (and reasoning) in Reveal.
+    const frame = requestAnimationFrame(() => setBannerDismissed(true))
+    return () => cancelAnimationFrame(frame)
+  }, [])
+
+  function dismissBanner() {
+    setBannerDismissed(true)
+    try {
+      window.localStorage.setItem(BANNER_DISMISS_KEY, "1")
+    } catch {
+      // localStorage unavailable (private browsing etc.) -- dismissal just won't persist
+    }
+  }
 
   useEffect(() => {
     function tick() {
@@ -253,6 +589,10 @@ export function LandingPage() {
     setOpenFaq((current) => (current === i ? null : i))
   }
 
+  function toggleCommittee(i: number) {
+    setOpenCommittee((current) => (current === i ? null : i))
+  }
+
   function openContactModal() {
     setContactStatus("idle")
     setContactError(null)
@@ -278,7 +618,7 @@ export function LandingPage() {
   return (
     <div className="asm-landing">
       {/* ═══ URGENCY BANNER ═══ */}
-      {!earlyExpired && (
+      {!earlyExpired && !bannerDismissed && (
         <div id="urgency-bar" role="alert" aria-label="Urgent deadline notice">
           <div className="inner">
             <span className="label">
@@ -298,6 +638,9 @@ export function LandingPage() {
             <Link href="/register" className="bar-cta">
               Submit Now →
             </Link>
+            <button type="button" className="bar-close" onClick={dismissBanner} aria-label="Dismiss this notice">
+              ✕
+            </button>
           </div>
         </div>
       )}
@@ -350,7 +693,7 @@ export function LandingPage() {
               <div className="hero-chip">
                 <span className="chip chip-white">
                   <span className="dot" />
-                  🇳🇬 First Edition · Maiden Conference
+                  🇳🇬 ASM Nigeria Maiden Conference · Abuja 2026
                 </span>
               </div>
               <h1 className="display hero-title">
@@ -380,8 +723,8 @@ export function LandingPage() {
               <div className="hero-actions">
                 <a href="#registration" className="btn btn-primary btn-lg">🎟️ Register Now</a>
                 <Link href="/register" className="btn btn-secondary btn-lg">📄 Submit Abstract</Link>
-                <a href="#why" className="btn btn-ghost btn-lg">Learn More ↓</a>
               </div>
+              <a href="#why" className="hero-learn-more">Learn more about the conference ↓</a>
             </div>
 
             <div>
@@ -432,7 +775,37 @@ export function LandingPage() {
         {/* ═══ WHY ATTEND ═══ */}
         <section id="why" className="section" aria-labelledby="why-heading">
           <div className="wrap">
-            <Reveal>
+            <Reveal className="about-conference">
+              <span className="caption eyebrow" style={{ color: "var(--red)" }}>About the Conference</span>
+              <h2 className="headline">A National Platform for Scientific Exchange</h2>
+              <div className="rule" />
+              <p className="body-lg">
+                The ASM One Health Scientific Conference is the maiden ASM scientific conference in
+                Nigeria, serving as a national platform for scientific exchange. It is a landmark
+                scientific gathering bringing together microbiologists, researchers, clinicians,
+                veterinarians, environmental scientists, public health professionals, students,
+                policymakers, industry professionals, and One Health stakeholders from Nigeria and
+                beyond. The conference will provide a dynamic platform for sharing cutting-edge
+                research, advancing scientific collaboration, strengthening capacity, and translating
+                microbial science into solutions for human, animal, and environmental health.
+              </p>
+              <p className="body-lg">
+                Through keynote address, plenary cum scientific sessions, practical workshops,
+                innovation showcases, mentorship, networking, and policy dialogue, the conference will
+                spotlight the transformative role of microbiology in addressing antimicrobial
+                resistance, emerging infectious diseases, biotechnology, artificial intelligence, food
+                security, climate change, and sustainable/resilient health systems.
+              </p>
+              <p className="body-lg">
+                Under the theme &ldquo;One Health in Action: Advancing Microbial Science for Human,
+                Animal, Environmental, and Global Health,&rdquo; the conference seeks to inspire
+                collaboration, nurture the next generation of microbial scientists, and strengthen the
+                contribution of microbiology to Nigeria&apos;s health, research, innovation, and
+                sustainable development agenda.
+              </p>
+            </Reveal>
+
+            <Reveal delay={80}>
               <span className="caption eyebrow" style={{ color: "var(--red)" }}>Why Attend</span>
               <h2 className="headline" id="why-heading">Africa&apos;s Most Impactful<br />Microbiology Event of 2026</h2>
               <div className="rule" />
@@ -461,7 +834,12 @@ export function LandingPage() {
             <div className="speakers-row">
               {SPEAKERS.map((sp, i) => (
                 <Reveal key={sp.name} delay={i * 80} className="speaker-card" style={{ "--accent": sp.accent } as React.CSSProperties}>
-                  <div className="sp-avatar" style={sp.initials === "SA" ? { background: "var(--gold-d)" } : undefined}>{sp.initials}</div>
+                  {sp.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={sp.image} alt={sp.name} className="sp-avatar sp-avatar-img" />
+                  ) : (
+                    <div className="sp-avatar" style={sp.initials === "SA" ? { background: "var(--gold-d)" } : undefined}>{sp.initials}</div>
+                  )}
                   <div>
                     <div className="sp-chip"><span className={`chip ${sp.chip}`}>{sp.chipLabel}</span></div>
                     <div className="sp-name">{sp.name}</div>
@@ -482,15 +860,74 @@ export function LandingPage() {
               <div className="rule" />
               <p className="body-lg">All abstracts must address one or two of these sub-themes.</p>
             </Reveal>
-            <div className="themes-grid">
+            <div className="themes-grid themes-grid-full">
               {THEMES.map((t, i) => (
-                <Reveal key={t.num} delay={i * 80} className="theme-card">
+                <Reveal key={t.num} delay={i * 80} className="theme-card theme-card-full">
                   <div className="tc-num" style={t.bg ? { background: t.bg, color: t.num === 3 ? "#fff" : undefined } : undefined}>{t.num}</div>
                   <div className="tc-body">
                     <div className="tc-title">{t.title}</div>
-                    <div className="tc-desc">{t.desc}</div>
+                    <p className="tc-desc">{t.desc}</p>
+                    <div className="tc-topics">
+                      {t.topics.map((topic) => (
+                        <span className="tc-topic" key={topic}>{topic}</span>
+                      ))}
+                    </div>
                   </div>
                 </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ PLANNING COMMITTEE ═══ */}
+        <section id="planning-committee" className="section" aria-labelledby="committee-heading">
+          <div className="wrap">
+            <Reveal className="reveal-center" style={{ textAlign: "center" } as React.CSSProperties}>
+              <span className="caption eyebrow" style={{ color: "var(--red)" }}>Planning Committee</span>
+              <h2 className="headline" id="committee-heading">ASM Nigeria Maiden Conference<br />Abuja 2026 — Subcommittees</h2>
+              <div className="rule rule-center" />
+              <p className="body-lg">Ten subcommittees, drawn from institutions and organizations across Nigeria, plan and run every part of the conference.</p>
+            </Reveal>
+            <div className="committee-list" role="list">
+              {SUBCOMMITTEES.map((c, i) => (
+                <div className={openCommittee === i ? "committee-item open" : "committee-item"} role="listitem" key={c.name}>
+                  <div
+                    className="committee-q"
+                    onClick={() => toggleCommittee(i)}
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={openCommittee === i}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleCommittee(i) } }}
+                  >
+                    <span>{i + 1}. {c.name}</span>
+                    <span className="faq-arrow" aria-hidden="true">⌄</span>
+                  </div>
+                  <div className="committee-a">
+                    <div className="committee-members">
+                      {c.members.map((m) => (
+                        <div className="committee-member" key={`${c.name}-${m.name}`}>
+                          <span className="cm-position">{m.position}</span>
+                          <span className="cm-name">{m.name}</span>
+                          <span className="cm-institution">{m.institution}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {c.tor ? (
+                      <div className="committee-tor">
+                        <div className="committee-tor-title">Terms of Reference</div>
+                        <ol>
+                          {c.tor.map((item) => (
+                            <li key={item}>{item}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    ) : (
+                      <div className="committee-tor">
+                        <p className="committee-tor-pending">Terms of reference to be finalized.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -866,6 +1303,7 @@ export function LandingPage() {
                   <li><a href="#themes">Sub-Themes</a></li>
                   <li><a href="#programme">Programme</a></li>
                   <li><a href="#speakers">Speakers</a></li>
+                  <li><a href="#planning-committee">Planning Committee</a></li>
                 </ul>
               </div>
               <div className="footer-col">
