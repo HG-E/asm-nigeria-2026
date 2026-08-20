@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation"
 
+import { proposeDecisionAction } from "@/app/committee/submissions/[id]/actions"
 import { DecisionFinalizePanel } from "@/components/admin/decision-finalize-panel"
 import { PaymentVerificationPanel } from "@/components/admin/payment-verification-panel"
 import { ReviewerAssignmentPanel } from "@/components/admin/reviewer-assignment-panel"
+import { DecisionForm } from "@/components/committee/decision-form"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { requireRole } from "@/lib/auth"
@@ -53,6 +55,17 @@ export default async function AdminSubmissionDetailPage(
     .order("created_at", { ascending: false })
     .limit(1)
   const latestDecision = decisionRows?.[0]
+
+  // Same admin/super_admin ("ASM") login already satisfies requireRole("committee")
+  // via the role hierarchy -- this mirrors /committee/submissions/[id]'s propose
+  // form directly on the admin page so ASM can propose AND finalize in one place,
+  // without needing a separate committee-role account for a single-person review.
+  const DECIDABLE_STATUSES = ["reviews_completed", "decision_pending"]
+  const hasFinalDecision = latestDecision?.is_final ?? false
+  const isNotYetDecidable = !hasFinalDecision && !DECIDABLE_STATUSES.includes(submission.status)
+  const proposeLockReason = hasFinalDecision ? "final" : isNotYetDecidable ? "not_decidable" : null
+  const draftDecision = latestDecision && !latestDecision.is_final ? latestDecision : null
+  const decisionToPropose = hasFinalDecision ? latestDecision : draftDecision
 
   const { data: reviewerPool } = await supabase
     .from("reviewer_profiles")
@@ -207,7 +220,30 @@ export default async function AdminSubmissionDetailPage(
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Committee Decision</CardTitle>
+          <CardTitle className="text-base">Propose Decision (as Committee)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground mb-4 text-sm">
+            Your ASM admin login already has committee sign-in rights, so you can propose the
+            decision here directly — no separate committee-member account or reviewer step
+            needed.
+          </p>
+          <DecisionForm
+            lockReason={proposeLockReason}
+            defaultValues={{
+              decision: decisionToPropose?.decision,
+              decisionNotes: decisionToPropose?.decision_notes ?? "",
+              authorMessage: decisionToPropose?.author_message ?? "",
+              revisionDeadline: decisionToPropose?.revision_deadline?.slice(0, 10) ?? "",
+            }}
+            onSave={proposeDecisionAction.bind(null, id)}
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Finalize Decision</CardTitle>
         </CardHeader>
         <CardContent>
           <DecisionFinalizePanel

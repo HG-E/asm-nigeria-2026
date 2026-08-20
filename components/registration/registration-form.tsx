@@ -17,7 +17,7 @@ import {
   WORKSHOP_FEE,
   type ParticipantCategory,
 } from "@/lib/registration-fees"
-import { registrationSchema, type RegistrationInput } from "@/lib/validations/registration"
+import { ATTENDANCE_MODES, registrationSchema, type RegistrationInput } from "@/lib/validations/registration"
 
 const period = currentRegistrationPeriod()
 
@@ -81,6 +81,7 @@ export function RegistrationForm() {
       phone: "",
       institution: "",
       participantCategory: undefined,
+      attendanceMode: undefined,
       includeWorkshop: false,
       company: "",
     },
@@ -112,6 +113,7 @@ export function RegistrationForm() {
     formData.set("phone", values.phone ?? "")
     formData.set("institution", values.institution ?? "")
     formData.set("participantCategory", values.participantCategory)
+    formData.set("attendanceMode", values.attendanceMode)
     formData.set("includeWorkshop", String(values.includeWorkshop))
     formData.set("company", values.company ?? "")
     formData.set("receipt", receiptFile!)
@@ -237,6 +239,31 @@ export function RegistrationForm() {
 
         <FormField
           control={form.control}
+          name="attendanceMode"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Will you attend virtually or physically?</FormLabel>
+              <Select value={field.value} onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select how you'll attend" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {ATTENDANCE_MODES.map((m) => (
+                    <SelectItem key={m} value={m}>
+                      {m}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="includeWorkshop"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start gap-2 space-y-0">
@@ -279,7 +306,7 @@ export function RegistrationForm() {
         />
 
         <FileUploadField
-          label="ASM membership certificate (optional)"
+          label="Recent ASM Membership ID Certificate (optional)"
           hint="Only if you're a member and are registering at the member rate. PDF, JPG, or PNG, maximum size 1MB."
           accept=".pdf,.jpg,.jpeg,.png"
           file={certificateFile}

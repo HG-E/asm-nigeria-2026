@@ -50,6 +50,7 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
     phone: formData.get("phone"),
     institution: formData.get("institution"),
     participantCategory: formData.get("participantCategory"),
+    attendanceMode: formData.get("attendanceMode"),
     includeWorkshop: formData.get("includeWorkshop") === "true",
     company: formData.get("company"),
   })
@@ -152,6 +153,7 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
     phone: parsed.data.phone || null,
     institution: parsed.data.institution || null,
     participant_category: category,
+    attendance_mode: parsed.data.attendanceMode,
     registration_period: period,
     amount_expected: amountExpected,
     payment_currency: currency,

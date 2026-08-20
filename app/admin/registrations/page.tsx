@@ -117,6 +117,7 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
                   <TableCell className="text-sm">
                     {r.participant_category}
                     <span className="text-muted-foreground"> ({r.registration_period})</span>
+                    <div className="text-muted-foreground text-xs">{r.attendance_mode}</div>
                   </TableCell>
                   <TableCell className="text-sm">{r.amount_expected}</TableCell>
                   <TableCell className="text-sm">

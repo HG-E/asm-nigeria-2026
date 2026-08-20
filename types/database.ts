@@ -224,6 +224,7 @@ export type Database = {
           phone: string | null
           institution: string | null
           participant_category: string
+          attendance_mode: string
           registration_period: string
           amount_expected: string
           payment_currency: string
@@ -247,6 +248,7 @@ export type Database = {
           phone?: string | null
           institution?: string | null
           participant_category: string
+          attendance_mode: string
           registration_period: string
           amount_expected: string
           payment_currency: string
@@ -270,6 +272,7 @@ export type Database = {
           phone?: string | null
           institution?: string | null
           participant_category?: string
+          attendance_mode?: string
           registration_period?: string
           amount_expected?: string
           payment_currency?: string

@@ -55,6 +55,7 @@ const SPEAKERS = [
     name: "Prof. Kehinde I.T. Eniola",
     title: "Vice Chancellor",
     sub: "Kogi State University, Kabba",
+    bio: "",
   },
   {
     accent: "var(--gold)",
@@ -65,6 +66,7 @@ const SPEAKERS = [
     name: "Sylvia O. Anyadoh-Nwadike, PhD",
     title: "ASM Country Ambassador to Nigeria",
     sub: null,
+    bio: "",
   },
 ]
 
@@ -247,6 +249,7 @@ const FAQS = [
 
 const NAV_LINKS = [
   { href: "#why", label: "Why Attend" },
+  { href: "https://asm.org/membership", label: "Become a Member", external: true },
   { href: "#speakers", label: "Speakers" },
   { href: "#themes", label: "Themes" },
   { href: "#planning-committee", label: "Committee" },
@@ -503,6 +506,7 @@ export function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [openCommittee, setOpenCommittee] = useState<number | null>(null)
   const [openTheme, setOpenTheme] = useState<number | null>(null)
+  const [openSpeaker, setOpenSpeaker] = useState<number | null>(null)
   const [confCountdown, setConfCountdown] = useState(PENDING_COUNTDOWN)
   const [earlyCountdown, setEarlyCountdown] = useState(PENDING_COUNTDOWN)
   const [earlyExpired, setEarlyExpired] = useState(false)
@@ -598,6 +602,10 @@ export function LandingPage() {
     setOpenTheme((current) => (current === i ? null : i))
   }
 
+  function toggleSpeaker(i: number) {
+    setOpenSpeaker((current) => (current === i ? null : i))
+  }
+
   function openContactModal() {
     setContactStatus("idle")
     setContactError(null)
@@ -660,7 +668,12 @@ export function LandingPage() {
             </a>
             <div className="nav-links" role="list">
               {NAV_LINKS.map((link) => (
-                <a key={link.href} href={link.href} role="listitem">
+                <a
+                  key={link.href}
+                  href={link.href}
+                  role="listitem"
+                  {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                >
                   {link.label}
                 </a>
               ))}
@@ -680,7 +693,12 @@ export function LandingPage() {
           </div>
           <nav id="mobile-nav" className={mobileOpen ? "nav-mobile open" : "nav-mobile"} aria-label="Mobile navigation">
             {NAV_LINKS.map((link) => (
-              <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)}>
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              >
                 {link.label}
               </a>
             ))}
@@ -763,18 +781,28 @@ export function LandingPage() {
         {/* ═══ STATS BAR ═══ */}
         <div id="stats" role="region" aria-label="Key conference figures">
           <div className="stats-wrap">
-            {[
-              { num: "1", unit: "st", desc: "ASM Conference in Nigeria" },
-              { num: "1", unit: "", desc: "Conference Theme" },
-              { num: "5", unit: "", desc: "One Health Sub-Themes" },
-              { num: "4", unit: "", desc: "Days of Science & Dialogue" },
-              { num: "250", unit: "+", desc: "Expected Delegates" },
-            ].map((s, i) => (
-              <Reveal key={s.desc} delay={i * 80} className="stat-item">
-                <div className="stat-num">{s.num}<span className="unit">{s.unit}</span></div>
-                <div className="stat-desc">{s.desc}</div>
-              </Reveal>
-            ))}
+            <Reveal delay={0} className="stat-item">
+              <div className="stat-num">1<span className="unit">st</span></div>
+              <div className="stat-desc">ASM Conference in Nigeria</div>
+            </Reveal>
+            <Reveal delay={80} className="stat-item stat-item-combo">
+              <div className="stat-combo-row">
+                <span className="stat-num stat-num-sm">1</span>
+                <span className="stat-desc">Conference Theme</span>
+              </div>
+              <div className="stat-combo-row">
+                <span className="stat-num stat-num-sm">5</span>
+                <span className="stat-desc">One Health Sub-Themes</span>
+              </div>
+            </Reveal>
+            <Reveal delay={160} className="stat-item">
+              <div className="stat-num">4</div>
+              <div className="stat-desc">Days of Science &amp; Dialogue</div>
+            </Reveal>
+            <Reveal delay={240} className="stat-item">
+              <div className="stat-num">250<span className="unit">+</span></div>
+              <div className="stat-desc">Expected Delegates</div>
+            </Reveal>
           </div>
         </div>
 
@@ -811,6 +839,21 @@ export function LandingPage() {
               </p>
             </Reveal>
 
+            <Reveal delay={40} className="convener-block">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/speakers/sylvia-anyadoh-nwadike.jpg"
+                alt="Sylvia O. Anyadoh-Nwadike, PhD"
+                className="convener-photo"
+              />
+              <div>
+                <span className="caption eyebrow" style={{ color: "var(--gold-d)" }}>Conference Convener</span>
+                <h3 className="convener-name">Sylvia O. Anyadoh-Nwadike, PhD</h3>
+                <p className="convener-title">ASM Country Ambassador to Nigeria</p>
+                <p className="convener-bio">Full biography coming soon.</p>
+              </div>
+            </Reveal>
+
             <Reveal delay={80}>
               <span className="caption eyebrow" style={{ color: "var(--red)" }}>Why Attend</span>
               <h2 className="headline" id="why-heading">Africa&apos;s Most Impactful<br />Microbiology Event of 2026</h2>
@@ -839,17 +882,35 @@ export function LandingPage() {
             </Reveal>
             <div className="speakers-row">
               {SPEAKERS.map((sp, i) => (
-                <Reveal key={sp.name} delay={i * 80} className="speaker-card" style={{ "--accent": sp.accent } as React.CSSProperties}>
-                  {sp.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={sp.image} alt={sp.name} className="sp-avatar sp-avatar-img" />
-                  ) : (
-                    <div className="sp-avatar" style={sp.initials === "SA" ? { background: "var(--gold-d)" } : undefined}>{sp.initials}</div>
-                  )}
-                  <div>
-                    <div className="sp-chip"><span className={`chip ${sp.chip}`}>{sp.chipLabel}</span></div>
-                    <div className="sp-name">{sp.name}</div>
-                    <div className="sp-title">{sp.title}{sp.sub && <><br />{sp.sub}</>}</div>
+                <Reveal
+                  key={sp.name}
+                  delay={i * 80}
+                  className={openSpeaker === i ? "speaker-card open" : "speaker-card"}
+                  style={{ "--accent": sp.accent } as React.CSSProperties}
+                >
+                  <div
+                    className="sp-header"
+                    onClick={() => toggleSpeaker(i)}
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={openSpeaker === i}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleSpeaker(i) } }}
+                  >
+                    {sp.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={sp.image} alt={sp.name} className="sp-avatar sp-avatar-img" />
+                    ) : (
+                      <div className="sp-avatar" style={sp.initials === "SA" ? { background: "var(--gold-d)" } : undefined}>{sp.initials}</div>
+                    )}
+                    <div className="sp-info">
+                      <div className="sp-chip"><span className={`chip ${sp.chip}`}>{sp.chipLabel}</span></div>
+                      <div className="sp-name">{sp.name}</div>
+                      <div className="sp-title">{sp.title}{sp.sub && <><br />{sp.sub}</>}</div>
+                    </div>
+                    <span className="faq-arrow sp-arrow" aria-hidden="true">⌄</span>
+                  </div>
+                  <div className="sp-body">
+                    <p className="sp-bio">{sp.bio || "Full biography coming soon."}</p>
                   </div>
                 </Reveal>
               ))}
