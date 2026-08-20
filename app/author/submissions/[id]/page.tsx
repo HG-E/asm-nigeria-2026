@@ -16,6 +16,7 @@ import { buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { requireAuth } from "@/lib/auth"
 import { getActiveConference } from "@/lib/conference"
+import { STATUS_HINTS } from "@/lib/submission-status"
 import { createClient } from "@/lib/supabase/server"
 import { WITHDRAWABLE_STATUSES } from "@/lib/validations/submission"
 
@@ -167,7 +168,14 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
             <dt className="text-muted-foreground">Subtheme</dt>
             <dd>{submission.conference_subthemes?.name ?? "—"}</dd>
             <dt className="text-muted-foreground">Status</dt>
-            <dd className="capitalize">{submission.status.replaceAll("_", " ")}</dd>
+            <dd className="capitalize">
+              {submission.status.replaceAll("_", " ")}
+              {STATUS_HINTS[submission.status] && (
+                <span className="text-muted-foreground block text-xs normal-case">
+                  {STATUS_HINTS[submission.status]}
+                </span>
+              )}
+            </dd>
           </dl>
 
           {finalDecision?.author_message && (

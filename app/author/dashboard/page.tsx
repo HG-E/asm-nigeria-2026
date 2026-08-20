@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { requireAuth } from "@/lib/auth"
+import { STATUS_HINTS } from "@/lib/submission-status"
 import { createClient } from "@/lib/supabase/server"
 import type { Database } from "@/types/database"
 
@@ -161,7 +162,9 @@ export default async function AuthorDashboardPage() {
                           {submission.title || "Untitled draft"}
                         </Link>
                       </TableCell>
-                      <TableCell>{submission.conference_subthemes?.name ?? "—"}</TableCell>
+                      <TableCell className="max-w-40 truncate" title={submission.conference_subthemes?.name ?? undefined}>
+                        {submission.conference_subthemes?.name ?? "—"}
+                      </TableCell>
                       <TableCell>
                         {submission.submitted_at
                           ? new Date(submission.submitted_at).toLocaleDateString()
@@ -171,6 +174,11 @@ export default async function AuthorDashboardPage() {
                         <Badge variant={statusVariant(submission.status)}>
                           {STATUS_LABELS[submission.status]}
                         </Badge>
+                        {STATUS_HINTS[submission.status] && (
+                          <p className="text-muted-foreground mt-1 max-w-48 text-xs text-balance">
+                            {STATUS_HINTS[submission.status]}
+                          </p>
+                        )}
                       </TableCell>
                       <TableCell>{finalDecision?.decision ?? "—"}</TableCell>
                       <TableCell>
