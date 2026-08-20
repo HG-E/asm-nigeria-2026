@@ -84,7 +84,7 @@ export function ProfileForm({
           name="asmIdNumber"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>ASM ID Number</FormLabel>
+              <FormLabel>ASM ID Number (optional)</FormLabel>
               <FormControl>
                 <Input
                   inputMode="numeric"
@@ -93,7 +93,9 @@ export function ProfileForm({
                   onChange={(e) => field.onChange(digitsOnly(e.target.value, 9))}
                 />
               </FormControl>
-              <p className="text-muted-foreground text-xs">7 to 9 digits, numbers only.</p>
+              <p className="text-muted-foreground text-xs">
+                Only if you&apos;re an ASM member. 7 to 9 digits, numbers only.
+              </p>
               <FormMessage />
             </FormItem>
           )}

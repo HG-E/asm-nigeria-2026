@@ -53,7 +53,7 @@ export default function TermsPage() {
             </Clause>
             <Clause number={4} title="Submission fee">
               <p>
-                Each abstract requires a submission fee of ₦3,000 (or $10 USD equivalent),
+                Each abstract requires a submission fee of ₦3,000 (or $5 USD equivalent),
                 paid by bank transfer to the account shown during submission, with proof of
                 payment uploaded at the same time. Submission proceeds immediately on upload;
                 the secretariat verifies the receipt separately and will contact you if it

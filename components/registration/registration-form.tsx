@@ -21,12 +21,57 @@ import { registrationSchema, type RegistrationInput } from "@/lib/validations/re
 
 const period = currentRegistrationPeriod()
 
+function FileUploadField({
+  label,
+  hint,
+  accept,
+  file,
+  onChange,
+  error,
+}: {
+  label: string
+  hint: string
+  accept: string
+  file: File | null
+  onChange: (file: File | null) => void
+  error: string | null
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-medium">{label}</label>
+      <p className="text-muted-foreground text-sm">{hint}</p>
+      <div
+        className="hover:bg-muted/50 cursor-pointer rounded-lg border border-dashed p-6 text-center text-sm"
+        onClick={() => inputRef.current?.click()}
+      >
+        {file ? file.name : "Click to select a file"}
+      </div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept={accept}
+        className="hidden"
+        onChange={(e) => onChange(e.target.files?.[0] ?? null)}
+      />
+      {error && (
+        <p className="text-destructive text-sm" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
+  )
+}
+
 export function RegistrationForm() {
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [referenceNumber, setReferenceNumber] = useState<string | null>(null)
+
   const [receiptFile, setReceiptFile] = useState<File | null>(null)
   const [receiptError, setReceiptError] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [photoError, setPhotoError] = useState<string | null>(null)
+  const [certificateFile, setCertificateFile] = useState<File | null>(null)
 
   const form = useForm<RegistrationInput>({
     resolver: zodResolver(registrationSchema),
@@ -48,10 +93,18 @@ export function RegistrationForm() {
   async function onSubmit(values: RegistrationInput) {
     setSubmitError(null)
     setReceiptError(null)
+    setPhotoError(null)
+
+    let hasFileError = false
     if (!receiptFile) {
       setReceiptError("Please upload your payment receipt or screenshot.")
-      return
+      hasFileError = true
     }
+    if (!photoFile) {
+      setPhotoError("Please upload a passport photograph.")
+      hasFileError = true
+    }
+    if (hasFileError) return
 
     const formData = new FormData()
     formData.set("fullName", values.fullName)
@@ -61,7 +114,9 @@ export function RegistrationForm() {
     formData.set("participantCategory", values.participantCategory)
     formData.set("includeWorkshop", String(values.includeWorkshop))
     formData.set("company", values.company ?? "")
-    formData.set("receipt", receiptFile)
+    formData.set("receipt", receiptFile!)
+    formData.set("photo", photoFile!)
+    if (certificateFile) formData.set("certificate", certificateFile)
 
     const result = await submitRegistrationAction(formData)
     if ("error" in result) {
@@ -205,31 +260,32 @@ export function RegistrationForm() {
           </p>
         )}
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Payment receipt or screenshot</label>
-          <p className="text-muted-foreground text-sm">Accepted formats: PDF, JPG, PNG. Maximum size: 1MB.</p>
-          <div
-            className="hover:bg-muted/50 cursor-pointer rounded-lg border border-dashed p-6 text-center text-sm"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            {receiptFile ? receiptFile.name : "Click to select your receipt"}
-          </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf,.jpg,.jpeg,.png"
-            className="hidden"
-            onChange={(e) => {
-              setReceiptError(null)
-              setReceiptFile(e.target.files?.[0] ?? null)
-            }}
-          />
-          {receiptError && (
-            <p className="text-destructive text-sm" role="alert">
-              {receiptError}
-            </p>
-          )}
-        </div>
+        <FileUploadField
+          label="Payment receipt or screenshot"
+          hint="Accepted formats: PDF, JPG, PNG. Maximum size: 1MB."
+          accept=".pdf,.jpg,.jpeg,.png"
+          file={receiptFile}
+          onChange={(f) => { setReceiptError(null); setReceiptFile(f) }}
+          error={receiptError}
+        />
+
+        <FileUploadField
+          label="Passport photograph"
+          hint="Used for your participation pack and badge. JPG or PNG, maximum size 1MB."
+          accept=".jpg,.jpeg,.png"
+          file={photoFile}
+          onChange={(f) => { setPhotoError(null); setPhotoFile(f) }}
+          error={photoError}
+        />
+
+        <FileUploadField
+          label="ASM membership certificate (optional)"
+          hint="Only if you're a member and are registering at the member rate. PDF, JPG, or PNG, maximum size 1MB."
+          accept=".pdf,.jpg,.jpeg,.png"
+          file={certificateFile}
+          onChange={setCertificateFile}
+          error={null}
+        />
 
         {/* Honeypot -- hidden from real visitors */}
         <FormField

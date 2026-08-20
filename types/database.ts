@@ -228,6 +228,8 @@ export type Database = {
           amount_expected: string
           payment_currency: string
           payment_receipt_path: string
+          passport_photo_path: string
+          asm_certificate_path: string | null
           payment_status: string
           payment_verified_by: string | null
           payment_verified_at: string | null
@@ -249,6 +251,8 @@ export type Database = {
           amount_expected: string
           payment_currency: string
           payment_receipt_path: string
+          passport_photo_path: string
+          asm_certificate_path?: string | null
           payment_status?: string
           payment_verified_by?: string | null
           payment_verified_at?: string | null
@@ -270,6 +274,8 @@ export type Database = {
           amount_expected?: string
           payment_currency?: string
           payment_receipt_path?: string
+          passport_photo_path?: string
+          asm_certificate_path?: string | null
           payment_status?: string
           payment_verified_by?: string | null
           payment_verified_at?: string | null

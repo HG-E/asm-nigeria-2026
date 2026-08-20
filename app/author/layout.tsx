@@ -22,8 +22,8 @@ export default async function AuthorLayout({ children }: LayoutProps<"/author">)
               Profile
             </Link>
             <span className="text-muted-foreground hidden sm:inline">
-              {session.profile.first_name} {session.profile.last_name} &middot; ASM ID:{" "}
-              {session.profile.asm_id_number}
+              {session.profile.first_name} {session.profile.last_name}
+              {session.profile.asm_id_number && <> &middot; ASM ID: {session.profile.asm_id_number}</>}
             </span>
             <form action="/logout" method="POST">
               <Button type="submit" variant="ghost" size="sm">

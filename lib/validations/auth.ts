@@ -4,10 +4,15 @@ export const registerSchema = z
   .object({
     firstName: z.string().trim().min(1, "First name is required"),
     lastName: z.string().trim().min(1, "Last name is required"),
+    // Not required to submit an abstract -- ASM membership is only relevant
+    // (and only asked for again, via certificate upload) at conference
+    // registration, where membership unlocks a lower fee tier.
     asmIdNumber: z
       .string()
       .trim()
-      .regex(/^\d{7,9}$/, "ASM ID Number must be 7 to 9 digits, numbers only"),
+      .regex(/^\d{7,9}$/, "ASM ID Number must be 7 to 9 digits, numbers only")
+      .optional()
+      .or(z.literal("")),
     email: z.email("Enter a valid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),

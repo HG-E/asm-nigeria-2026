@@ -48,8 +48,10 @@ export default function PrivacyPage() {
                 </li>
                 <li>
                   Conference registration: name, email, phone and institution if provided,
-                  participant category, and your payment receipt or screenshot, if you register
-                  to attend the conference. Registration does not require creating an account.
+                  participant category, a passport photograph (used to produce your
+                  participation pack and badge), your payment receipt or screenshot, and your
+                  ASM membership certificate if you register at the member rate. Registration
+                  does not require creating an account.
                 </li>
               </ul>
             </Clause>

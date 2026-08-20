@@ -110,7 +110,7 @@ export function RegisterForm() {
             name="asmIdNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>ASM ID Number</FormLabel>
+                <FormLabel>ASM ID Number (optional)</FormLabel>
                 <FormControl>
                   <Input
                     inputMode="numeric"
@@ -121,7 +121,8 @@ export function RegisterForm() {
                   />
                 </FormControl>
                 <p className="text-muted-foreground text-xs">
-                  7 to 9 digits, numbers only.
+                  Only if you&apos;re an ASM member — not required to submit an abstract. 7 to 9
+                  digits, numbers only.
                 </p>
                 <FormMessage />
               </FormItem>

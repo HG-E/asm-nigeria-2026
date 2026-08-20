@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { requireRole } from "@/lib/auth"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 
 const STATUSES = ["pending", "verified", "rejected"] as const
@@ -35,14 +36,24 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
 
   const { data: registrations } = await query
 
-  const receiptUrls = new Map<string, string>()
+  // registration-receipts has no storage.objects RLS policies at all (by
+  // design -- every access, write or read, goes through the service-role
+  // client). The regular session-bound client used for the row query above
+  // can't sign URLs against it, so this specifically needs the admin client.
+  const storageAdmin = createAdminClient()
+  type FileLinks = { receipt: string | null; photo: string | null; certificate: string | null }
+  const fileUrls = new Map<string, FileLinks>()
+  async function signedUrl(path: string | null) {
+    if (!path) return null
+    const { data } = await storageAdmin.storage.from("registration-receipts").createSignedUrl(path, 60 * 10)
+    return data?.signedUrl ?? null
+  }
   for (const r of registrations ?? []) {
-    if (r.payment_receipt_path) {
-      const { data: signed } = await supabase.storage
-        .from("registration-receipts")
-        .createSignedUrl(r.payment_receipt_path, 60 * 10)
-      if (signed?.signedUrl) receiptUrls.set(r.id, signed.signedUrl)
-    }
+    fileUrls.set(r.id, {
+      receipt: await signedUrl(r.payment_receipt_path),
+      photo: await signedUrl(r.passport_photo_path),
+      certificate: await signedUrl(r.asm_certificate_path),
+    })
   }
 
   const counts = {
@@ -90,7 +101,7 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
                 <TableHead>Name</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Amount</TableHead>
-                <TableHead>Receipt</TableHead>
+                <TableHead>Files</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>
@@ -108,19 +119,28 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
                     <span className="text-muted-foreground"> ({r.registration_period})</span>
                   </TableCell>
                   <TableCell className="text-sm">{r.amount_expected}</TableCell>
-                  <TableCell>
-                    {receiptUrls.has(r.id) ? (
-                      <Link
-                        href={receiptUrls.get(r.id)!}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-primary text-sm underline underline-offset-4"
-                      >
-                        View
-                      </Link>
-                    ) : (
-                      <span className="text-muted-foreground text-sm">—</span>
-                    )}
+                  <TableCell className="text-sm">
+                    <div className="flex flex-col gap-1">
+                      {(["receipt", "photo", "certificate"] as const).map((kind) => {
+                        const url = fileUrls.get(r.id)?.[kind]
+                        const label = kind === "receipt" ? "Receipt" : kind === "photo" ? "Photo" : "Certificate"
+                        return url ? (
+                          <Link
+                            key={kind}
+                            href={url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-primary underline underline-offset-4"
+                          >
+                            {label}
+                          </Link>
+                        ) : (
+                          <span key={kind} className="text-muted-foreground">
+                            {label}: {kind === "certificate" ? "not provided" : "—"}
+                          </span>
+                        )
+                      })}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant={statusVariant(r.payment_status)}>{r.payment_status}</Badge>

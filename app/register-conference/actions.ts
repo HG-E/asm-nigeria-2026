@@ -12,7 +12,8 @@ import { registrationSchema } from "@/lib/validations/registration"
 
 export type RegistrationActionResult = { error: string } | { success: true; referenceNumber: string }
 
-const ALLOWED_TYPES = ["pdf", "jpg", "jpeg", "png"]
+const DOCUMENT_TYPES = ["pdf", "jpg", "jpeg", "png"]
+const PHOTO_TYPES = ["jpg", "jpeg", "png"]
 const MAX_FILE_BYTES = 1 * 1024 * 1024
 const IP_WINDOW_MS = 60 * 60 * 1000 // 1 hour
 const IP_MAX_REGISTRATIONS = 5
@@ -22,6 +23,24 @@ async function getClientIp(): Promise<string | null> {
   const forwardedFor = headerList.get("x-forwarded-for")
   if (forwardedFor) return forwardedFor.split(",")[0]?.trim() || null
   return headerList.get("x-real-ip")
+}
+
+function validateFile(
+  file: FormDataEntryValue | null,
+  { required, allowedTypes, label }: { required: boolean; allowedTypes: string[]; label: string }
+): { error: string } | { file: File | null } {
+  if (!(file instanceof File) || file.size === 0) {
+    if (required) return { error: `Please upload your ${label}.` }
+    return { file: null }
+  }
+  const extension = file.name.split(".").pop()?.toLowerCase() ?? ""
+  if (!allowedTypes.includes(extension)) {
+    return { error: `${label[0].toUpperCase()}${label.slice(1)} must be ${allowedTypes.join(", ").toUpperCase()}.` }
+  }
+  if (file.size > MAX_FILE_BYTES) {
+    return { error: `Your ${label} exceeds the 1MB limit.` }
+  }
+  return { file }
 }
 
 export async function submitRegistrationAction(formData: FormData): Promise<RegistrationActionResult> {
@@ -44,17 +63,29 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
     return { success: true, referenceNumber: "REG-0000" }
   }
 
-  const file = formData.get("receipt")
-  if (!(file instanceof File) || file.size === 0) {
-    return { error: "Please upload your payment receipt or screenshot." }
-  }
-  const extension = file.name.split(".").pop()?.toLowerCase() ?? ""
-  if (!ALLOWED_TYPES.includes(extension)) {
-    return { error: "Only PDF, JPG, or PNG files are permitted for the receipt." }
-  }
-  if (file.size > MAX_FILE_BYTES) {
-    return { error: "The receipt file exceeds the 1MB limit." }
-  }
+  const receiptCheck = validateFile(formData.get("receipt"), {
+    required: true,
+    allowedTypes: DOCUMENT_TYPES,
+    label: "payment receipt or screenshot",
+  })
+  if ("error" in receiptCheck) return receiptCheck
+  const receiptFile = receiptCheck.file!
+
+  const photoCheck = validateFile(formData.get("photo"), {
+    required: true,
+    allowedTypes: PHOTO_TYPES,
+    label: "passport photograph",
+  })
+  if ("error" in photoCheck) return photoCheck
+  const photoFile = photoCheck.file!
+
+  const certificateCheck = validateFile(formData.get("certificate"), {
+    required: false,
+    allowedTypes: DOCUMENT_TYPES,
+    label: "ASM membership certificate",
+  })
+  if ("error" in certificateCheck) return certificateCheck
+  const certificateFile = certificateCheck.file
 
   const admin = createAdminClient()
   const ip = await getClientIp()
@@ -83,21 +114,33 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
     : fee
   const currency = fee.trim().startsWith("$") ? "USD" : "NGN"
 
-  const storagePath = `${conference.id}/${Date.now()}-${file.name}`
-  const arrayBuffer = await file.arrayBuffer()
-  const { error: uploadError } = await admin.storage
-    .from("registration-receipts")
-    .upload(storagePath, arrayBuffer, { contentType: file.type || undefined })
+  const uploadedPaths: string[] = []
+  async function uploadOne(file: File, kind: string) {
+    const path = `${conference!.id}/${kind}/${Date.now()}-${file.name}`
+    const { error } = await admin.storage
+      .from("registration-receipts")
+      .upload(path, await file.arrayBuffer(), { contentType: file.type || undefined })
+    if (error) return null
+    uploadedPaths.push(path)
+    return path
+  }
 
-  if (uploadError) {
-    return { error: "Could not upload your receipt. Please try again." }
+  const receiptPath = await uploadOne(receiptFile, "receipts")
+  const photoPath = await uploadOne(photoFile, "photos")
+  const certificatePath = certificateFile ? await uploadOne(certificateFile, "certificates") : null
+
+  if (!receiptPath || !photoPath || (certificateFile && !certificatePath)) {
+    if (uploadedPaths.length > 0) {
+      await admin.storage.from("registration-receipts").remove(uploadedPaths)
+    }
+    return { error: "Could not upload your files. Please try again." }
   }
 
   const { data: referenceNumber, error: refError } = await admin.rpc("generate_registration_reference", {
     p_conference_id: conference.id,
   })
   if (refError || !referenceNumber) {
-    await admin.storage.from("registration-receipts").remove([storagePath])
+    await admin.storage.from("registration-receipts").remove(uploadedPaths)
     return { error: "Could not complete registration. Please try again." }
   }
 
@@ -112,12 +155,14 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
     registration_period: period,
     amount_expected: amountExpected,
     payment_currency: currency,
-    payment_receipt_path: storagePath,
+    payment_receipt_path: receiptPath,
+    passport_photo_path: photoPath,
+    asm_certificate_path: certificatePath,
     ip_address: ip,
   })
 
   if (insertError) {
-    await admin.storage.from("registration-receipts").remove([storagePath])
+    await admin.storage.from("registration-receipts").remove(uploadedPaths)
     return { error: "Could not complete registration. Please try again." }
   }
 
@@ -133,11 +178,11 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
             <p><strong>Email:</strong> ${parsed.data.email}</p>
             <p><strong>Category:</strong> ${category} (${period})</p>
             <p><strong>Amount expected:</strong> ${amountExpected}</p>
-            <p>Review and verify the receipt from the admin registrations page.</p>
+            <p>Review and verify the receipt (and certificate, if a member rate was claimed) from the admin registrations page.</p>
           `,
         })
       } catch {
-        // registration row + receipt are already durable; admin can still find it
+        // registration row + files are already durable; admin can still find it
       }
     }
     try {

@@ -23,7 +23,7 @@ export async function updateProfileAction(input: ProfileInput): Promise<UpdatePr
     .update({
       first_name: data.firstName,
       last_name: data.lastName,
-      asm_id_number: data.asmIdNumber,
+      asm_id_number: data.asmIdNumber || "",
       professional_title: data.professionalTitle,
       institution: data.institution,
       department: data.department,
