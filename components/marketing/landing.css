@@ -31,8 +31,18 @@
   font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
   color: var(--ink);
   background: var(--off);
-  overflow-x: hidden;
   line-height: 1.6;
+}
+/* overflow-x:hidden lives on <main> specifically (guards against the
+   sections' own decorative absolute-positioned elements causing
+   horizontal scroll) rather than on the whole .asm-landing wrapper --
+   putting it on an ancestor of the sticky nav breaks position:sticky
+   entirely (a well-known CSS interaction: any overflow other than
+   visible on an ancestor removes the sticky element's viewport-relative
+   containing block). header/nav sits as a sibling of main, outside this
+   clip, so it stays genuinely pinned while scrolling. */
+.asm-landing > main {
+  overflow-x: hidden;
 }
 .asm-landing * {
   box-sizing: border-box;
@@ -326,14 +336,34 @@
 }
 
 /* ════ NAV ════ */
-.asm-landing #nav {
+/* position: sticky lives on <header>, not #nav. header's own containing
+   block is exactly as tall as #nav (header wraps nothing else), which
+   leaves zero slack for #nav to detach from normal flow -- the sticky
+   offset and the in-flow offset are always identical, so it silently
+   never "sticks". header's containing block is the full page, which has
+   plenty of room, so moving the property up one level fixes it. */
+.asm-landing header {
   position: sticky;
   top: 0;
   z-index: 1000;
+}
+.asm-landing #nav {
   background: rgba(0, 48, 135, 0.97);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 2px solid rgba(245, 168, 0, 0.5);
+  transition: background 0.35s ease, border-color 0.35s ease;
+}
+/* Glassier once scrolled past the hero -- backdrop-filter keeps the link
+   text legible against whatever content is now showing through it, so
+   transparency never comes at the cost of the menu being hard to read
+   or click. */
+.asm-landing #nav.nav-scrolled {
+  background: rgba(0, 48, 135, 0.55);
+  border-bottom-color: rgba(245, 168, 0, 0.25);
+}
+.asm-landing #nav.nav-scrolled .nav-links a {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 .asm-landing .nav-wrap {
   max-width: 1180px;
@@ -1585,6 +1615,15 @@
   font-weight: 800;
   color: var(--blue);
 }
+.asm-landing .ac-distance {
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: var(--off);
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: var(--muted);
+  font-weight: 600;
+}
 .asm-landing .ac-chip {
   margin-top: 14px;
 }
@@ -1882,6 +1921,23 @@
   border-bottom: 2px solid var(--line);
   margin-bottom: 20px;
 }
+.asm-landing .contact-col {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+/* The two contacts-grid columns naturally hold different amounts of
+   content (committee list only vs. a shorter list + the secretariat info
+   box) -- stretching the column and distributing its content is what
+   makes both columns start and end at the same point rather than one
+   trailing off higher than the other. */
+.asm-landing .contact-col-left .contact-list-spread {
+  flex: 1;
+  justify-content: space-between;
+}
+.asm-landing .contact-col .sec-box {
+  margin-top: auto;
+}
 .asm-landing .contact-list {
   display: flex;
   flex-direction: column;
@@ -1958,6 +2014,22 @@
   font-size: 14px;
   color: rgba(255, 255, 255, 0.75);
   margin-bottom: 12px;
+}
+.asm-landing .sec-member-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 20px 0 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.asm-landing .sec-member-note {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.55);
+  margin: -2px 0 0;
 }
 .asm-landing .sec-row a {
   color: var(--gold);
@@ -2337,6 +2409,44 @@
 }
 .asm-landing .toast.show {
   transform: translateX(0);
+}
+.asm-landing .back-to-top {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9998;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(0, 48, 135, 0.35);
+  border: 2px solid rgba(245, 168, 0, 0.5);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(16px) scale(0.9);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease;
+}
+.asm-landing .back-to-top.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.asm-landing .back-to-top:hover {
+  background: var(--gold);
+  color: var(--blue-d);
+}
+@media (max-width: 480px) {
+  .asm-landing .back-to-top {
+    right: 16px;
+    bottom: 16px;
+  }
 }
 
 /* ════ RESPONSIVE ════ */

@@ -217,10 +217,11 @@ const LATE_FEES = [
 
 const ACCOMMODATIONS = [
   {
-    header: "ac-h-blue", tag: "Budget · Closest to Venue", name: "SMA Fathers House",
+    header: "ac-h-blue", tag: "", name: "SMA Fathers House",
     sub: "📍 Opposite Jabi Lake, Abuja (3.5km, 5–10 min drive)",
     rows: [{ type: "Single Room", price: "₦15,000/night" }, { type: "Dormitory (up to 30)", price: "₦5,000/night" }],
     chip: "✅ Closest to venue", chipClass: "chip-blue",
+    distance: "10–16 minutes (8–10km) to the conference venue",
   },
   {
     header: "ac-h-dark", tag: "Retreat & Conference Centre", name: "DRACC",
@@ -233,6 +234,7 @@ const ACCOMMODATIONS = [
       { type: "Dormitory (12)", price: "₦55,500" },
     ],
     chip: "Separate Male & Female", chipClass: "chip-blue",
+    distance: "12–20 minutes drive (9–11km) to the conference venue",
   },
   {
     header: "ac-h-red", tag: "Hotel", name: "Best Budget Hotel", sub: "📍 Abuja",
@@ -242,6 +244,7 @@ const ACCOMMODATIONS = [
       { type: "Suite", price: "₦45,000/night" },
     ],
     chip: "🏨 Hotel Comfort", chipClass: "chip-red",
+    distance: "12–18 minutes (9–10km) to the conference venue",
   },
 ]
 
@@ -261,6 +264,8 @@ const FAQS = [
   { q: "Can I submit more than one abstract?", a: "Yes, you may submit multiple abstracts. Each abstract requires a separate processing fee of ₦3,000. Each submission must meet all guidelines and address one or two of the five stated sub-themes." },
 ]
 
+// Full link set -- used for the mobile menu, where a longer vertical list
+// isn't cramped the way a wide horizontal bar is.
 const NAV_LINKS = [
   { href: "#why", label: "Why Attend" },
   { href: "https://asm.org/membership", label: "Become a Member", external: true },
@@ -269,11 +274,17 @@ const NAV_LINKS = [
   { href: "#planning-committee", label: "Committee" },
   { href: "#abstract", label: "Abstract" },
   { href: "#registration", label: "Register" },
-  { href: "#accommodation", label: "Stay" },
+  { href: "#accommodation", label: "Accommodation" },
   { href: "#faq", label: "FAQ" },
   { href: "#contacts", label: "Contact" },
   { href: "#partners", label: "Partners" },
 ]
+
+// Trimmed subset for the desktop horizontal bar, which gets visually
+// cramped with the full link list -- keeps the highest-value destinations.
+const DESKTOP_NAV_LINKS = NAV_LINKS.filter((link) =>
+  ["Become a Member", "Speakers", "Accommodation", "Contact", "Partners"].includes(link.label)
+)
 
 // Proposed subcommittee membership and terms of reference, as supplied by
 // the organizing committee. One TOR is intentionally omitted below (Finance
@@ -517,6 +528,8 @@ const EMPTY_CONTACT_FORM: ContactFormState = { name: "", email: "", subject: "Ge
 
 export function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [navScrolled, setNavScrolled] = useState(false)
+  const [showBackToTop, setShowBackToTop] = useState(false)
   const [regTab, setRegTab] = useState<"early" | "late">("early")
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [openCommittee, setOpenCommittee] = useState<number | null>(null)
@@ -590,6 +603,29 @@ export function LandingPage() {
     document.addEventListener("keydown", onKey)
     return () => document.removeEventListener("keydown", onKey)
   }, [])
+
+  // Nav fades toward a glassier, more transparent look once scrolled past
+  // the hero, and the back-to-top button appears around the same point.
+  // rAF-throttled so the scroll handler never runs more than once per frame.
+  useEffect(() => {
+    let ticking = false
+    function onScroll() {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(() => {
+        const y = window.scrollY
+        setNavScrolled(y > 60)
+        setShowBackToTop(y > 600)
+        ticking = false
+      })
+    }
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
+
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
 
   function showToast(msg: string) {
     setToast(msg)
@@ -682,14 +718,14 @@ export function LandingPage() {
 
       {/* ═══ NAV ═══ */}
       <header>
-        <nav id="nav" role="navigation" aria-label="Main navigation">
+        <nav id="nav" className={navScrolled ? "nav-scrolled" : ""} role="navigation" aria-label="Main navigation">
           <div className="nav-wrap">
             <a href="#hero" className="nav-brand" aria-label="ASM Nigeria Conference 2026 home">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/brand/asm-logo.png" alt="ASM — Microbes Make Our World" className="nav-logo-img" width={120} height={40} />
             </a>
             <div className="nav-links" role="list">
-              {NAV_LINKS.map((link) => (
+              {DESKTOP_NAV_LINKS.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
@@ -1245,7 +1281,7 @@ export function LandingPage() {
         <section id="accommodation" className="section" aria-labelledby="accomm-heading">
           <div className="wrap">
             <Reveal>
-              <span className="caption eyebrow" style={{ color: "var(--red)" }}>Where to Stay</span>
+              <span className="caption eyebrow" style={{ color: "var(--red)" }}>Accommodation</span>
               <h2 className="headline" id="accomm-heading">Accommodation Options<br />in Abuja</h2>
               <div className="rule" />
               <p className="body-lg">From budget dormitory to luxury apartments — options to suit every traveller.</p>
@@ -1254,7 +1290,7 @@ export function LandingPage() {
               {ACCOMMODATIONS.map((a, i) => (
                 <Reveal key={a.name} delay={i * 80} className="accomm-card">
                   <div className={`ac-header ${a.header}`}>
-                    <div className="ac-tag">{a.tag}</div>
+                    {a.tag && <div className="ac-tag">{a.tag}</div>}
                     <div className="ac-name">{a.name}</div>
                     <div className="ac-sub">{a.sub}</div>
                   </div>
@@ -1262,6 +1298,7 @@ export function LandingPage() {
                     {a.rows.map((r) => (
                       <div className="ac-row" key={r.type}><span className="ac-type">{r.type}</span><span className="ac-price">{r.price}</span></div>
                     ))}
+                    <div className="ac-distance">🚗 {a.distance}</div>
                     <div className="ac-chip"><span className={`chip ${a.chipClass}`}>{a.chip}</span></div>
                   </div>
                 </Reveal>
@@ -1283,6 +1320,7 @@ export function LandingPage() {
                       <span className="ac-price">{r.double}</span>
                     </div>
                   ))}
+                  <div className="ac-distance">🚗 5–7 minutes (5–7km) to the conference venue</div>
                   <div className="ac-chip"><span className="chip" style={{ background: "var(--gold-bg)", color: "var(--gold-d)" }}>⭐ Luxury Option</span></div>
                 </div>
               </Reveal>
@@ -1352,9 +1390,9 @@ export function LandingPage() {
               <div className="rule" />
             </Reveal>
             <div className="contacts-grid">
-              <Reveal delay={80}>
+              <Reveal delay={80} className="contact-col contact-col-left">
                 <div className="cg-title">Organizing Committee</div>
-                <div className="contact-list">
+                <div className="contact-list contact-list-spread">
                   {COMMITTEE.map((c) => (
                     <div className="contact-card" key={c.name}>
                       <div className="cc-av">{c.initials}</div>
@@ -1367,7 +1405,7 @@ export function LandingPage() {
                   ))}
                 </div>
               </Reveal>
-              <Reveal delay={160}>
+              <Reveal delay={160} className="contact-col">
                 <div className="cg-title">Secretariat Contacts</div>
                 <div className="contact-list">
                   {SECRETARIAT.map((c) => (
@@ -1382,9 +1420,11 @@ export function LandingPage() {
                   ))}
                 </div>
                 <div className="sec-box">
-                  <div className="sec-box-title">📮 Conference Secretariat</div>
+                  <div className="sec-box-title">📮 Conference Email</div>
                   <div className="sec-row"><span>✉️</span><a href={`mailto:${SECRETARIAT_EMAIL}`}>{SECRETARIAT_EMAIL}</a></div>
-                  <div className="sec-row"><span>🌐</span><a href="https://www.asm.org" target="_blank" rel="noopener noreferrer">www.asm.org</a></div>
+                  <div className="sec-member-label">Become a Member</div>
+                  <div className="sec-row"><span>🌐</span><a href="https://asm.org/membership" target="_blank" rel="noopener noreferrer">asm.org/membership</a></div>
+                  <p className="sec-member-note">Subscribe to Global Outreach membership — free of cost for Nigeria and other LMICs.</p>
                   <div style={{ marginTop: 20 }}>
                     <button className="btn btn-secondary btn-block" onClick={openContactModal}>✉️ Send a Message</button>
                   </div>
@@ -1578,6 +1618,15 @@ export function LandingPage() {
       </div>
 
       <div className={toast ? "toast show" : "toast"} role="status" aria-live="polite">{toast}</div>
+
+      <button
+        type="button"
+        className={showBackToTop ? "back-to-top show" : "back-to-top"}
+        onClick={scrollToTop}
+        aria-label="Back to top"
+      >
+        ↑
+      </button>
     </div>
   )
 }
