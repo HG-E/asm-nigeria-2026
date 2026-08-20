@@ -4,7 +4,7 @@ import { escapeHtml } from "@/lib/html"
 
 const SUBMISSION_PORTAL_NOTE =
   "You can submit or check on an abstract any time from the submission portal at " +
-  '<a href="https://abstract-management-system.vercel.app/register">the registration page</a>.'
+  '<a href="https://www.asmnigeriaconference.com.ng/register">the registration page</a>.'
 
 const AUTO_REPLIES: Record<string, string> = {
   "Abstract Submission": `

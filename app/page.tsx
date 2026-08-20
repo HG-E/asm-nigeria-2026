@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     description:
       "One Health. One Future. One Scientific Community. 22–25 November 2026 · Abuja, Nigeria · Hybrid Conference. Register & submit your abstract today.",
     type: "website",
-    url: "https://abstract-management-system.vercel.app",
+    url: "https://www.asmnigeriaconference.com.ng",
     images: ["/brand/asm-logo.png"],
   },
   twitter: {

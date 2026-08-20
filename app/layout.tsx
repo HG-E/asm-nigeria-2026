@@ -19,7 +19,7 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://abstract-management-system.vercel.app"),
+  metadataBase: new URL("https://www.asmnigeriaconference.com.ng"),
   title: "ASM Nigeria 2026 — Abstract Management System",
   description: "Conference abstract submission, review, and decision management for ASM Nigeria 2026.",
 };
