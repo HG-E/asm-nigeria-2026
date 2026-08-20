@@ -52,6 +52,13 @@ const PARTNER_BENEFITS = [
   { icon: "🌱", accent: "wi-red", title: "CSR & Community Impact", desc: "Support mentorship, student attendance, and scientific capacity-building as part of your organization's community impact." },
 ]
 
+// Confirmed partners/sponsors -- empty until real ones are signed on, so
+// the carousel below simply doesn't render rather than showing placeholder
+// or fabricated brands. Add entries here as partnerships are confirmed:
+// { name: "Acme Diagnostics", logo: "/partners/acme.png", url: "https://acme.example", desc: "One-line description of what they do." }
+type Partner = { name: string; logo: string; url: string; desc: string }
+const PARTNERS: Partner[] = []
+
 const SPEAKERS = [
   {
     accent: "var(--red)",
@@ -523,6 +530,7 @@ export function LandingPage() {
 
   const [toast, setToast] = useState<string | null>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const partnersScrollRef = useRef<HTMLDivElement | null>(null)
 
   const [contactOpen, setContactOpen] = useState(false)
   const [contactForm, setContactForm] = useState<ContactFormState>(EMPTY_CONTACT_FORM)
@@ -612,6 +620,12 @@ export function LandingPage() {
 
   function toggleSpeaker(i: number) {
     setOpenSpeaker((current) => (current === i ? null : i))
+  }
+
+  function scrollPartners(direction: -1 | 1) {
+    const el = partnersScrollRef.current
+    if (!el) return
+    el.scrollBy({ left: direction * (el.clientWidth * 0.8), behavior: "smooth" })
   }
 
   function openContactModal() {
@@ -1406,6 +1420,45 @@ export function LandingPage() {
                 </Reveal>
               ))}
             </div>
+            {PARTNERS.length > 0 && (
+              <Reveal delay={120} className="partner-logos-block">
+                <h3 className="partner-logos-heading">Our Partners &amp; Sponsors</h3>
+                <div className="partner-carousel">
+                  <button
+                    type="button"
+                    className="pc-arrow pc-arrow-left"
+                    onClick={() => scrollPartners(-1)}
+                    aria-label="Scroll partners left"
+                  >
+                    ‹
+                  </button>
+                  <div className="pc-track" ref={partnersScrollRef}>
+                    {PARTNERS.map((p) => (
+                      <a
+                        key={p.name}
+                        href={p.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="pc-card"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={p.logo} alt={p.name} className="pc-logo" />
+                        <div className="pc-name">{p.name}</div>
+                        <div className="pc-desc">{p.desc}</div>
+                      </a>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    className="pc-arrow pc-arrow-right"
+                    onClick={() => scrollPartners(1)}
+                    aria-label="Scroll partners right"
+                  >
+                    ›
+                  </button>
+                </div>
+              </Reveal>
+            )}
             <Reveal delay={160} className="partners-cta">
               <p>Interested in partnering or sponsoring? We&apos;ll share tiers, packages, and pricing directly.</p>
               <button className="btn btn-primary" onClick={openContactModal}>🤝 Become a Partner</button>
