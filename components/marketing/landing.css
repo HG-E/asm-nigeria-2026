@@ -652,7 +652,7 @@
   margin: 0 auto;
   padding: 0 24px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   border-left: 1px solid rgba(255, 255, 255, 0.08);
 }
 .asm-landing .stat-item {
@@ -684,7 +684,7 @@
 }
 .asm-landing .about-conference {
   max-width: 860px;
-  margin: 0 auto 64px;
+  margin: 0 0 64px;
   padding-bottom: 48px;
   border-bottom: 1px solid var(--line);
 }
@@ -853,36 +853,61 @@
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--r-lg);
-  padding: 28px;
-  transition: all 0.3s;
-  cursor: default;
-  display: flex;
-  gap: 20px;
+  transition: background 0.3s, box-shadow 0.3s;
+  overflow: hidden;
 }
-.asm-landing .theme-card:hover {
+.asm-landing .theme-card.open {
   background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-3px);
+}
+.asm-landing .tc-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 24px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+.asm-landing .tc-header:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 .asm-landing .tc-num {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 900;
-  font-size: 18px;
+  font-size: 16px;
   color: var(--blue-d);
   background: var(--num-bg, var(--gold));
   flex-shrink: 0;
-  margin-top: 2px;
 }
 .asm-landing .tc-title {
+  flex: 1;
   font-size: 15px;
   font-weight: 700;
   color: #fff;
-  margin-bottom: 8px;
   line-height: 1.4;
+}
+.asm-landing .tc-arrow {
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+.asm-landing .theme-card.open .tc-arrow {
+  transform: rotate(180deg);
+  color: var(--gold);
+}
+.asm-landing .tc-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease;
+  padding: 0 24px;
+}
+.asm-landing .theme-card.open .tc-body {
+  max-height: 500px;
+  padding: 0 24px 24px;
 }
 .asm-landing .tc-desc {
   font-size: 13px;
@@ -896,8 +921,7 @@
   margin-right: auto;
 }
 .asm-landing .theme-card-full .tc-title {
-  font-size: 18px;
-  margin-bottom: 12px;
+  font-size: 17px;
 }
 .asm-landing .theme-card-full .tc-desc {
   font-size: 14.5px;
@@ -2062,7 +2086,7 @@
     display: flex;
   }
   .asm-landing .stats-wrap {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
   }
   .asm-landing .prog-days {
     grid-template-columns: 1fr;

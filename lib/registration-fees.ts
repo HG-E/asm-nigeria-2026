@@ -6,7 +6,7 @@
 // static per an earlier decision) so this is the one place to update if
 // the fee schedule changes.
 
-export const REGISTRATION_PERIOD_CUTOFF = "2026-10-26T23:59:59+01:00"
+export const REGISTRATION_PERIOD_CUTOFF = "2026-10-22T23:59:59+01:00"
 
 export const PARTICIPANT_CATEGORIES = [
   "ASM Members",

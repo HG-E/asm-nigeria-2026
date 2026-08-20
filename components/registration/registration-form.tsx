@@ -144,7 +144,7 @@ export function RegistrationForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="bg-muted/50 space-y-1 rounded-lg border p-4 text-sm">
           <p className="font-medium">
-            {period === "early" ? "Early/Regular registration (till Oct 26, 2026)" : "Late registration (after Oct 26, 2026)"}
+            {period === "early" ? "Early/Regular registration (till Oct 22, 2026)" : "Late registration (after Oct 22, 2026)"}
           </p>
           <p className="text-muted-foreground">
             Complete your bank transfer first (see the Payment section on the homepage), then
@@ -187,7 +187,7 @@ export function RegistrationForm() {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone number (optional)</FormLabel>
+                <FormLabel>Phone number</FormLabel>
                 <FormControl>
                   <Input type="tel" autoComplete="tel" {...field} />
                 </FormControl>
@@ -200,7 +200,7 @@ export function RegistrationForm() {
             name="institution"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Institution (optional)</FormLabel>
+                <FormLabel>Institution</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

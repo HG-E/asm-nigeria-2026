@@ -238,8 +238,8 @@ const AES_ROOMS = [
 const FAQS = [
   { q: "Who can attend the ASM Nigeria Conference?", a: "The conference is open to microbiologists, researchers, clinicians, veterinarians, environmental scientists, public health professionals, students, policymakers, industry experts, and One Health stakeholders from Nigeria and beyond." },
   { q: "Can I attend online?", a: "Yes! The conference is hybrid. Local online participants pay ₦25,000 (early rate) and foreign online participants pay $25 USD. You'll receive a link to the virtual platform after registration is confirmed." },
-  { q: "What is the abstract submission fee and what does it cover?", a: <>The abstract processing fee is ₦3,000 (or equivalent in USD). This is separate from your conference registration fee. Payment should be made to the ASM Nigeria Chapter account at First Bank (2047664724) before or alongside your abstract submission via the <Link href="/register">official portal</Link>.</> },
-  { q: "What is the difference between Early and Late registration?", a: "Early/Regular registration is available until October 26, 2026, and offers significantly lower rates (e.g., ASM Members ₦25,000 vs ₦30,000 late). Registering early saves you money and helps the organizers plan effectively. We strongly recommend registering before October 26." },
+  { q: "What is the abstract submission fee and what does it cover?", a: <>The abstract processing fee is ₦3,000 (or $5 USD). This is separate from your conference registration fee. Payment should be made to the ASM Nigeria Chapter account at First Bank (2047664724) before or alongside your abstract submission via the <Link href="/register">official portal</Link>.</> },
+  { q: "What is the difference between Early and Late registration?", a: "Early/Regular registration is available until October 22, 2026, and offers significantly lower rates (e.g., ASM Members ₦25,000 vs ₦30,000 late). Registering early saves you money and helps the organizers plan effectively. We strongly recommend registering before October 22." },
   { q: "What is the Pre-Conference Hands-On Workshop?", a: "The pre-conference workshop on November 22 is an additional paid session (₦4,000 early / ₦8,000 late) offering practical, skills-based training. It is particularly valuable for students and early-career researchers and requires separate registration." },
   { q: "How do I confirm my payment was received?", a: <>After making your bank transfer to First Bank (Acc: 2047664724, ASM Nigeria Chapter), email your payment receipt to <a href={`mailto:${SECRETARIAT_EMAIL}`}>{SECRETARIAT_EMAIL}</a>. The secretariat will confirm your registration within 2–3 working days.</> },
   { q: "Can I submit more than one abstract?", a: "Yes, you may submit multiple abstracts. Each abstract requires a separate processing fee of ₦3,000. Each submission must meet all guidelines and address one or two of the five stated sub-themes." },
@@ -502,6 +502,7 @@ export function LandingPage() {
   const [regTab, setRegTab] = useState<"early" | "late">("early")
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [openCommittee, setOpenCommittee] = useState<number | null>(null)
+  const [openTheme, setOpenTheme] = useState<number | null>(null)
   const [confCountdown, setConfCountdown] = useState(PENDING_COUNTDOWN)
   const [earlyCountdown, setEarlyCountdown] = useState(PENDING_COUNTDOWN)
   const [earlyExpired, setEarlyExpired] = useState(false)
@@ -591,6 +592,10 @@ export function LandingPage() {
 
   function toggleCommittee(i: number) {
     setOpenCommittee((current) => (current === i ? null : i))
+  }
+
+  function toggleTheme(i: number) {
+    setOpenTheme((current) => (current === i ? null : i))
   }
 
   function openContactModal() {
@@ -746,7 +751,7 @@ export function LandingPage() {
                   <div className="hero-card-divider" />
                   <div className="hero-card-stat"><span className="hcs-label">📅 Abstract Early Deadline</span><span className="hcs-val">Aug 22, 2026</span></div>
                   <div className="hero-card-stat"><span className="hcs-label">📅 Final Abstract Deadline</span><span className="hcs-val">Nov 2, 2026</span></div>
-                  <div className="hero-card-stat"><span className="hcs-label">💳 Early Reg. Cutoff</span><span className="hcs-val">Oct 26, 2026</span></div>
+                  <div className="hero-card-stat"><span className="hcs-label">💳 Early Reg. Cutoff</span><span className="hcs-val">Oct 22, 2026</span></div>
                   <div className="hero-card-stat"><span className="hcs-label">🎤 Presentation Mode</span><span className="hcs-val">Oral / Poster</span></div>
                   <div className="hero-card-stat"><span className="hcs-label">🌐 Format</span><span className="hcs-val">Hybrid</span></div>
                 </div>
@@ -759,10 +764,11 @@ export function LandingPage() {
         <div id="stats" role="region" aria-label="Key conference figures">
           <div className="stats-wrap">
             {[
-              { num: "4", unit: "days", desc: "of Science & Dialogue" },
-              { num: "5", unit: " themes", desc: "One Health Sub-Themes" },
-              { num: "250", unit: "+", desc: "Expected Delegates" },
               { num: "1", unit: "st", desc: "ASM Conference in Nigeria" },
+              { num: "1", unit: "", desc: "Conference Theme" },
+              { num: "5", unit: "", desc: "One Health Sub-Themes" },
+              { num: "4", unit: "", desc: "Days of Science & Dialogue" },
+              { num: "250", unit: "+", desc: "Expected Delegates" },
             ].map((s, i) => (
               <Reveal key={s.desc} delay={i * 80} className="stat-item">
                 <div className="stat-num">{s.num}<span className="unit">{s.unit}</span></div>
@@ -862,10 +868,20 @@ export function LandingPage() {
             </Reveal>
             <div className="themes-grid themes-grid-full">
               {THEMES.map((t, i) => (
-                <Reveal key={t.num} delay={i * 80} className="theme-card theme-card-full">
-                  <div className="tc-num" style={t.bg ? { background: t.bg, color: t.num === 3 ? "#fff" : undefined } : undefined}>{t.num}</div>
-                  <div className="tc-body">
+                <Reveal key={t.num} delay={i * 80} className={openTheme === i ? "theme-card theme-card-full open" : "theme-card theme-card-full"}>
+                  <div
+                    className="tc-header"
+                    onClick={() => toggleTheme(i)}
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={openTheme === i}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleTheme(i) } }}
+                  >
+                    <div className="tc-num" style={t.bg ? { background: t.bg, color: t.num === 3 ? "#fff" : undefined } : undefined}>{t.num}</div>
                     <div className="tc-title">{t.title}</div>
+                    <span className="faq-arrow tc-arrow" aria-hidden="true">⌄</span>
+                  </div>
+                  <div className="tc-body">
                     <p className="tc-desc">{t.desc}</p>
                     <div className="tc-topics">
                       {t.topics.map((topic) => (
@@ -998,7 +1014,7 @@ export function LandingPage() {
                 </div>
                 <div className="portal-box">
                   <h3>Ready to Submit?</h3>
-                  <p>Processing Fee: <strong>₦3,000</strong> or equivalent in USD. Submit via the official ASM portal.</p>
+                  <p>Processing Fee: <strong>₦3,000</strong> or <strong>$5 USD</strong>. Submit via the official ASM portal.</p>
                   <Link href="/register">🔗 Open Submission Portal <span aria-hidden="true">→</span></Link>
                 </div>
               </Reveal>
@@ -1010,7 +1026,7 @@ export function LandingPage() {
                   <div className="gl-item"><div className="gl-dot" /><span>Font: <strong>Times New Roman, Size 12</strong></span></div>
                   <div className="gl-item"><div className="gl-dot" /><span>Include <strong>all authors&apos; names and affiliations</strong></span></div>
                   <div className="gl-item"><div className="gl-dot" /><span>Corresponding author&apos;s <strong>email address required</strong></span></div>
-                  <div className="gl-item"><div className="gl-dot" /><span>Processing fee: <strong>₦3,000</strong> or USD equivalent</span></div>
+                  <div className="gl-item"><div className="gl-dot" /><span>Processing fee: <strong>₦3,000</strong> or <strong>$5 USD</strong></span></div>
                   <div className="gl-item"><div className="gl-dot" /><span>Submit only via the <strong>official abstract portal</strong></span></div>
                 </div>
                 <div style={{ background: "#fff", borderRadius: "var(--r-lg)", padding: 24, marginTop: 16, border: "1px solid var(--line)" }}>
@@ -1036,15 +1052,15 @@ export function LandingPage() {
               <span className="caption eyebrow" style={{ color: "var(--red)" }}>Registration &amp; Fees</span>
               <h2 className="headline" id="reg-heading">Secure Your Place</h2>
               <div className="rule" />
-              <p className="body-lg">Early registration closes <strong>October 26, 2026</strong>. Register early and save.</p>
+              <p className="body-lg">Early registration closes <strong>October 22, 2026</strong>. Register early and save.</p>
             </Reveal>
             <div style={{ marginTop: 40 }}>
               <div className="reg-switcher" role="tablist" aria-label="Registration period">
                 <button className={regTab === "early" ? "rsw-btn active" : "rsw-btn"} role="tab" aria-selected={regTab === "early"} aria-controls="tab-early" onClick={() => setRegTab("early")}>
-                  Early/Regular (Till Oct 26)
+                  Early/Regular (Till Oct 22)
                 </button>
                 <button className={regTab === "late" ? "rsw-btn active" : "rsw-btn"} role="tab" aria-selected={regTab === "late"} aria-controls="tab-late" onClick={() => setRegTab("late")}>
-                  Late Registration (After Oct 26)
+                  Late Registration (After Oct 22)
                 </button>
               </div>
               <Reveal>
@@ -1076,7 +1092,7 @@ export function LandingPage() {
               <Reveal>
                 <div className="reg-alert" role="note">
                   <span style={{ fontSize: 22, flexShrink: 0 }}>💡</span>
-                  <div><strong>Save money:</strong> Register before October 26, 2026 for Early/Regular rates. Undergraduate students get the best rate — only ₦5,000 early.</div>
+                  <div><strong>Save money:</strong> Register before October 22, 2026 for Early/Regular rates. Undergraduate students get the best rate — only ₦5,000 early.</div>
                 </div>
               </Reveal>
               <Reveal>
