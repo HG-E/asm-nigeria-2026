@@ -268,7 +268,7 @@ const FAQS = [
   { q: "What is the abstract submission fee and what does it cover?", a: <>The abstract processing fee is ₦3,000 (or $5 USD). This is separate from your conference registration fee. Payment should be made to the ASM Nigeria account at First Bank (2047664724) before or alongside your abstract submission via the <Link href="/register">official portal</Link>.</> },
   { q: "What is the difference between Early and Late registration?", a: "Early/Regular registration is available until October 22, 2026, and offers significantly lower rates (e.g., ASM Members ₦25,000 vs ₦30,000 late). Registering early saves you money and helps the organizers plan effectively. We strongly recommend registering before October 22." },
   { q: "What is the Pre-Conference Hands-On Workshop?", a: "The pre-conference workshop on November 22 is an additional paid session (₦4,000 early / ₦8,000 late) offering practical, skills-based training. It is particularly valuable for students and early-career researchers and requires separate registration." },
-  { q: "How do I confirm my payment was received?", a: <>After making your bank transfer to First Bank (Acc: 2047664724, ASM Nigeria), email your payment receipt to <a href={`mailto:${SECRETARIAT_EMAIL}`}>{SECRETARIAT_EMAIL}</a>. The secretariat will confirm your registration within 2–3 working days.</> },
+  { q: "How do I confirm my payment was received?", a: <>After making your bank transfer to First Bank (Acc: 2047664724, ASM Nigeria), attach your receipt when you register or submit your abstract — no separate email needed. The admin confirms it from your account within 2–3 working days.</> },
   { q: "Can I submit more than one abstract?", a: "Yes, you may submit multiple abstracts. Each abstract requires a separate processing fee of ₦3,000. Each submission must meet all guidelines and address one or two of the five stated sub-themes." },
 ]
 
@@ -1293,7 +1293,7 @@ export function LandingPage() {
                 <p className="body" style={{ marginBottom: 20 }}>Simple, straightforward, and secure.</p>
                 <div className="step-card"><div className="step-n">1</div><div><div className="step-h">Select your category</div><div className="step-p">Identify your participant category and the applicable fee from the registration table above.</div></div></div>
                 <div className="step-card"><div className="step-n">2</div><div><div className="step-h">Transfer to ASM Nigeria</div><div className="step-p">Send payment to First Bank — Acc No: <strong>2047664724</strong>, ASM Nigeria.</div></div></div>
-                <div className="step-card"><div className="step-n">3</div><div><div className="step-h">Upload your receipt</div><div className="step-p">Attach your bank receipt/teller when you register or submit your abstract — the secretariat confirms it from your account, no separate email needed.</div></div></div>
+                <div className="step-card"><div className="step-n">3</div><div><div className="step-h">Upload your receipt</div><div className="step-p">Attach your bank receipt/teller when you register or submit your abstract — the admin confirms it from your account, no separate email needed.</div></div></div>
               </Reveal>
             </div>
           </div>

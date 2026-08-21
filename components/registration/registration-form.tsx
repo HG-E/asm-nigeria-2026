@@ -134,7 +134,7 @@ export function RegistrationForm() {
         <h2 className="text-lg font-semibold">Registration received</h2>
         <p className="text-muted-foreground text-sm">
           Your reference number is <strong className="text-foreground">{referenceNumber}</strong>.
-          A confirmation email is on its way. The secretariat will verify your receipt and confirm
+          A confirmation email is on its way. The admin will verify your receipt and confirm
           your registration within 2-3 working days.
         </p>
       </div>
