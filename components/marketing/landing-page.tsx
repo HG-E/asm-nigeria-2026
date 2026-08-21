@@ -225,14 +225,14 @@ const LATE_FEES = [
 
 const ACCOMMODATIONS = [
   {
-    header: "ac-h-blue", tag: "", name: "SMA Fathers House",
+    header: "ac-h-blue", name: "SMA Fathers House",
     sub: "📍 Opposite Jabi Lake, Abuja (3.5km, 5–10 min drive)",
     rows: [{ type: "Single Room", price: "₦15,000/night" }, { type: "Dormitory (up to 30)", price: "₦5,000/night" }],
     chip: "✅ Closest to venue", chipClass: "chip-blue",
     distance: "10–16 minutes (8–10km) to the conference venue",
   },
   {
-    header: "ac-h-dark", tag: "Retreat & Conference Centre", name: "DRACC",
+    header: "ac-h-dark", name: "DRACC",
     sub: "📍 Aco/AMAC Estate, Airport Road, Abuja",
     rows: [
       { type: "Single Room", price: "₦15,750" },
@@ -245,13 +245,13 @@ const ACCOMMODATIONS = [
     distance: "12–20 minutes drive (9–11km) to the conference venue",
   },
   {
-    header: "ac-h-red", tag: "Hotel", name: "Best Budget Hotel", sub: "📍 Abuja",
+    header: "ac-h-red", name: "Best Budget Hotel", sub: "📍 Abuja",
     rows: [
       { type: "Deluxe Room", price: "₦25,000/night" },
       { type: "Executive Room", price: "₦35,000/night" },
       { type: "Suite", price: "₦45,000/night" },
     ],
-    chip: "🏨 Hotel Comfort", chipClass: "chip-red",
+    chip: null, chipClass: "",
     distance: "12–18 minutes (9–10km) to the conference venue",
   },
 ]
@@ -1312,23 +1312,23 @@ export function LandingPage() {
               {ACCOMMODATIONS.map((a, i) => (
                 <Reveal key={a.name} delay={i * 80} className="accomm-card">
                   <div className={`ac-header ${a.header}`}>
-                    {a.tag && <div className="ac-tag">{a.tag}</div>}
                     <div className="ac-name">{a.name}</div>
+                    <div className="ac-distance">🚗 {a.distance}</div>
+                    {a.chip && <div className="ac-chip"><span className={`chip ${a.chipClass}`}>{a.chip}</span></div>}
                     <div className="ac-sub">{a.sub}</div>
                   </div>
                   <div className="ac-body">
                     {a.rows.map((r) => (
                       <div className="ac-row" key={r.type}><span className="ac-type">{r.type}</span><span className="ac-price">{r.price}</span></div>
                     ))}
-                    <div className="ac-distance">🚗 {a.distance}</div>
-                    <div className="ac-chip"><span className={`chip ${a.chipClass}`}>{a.chip}</span></div>
                   </div>
                 </Reveal>
               ))}
               <Reveal delay={3 * 80} className="accomm-card">
                 <div className="ac-header ac-h-gold">
-                  <div className="ac-tag">Luxury Apartments</div>
                   <div className="ac-name">AES Luxury Apartments</div>
+                  <div className="ac-distance">🚗 5–7 minutes (5–7km) to the conference venue</div>
+                  <div className="ac-chip"><span className="chip" style={{ background: "rgba(0, 31, 91, 0.12)", color: "var(--blue-d)" }}>⭐ Luxury Option</span></div>
                   <div className="ac-sub">📍 Abuja</div>
                 </div>
                 <div className="ac-body">
@@ -1342,8 +1342,6 @@ export function LandingPage() {
                       <span className="ac-price">{r.double}</span>
                     </div>
                   ))}
-                  <div className="ac-distance">🚗 5–7 minutes (5–7km) to the conference venue</div>
-                  <div className="ac-chip"><span className="chip" style={{ background: "var(--gold-bg)", color: "var(--gold-d)" }}>⭐ Luxury Option</span></div>
                 </div>
               </Reveal>
             </div>
