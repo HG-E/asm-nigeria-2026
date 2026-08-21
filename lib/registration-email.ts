@@ -18,7 +18,7 @@ export function registrationConfirmationHtml(params: {
     <p><strong>Amount:</strong> ${escapeHtml(params.amountExpected)}</p>
     <p>The admin will verify your payment receipt and confirm your registration. This
     usually takes 2-3 working days. You'll receive a follow-up email once it's verified.</p>
-    <p>— ASM Nigeria 2026 Admin</p>
+    <p>— ASM Nigeria 2026 Finance &amp; Budget Committee and Admin</p>
   `
 }
 
@@ -31,7 +31,7 @@ export function registrationVerifiedHtml(params: { fullName: string; referenceNu
     <p><strong>Reference number:</strong> ${escapeHtml(params.referenceNumber)}</p>
     <p>We look forward to seeing you at the conference. Further details will follow from the
     admin closer to the date.</p>
-    <p>— ASM Nigeria 2026 Admin</p>
+    <p>— ASM Nigeria 2026 Finance &amp; Budget Committee and Admin</p>
   `
 }
 
@@ -49,6 +49,6 @@ export function registrationRejectedHtml(params: {
     <p><strong>Reference number:</strong> ${escapeHtml(params.referenceNumber)}</p>
     ${reasonNote}
     <p>Please contact the admin with a corrected receipt or proof of payment.</p>
-    <p>— ASM Nigeria 2026 Admin</p>
+    <p>— ASM Nigeria 2026 Finance &amp; Budget Committee and Admin</p>
   `
 }
