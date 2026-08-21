@@ -650,33 +650,17 @@
   gap: 12px;
   flex-wrap: wrap;
 }
-.asm-landing .hero-learn-more {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 18px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  color: rgba(255, 255, 255, 0.6);
-  transition: color 0.2s;
-}
-.asm-landing .hero-learn-more:hover {
-  color: var(--gold);
-}
-.asm-landing .hero-learn-more-right {
-  justify-content: center;
-  margin-top: 20px;
-}
 .asm-landing .hero-powered-by-right {
   text-align: center;
+  width: 100%;
 }
 .asm-landing .hero-powered-by {
-  margin-top: 14px;
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.45);
+  margin-top: 20px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
   letter-spacing: 0.3px;
+  line-height: 1.4;
 }
 
 /* Hero Right — Card */
@@ -2548,10 +2532,6 @@
     flex-direction: column;
   }
   .asm-landing .hero-actions .btn {
-    width: 100%;
-    justify-content: center;
-  }
-  .asm-landing .hero-learn-more {
     width: 100%;
     justify-content: center;
   }
