@@ -46,7 +46,7 @@ export function ProfileForm({
           <FormLabel className="mb-2">Email</FormLabel>
           <Input value={email} disabled />
           <p className="text-muted-foreground mt-1 text-xs">
-            Contact the secretariat to change your email address.
+            Contact the Admin to change your email address.
           </p>
         </div>
 

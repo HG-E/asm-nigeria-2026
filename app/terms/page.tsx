@@ -33,7 +33,7 @@ export default function TermsPage() {
               <p>
                 Registration requires a valid ASM membership ID and accurate professional
                 details. You&apos;re responsible for keeping your name, institution, and
-                contact information correct — reviewers, the committee, and the secretariat
+                contact information correct — reviewers, the committee, and the Admin
                 rely on it to reach you.
               </p>
             </Clause>
@@ -58,7 +58,7 @@ export default function TermsPage() {
                 Each abstract requires a submission fee of ₦3,000 (or $5 USD equivalent),
                 paid by bank transfer to the account shown during submission, with proof of
                 payment uploaded at the same time. Submission proceeds immediately on upload;
-                the secretariat verifies the receipt separately and will contact you if it
+                the Admin verifies the receipt separately and will contact you if it
                 cannot be confirmed.
               </p>
               <p>Fees are non-refundable once a submission has entered review.</p>
@@ -101,7 +101,7 @@ export default function TermsPage() {
                 made, using the &ldquo;Withdraw submission&rdquo; option on the submission&apos;s
                 page in your dashboard. Withdrawal removes it from the review process and cannot
                 be undone or resubmitted; the submission fee is not refunded. If you need help,
-                contact the secretariat at{" "}
+                contact the Admin at{" "}
                 <a href="mailto:asmnigeriaonehealth@gmail.com" className="underline underline-offset-4">
                   asmnigeriaonehealth@gmail.com
                 </a>

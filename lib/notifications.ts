@@ -51,7 +51,7 @@ async function renderContent(
           <p><strong>Title:</strong> ${title}</p>
           <p><strong>Presentation type:</strong> ${presentationType}</p>
           ${authorNote}
-          <p>Further details on next steps will follow from the secretariat. Log in to your dashboard to view your full submission record.</p>
+          <p>Further details on next steps will follow from the Scientific Programme Committee and Admin. Log in to your dashboard to view your full submission record.</p>
         `
       }
 
@@ -127,7 +127,7 @@ async function renderContent(
         <p>You've withdrawn the following submission from consideration for ASM Nigeria 2026.</p>
         <p><strong>Reference number:</strong> ${reference}</p>
         <p><strong>Title:</strong> ${title}</p>
-        <p>This is a confirmation for your records. If this wasn't intentional, contact the secretariat as soon as possible.</p>
+        <p>This is a confirmation for your records. If this wasn't intentional, contact the Scientific Programme Committee and Admin as soon as possible.</p>
       `
     case "reviewer_conflict_needs_reassignment":
       return `

@@ -346,6 +346,13 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  /* Forces its own GPU-composited layer for the whole scroll duration.
+     Some mobile browsers mis-paint a sticky element that also contains a
+     backdrop-filter descendant (#nav below) at a stale scroll offset
+     without this -- promoting the layer up front avoids that class of
+     glitch instead of only papering over one browser's version of it. */
+  transform: translateZ(0);
+  will-change: transform;
 }
 .asm-landing #nav {
   background: rgba(0, 48, 135, 0.97);

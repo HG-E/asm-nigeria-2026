@@ -8,7 +8,7 @@ type SubmissionStatus = Database["public"]["Enums"]["submission_status"]
 // admin to finalize it. Spell out what's still pending rather than just
 // the raw status label.
 export const STATUS_HINTS: Partial<Record<SubmissionStatus, string>> = {
-  submitted: "Awaiting screening by the secretariat.",
+  submitted: "Awaiting screening by the Admin.",
   screening: "Being screened before reviewer assignment.",
   assigned: "Reviewer(s) assigned; review not yet started.",
   under_review: "Reviewer(s) are evaluating this abstract.",

@@ -127,7 +127,7 @@ export function PaymentStep({
           <p className="whitespace-pre-wrap">{accountDetails}</p>
         ) : (
           <p className="text-muted-foreground">
-            Payment account details have not been configured yet — contact the secretariat.
+            Payment account details have not been configured yet — contact the Admin.
           </p>
         )}
         <p className="text-muted-foreground">

@@ -20,7 +20,7 @@ export async function createDraftAction(input: Step1Input): Promise<CreateDraftR
 
   const conference = await getActiveConference()
   if (!conference) {
-    return { error: "No active conference is configured. Contact the secretariat." }
+    return { error: "No active conference is configured. Contact the Admin." }
   }
 
   const supabase = await createClient()
