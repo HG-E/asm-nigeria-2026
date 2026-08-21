@@ -5,6 +5,7 @@ import { after } from "next/server"
 
 import { requireRole } from "@/lib/auth"
 import { sendNotifications } from "@/lib/notifications"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 import type { Database } from "@/types/database"
 
@@ -101,7 +102,11 @@ export async function finalizeDecisionAction(
     return { error: "Submission not found." }
   }
 
-  const { data: author } = await supabase
+  // RLS on user_profiles has no policy letting one user read another's
+  // row, so this lookup needs the service-role client -- the session-bound
+  // one silently returns null here, which previously fed an empty
+  // recipient_email into the notification and made it fail SMTP-side.
+  const { data: author } = await createAdminClient()
     .from("user_profiles")
     .select("email")
     .eq("id", submission.corresponding_author_id)
@@ -204,7 +209,7 @@ export async function rejectPaymentAction(
     return { error: "Submission not found." }
   }
 
-  const { data: author } = await supabase
+  const { data: author } = await createAdminClient()
     .from("user_profiles")
     .select("email")
     .eq("id", submission.corresponding_author_id)
