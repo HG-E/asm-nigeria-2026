@@ -17,7 +17,8 @@ export default function RegisterConferencePage() {
           <CardTitle className="text-2xl">Register for the conference</CardTitle>
           <CardDescription>
             This registers you to attend ASM Nigeria 2026 — separate from submitting an
-            abstract. See the <Link href="/#registration" className="underline underline-offset-4">registration &amp; fees</Link> and{" "}
+            abstract, and it does not require an account or login. See the{" "}
+            <Link href="/#registration" className="underline underline-offset-4">registration &amp; fees</Link> and{" "}
             <Link href="/#payment" className="underline underline-offset-4">payment</Link> sections on the homepage for details.
           </CardDescription>
         </CardHeader>

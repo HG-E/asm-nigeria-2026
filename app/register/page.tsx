@@ -38,7 +38,9 @@ export default async function RegisterPage() {
         <CardHeader>
           <CardTitle className="text-2xl">Create an author account</CardTitle>
           <CardDescription>
-            Register to submit and track abstracts for ASM Nigeria 2026.
+            Register to submit and track abstracts for ASM Nigeria 2026. This account is
+            separate from conference attendance registration. Once you&apos;re logged in, you&apos;ll
+            stay signed in to submit and manage abstracts — no need to log in again each visit.
           </CardDescription>
         </CardHeader>
         <CardContent>

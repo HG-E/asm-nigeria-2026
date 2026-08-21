@@ -464,6 +464,48 @@
   color: var(--gold);
 }
 
+/* ════ ANNOUNCEMENT TICKER ════ */
+.asm-landing .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.asm-landing .ticker {
+  background: var(--blue);
+  border-bottom: 1px solid rgba(245, 168, 0, 0.35);
+  overflow: hidden;
+  padding: 10px 0;
+}
+.asm-landing .ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll 32s linear infinite;
+}
+.asm-landing .ticker-item {
+  flex-shrink: 0;
+  padding: 0 40px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  white-space: nowrap;
+}
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .asm-landing .ticker-track {
+    animation: none;
+    flex-wrap: wrap;
+  }
+}
+
 /* ════ HERO ════ */
 .asm-landing #hero {
   background: var(--blue-d);
@@ -1175,6 +1217,15 @@
   color: var(--muted);
   text-align: center;
   margin-top: 20px;
+  font-style: italic;
+}
+.asm-landing .pd-day-note {
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--red-d);
   font-style: italic;
 }
 

@@ -36,6 +36,14 @@ function splitCountdown(msRemaining: number) {
 // land a moment later via the client-only useEffect below.
 const PENDING_COUNTDOWN = { d: "--", h: "--", m: "--", s: "--" }
 
+const TICKER_ITEMS = [
+  "✈️ Professor KIT Eniola Travel Grant is open for early-career microbiologists — enquire today",
+  "📅 Early Abstract Deadline: August 30, 2026",
+  "💳 Early Registration Cutoff: October 22, 2026",
+  "🌐 Hybrid Conference — attend in person in Abuja or join online",
+  "🇳🇬 Maiden ASM Nigeria Conference · 22–25 November 2026, Abuja",
+]
+
 const WHY_CARDS = [
   { icon: "🔬", accent: "wi-red", title: "World-Class Science", desc: "Keynote lectures, plenary sessions, oral and poster presentations delivering cutting-edge microbiology research." },
   { icon: "🤝", accent: "wi-blue", title: "Network Across Sectors", desc: "Connect with microbiologists, clinicians, vets, environmental scientists, policymakers and industry leaders under one roof." },
@@ -163,17 +171,17 @@ const PROGRAMME_DAYS = [
   { header: "pd-h-blue", label: "Day 1", date: "Nov 22", items: [
     { time: "Morning", text: "Pre-Conference Hands-On Workshop (₦4,000)" },
     { time: "Afternoon", text: "Conference Registration & Welcome" },
-    { time: "Evening", text: "Opening Ceremony & Keynote Address" },
-  ] },
+  ], note: "Sunday — no plenary or scientific sessions. Only the pre-conference workshop and early registration desk are open; other attendees should plan to arrive from Nov 23." },
   { header: "pd-h-red", label: "Day 2", date: "Nov 23", items: [
-    { time: "Morning", text: "Plenary Sessions — AMR & Infectious Disease" },
+    { time: "Morning", text: "Opening Ceremony & Keynote Address" },
+    { time: "Late Morning", text: "Plenary Sessions — AMR & Infectious Disease" },
     { time: "Afternoon", text: "Scientific Presentations (Oral)" },
     { time: "Evening", text: "Networking Reception" },
   ] },
   { header: "pd-h-gold", label: "Day 3", date: "Nov 24", items: [
     { time: "Morning", text: "Plenary Sessions — AI & Governance" },
     { time: "Afternoon", text: "Poster Presentations & Policy Dialogue" },
-    { time: "Evening", text: "Conference Dinner & Awards" },
+    { time: "Evening", text: "Cocktail" },
   ] },
   { header: "pd-h-dark", label: "Day 4", date: "Nov 25", items: [
     { time: "Morning", text: "Next-Gen Scientists Forum & Mentorship" },
@@ -765,6 +773,20 @@ export function LandingPage() {
       </header>
 
       <main>
+        {/* ═══ ANNOUNCEMENT TICKER ═══ */}
+        <div className="ticker" role="region" aria-label="Conference announcements">
+          <div className="ticker-track" aria-hidden="true">
+            {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
+              <span className="ticker-item" key={i}>{item}</span>
+            ))}
+          </div>
+          <ul className="sr-only">
+            {TICKER_ITEMS.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
+
         {/* ═══ HERO ═══ */}
         <section id="hero" aria-label="Conference overview">
           <div className="hero-bg" aria-hidden="true" />
@@ -808,6 +830,7 @@ export function LandingPage() {
               <div className="hero-actions">
                 <a href="#registration" className="btn btn-primary btn-lg">🎟️ Register Now</a>
                 <Link href="/register" className="btn btn-secondary btn-lg">📄 Submit Abstract</Link>
+                <a href="#travel-grant" className="btn btn-ghost btn-lg">✈️ Travel Grant</a>
               </div>
             </div>
 
@@ -858,6 +881,26 @@ export function LandingPage() {
             </Reveal>
           </div>
         </div>
+
+        {/* ═══ TRAVEL GRANT ═══ */}
+        <section id="travel-grant" className="section-sm" aria-labelledby="travel-grant-heading">
+          <div className="wrap">
+            <Reveal className="travel-grant-card">
+              <div className="tg-icon" aria-hidden="true">✈️</div>
+              <div className="tg-body">
+                <span className="caption eyebrow" style={{ color: "var(--gold)" }}>Travel Support</span>
+                <h3 className="tg-title" id="travel-grant-heading">Professor KIT Eniola Travel Grant</h3>
+                <p className="tg-desc">
+                  For Early Career Microbiologists. Travel support available for eligible early
+                  career participants. Selection criteria apply.
+                </p>
+              </div>
+              <a href={`mailto:${SECRETARIAT_EMAIL}?subject=Professor%20KIT%20Eniola%20Travel%20Grant%20Enquiry`} className="btn btn-secondary">
+                ✉️ Enquire About the Grant
+              </a>
+            </Reveal>
+          </div>
+        </section>
 
         {/* ═══ WHY ATTEND ═══ */}
         <section id="why" className="section" aria-labelledby="why-heading">
@@ -1086,6 +1129,7 @@ export function LandingPage() {
                         <strong>{item.time}</strong>{item.text}
                       </div>
                     ))}
+                    {day.note && <p className="pd-day-note">{day.note}</p>}
                   </div>
                 </Reveal>
               ))}
@@ -1254,26 +1298,6 @@ export function LandingPage() {
                 <div className="step-card"><div className="step-n">3</div><div><div className="step-h">Upload your receipt</div><div className="step-p">Attach your bank receipt/teller when you register or submit your abstract — the secretariat confirms it from your account, no separate email needed.</div></div></div>
               </Reveal>
             </div>
-          </div>
-        </section>
-
-        {/* ═══ TRAVEL GRANT ═══ */}
-        <section id="travel-grant" className="section-sm" aria-labelledby="travel-grant-heading">
-          <div className="wrap">
-            <Reveal className="travel-grant-card">
-              <div className="tg-icon" aria-hidden="true">✈️</div>
-              <div className="tg-body">
-                <span className="caption eyebrow" style={{ color: "var(--gold)" }}>Travel Support</span>
-                <h3 className="tg-title" id="travel-grant-heading">Professor KIT Eniola Travel Grant</h3>
-                <p className="tg-desc">
-                  For Early Career Microbiologists. Travel support available for eligible early
-                  career participants. Selection criteria apply.
-                </p>
-              </div>
-              <a href={`mailto:${SECRETARIAT_EMAIL}?subject=Professor%20KIT%20Eniola%20Travel%20Grant%20Enquiry`} className="btn btn-secondary">
-                ✉️ Enquire About the Grant
-              </a>
-            </Reveal>
           </div>
         </section>
 
