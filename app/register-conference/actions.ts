@@ -110,14 +110,21 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
   // A rejected registration needs a fresh submission to fix whatever was
   // wrong with the receipt, so only pending/verified rows count as "already
   // registered" -- otherwise someone whose payment was rejected would be
-  // permanently locked out of retrying.
-  const { data: existing } = await admin
-    .from("conference_registrations")
-    .select("reference_number")
-    .eq("conference_id", conference.id)
-    .eq("email", parsed.data.email)
-    .in("payment_status", ["pending", "verified"])
-    .maybeSingle()
+  // permanently locked out of retrying. Matched case-insensitively (fetch +
+  // compare, rather than ilike, since ilike treats "_" -- a valid email
+  // character -- as a wildcard) to line up with the DB-level unique index
+  // below, which is keyed on lower(email).
+  async function findActiveRegistration(email: string) {
+    const target = email.toLowerCase()
+    const { data: rows } = await admin
+      .from("conference_registrations")
+      .select("email, reference_number")
+      .eq("conference_id", conference!.id)
+      .in("payment_status", ["pending", "verified"])
+    return rows?.find((r) => r.email.toLowerCase() === target) ?? null
+  }
+
+  const existing = await findActiveRegistration(parsed.data.email)
   if (existing) {
     return {
       error: `This email is already registered (reference: ${existing.reference_number}). If you need to make changes or believe this is a mistake, contact the Admin at ${conference.secretariat_email ?? "the conference email"}.`,
@@ -182,6 +189,17 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
 
   if (insertError) {
     await admin.storage.from("registration-receipts").remove(uploadedPaths)
+    // The pre-check above is a courtesy for the common case; this unique
+    // constraint is what actually prevents two near-simultaneous
+    // submissions for the same email from both landing.
+    if (insertError.code === "23505") {
+      const dupe = await findActiveRegistration(parsed.data.email)
+      return {
+        error: dupe
+          ? `This email is already registered (reference: ${dupe.reference_number}). If you need to make changes or believe this is a mistake, contact the Admin at ${conference.secretariat_email ?? "the conference email"}.`
+          : "This email is already registered. Please try again in a moment, or contact the Admin if this persists.",
+      }
+    }
     return { error: "Could not complete registration. Please try again." }
   }
 
