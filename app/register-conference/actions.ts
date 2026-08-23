@@ -98,13 +98,30 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
       .eq("ip_address", ip)
       .gte("created_at", new Date(Date.now() - IP_WINDOW_MS).toISOString())
     if ((count ?? 0) >= IP_MAX_REGISTRATIONS) {
-      return { error: "Too many registrations submitted from this connection recently. Please wait a while and try again, or contact the secretariat directly." }
+      return { error: "Too many registrations submitted from this connection recently. Please wait a while and try again, or contact the Admin directly." }
     }
   }
 
   const conference = await getActiveConference()
   if (!conference) {
     return { error: "Registration is not open right now. Please try again later." }
+  }
+
+  // A rejected registration needs a fresh submission to fix whatever was
+  // wrong with the receipt, so only pending/verified rows count as "already
+  // registered" -- otherwise someone whose payment was rejected would be
+  // permanently locked out of retrying.
+  const { data: existing } = await admin
+    .from("conference_registrations")
+    .select("reference_number")
+    .eq("conference_id", conference.id)
+    .eq("email", parsed.data.email)
+    .in("payment_status", ["pending", "verified"])
+    .maybeSingle()
+  if (existing) {
+    return {
+      error: `This email is already registered (reference: ${existing.reference_number}). If you need to make changes or believe this is a mistake, contact the Admin at ${conference.secretariat_email ?? "the conference email"}.`,
+    }
   }
 
   const period = currentRegistrationPeriod()
