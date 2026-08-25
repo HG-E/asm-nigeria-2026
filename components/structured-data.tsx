@@ -1,4 +1,9 @@
 const BASE_URL = "https://www.asmnigeriaconference.com.ng"
+// The bare apex domain 308-redirects to BASE_URL (single hop, verified) --
+// listing it in sameAs tells consumers that don't follow redirects (some
+// structured-data parsers, not browsers/crawlers) that it's the same
+// organization, not a separate site.
+const APEX_URL = "https://asmnigeriaconference.com.ng"
 
 // Organization schema: identifies the conference organizer site-wide.
 // Every fact here is already published elsewhere on the site (footer,
@@ -9,6 +14,7 @@ export function OrganizationJsonLd() {
     "@type": "Organization",
     name: "American Society for Microbiology (ASM) Nigeria",
     url: BASE_URL,
+    sameAs: [APEX_URL],
     logo: `${BASE_URL}/brand/asm-logo.png`,
     email: "asmnigeriaonehealth@gmail.com",
   }
