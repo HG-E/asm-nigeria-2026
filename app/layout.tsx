@@ -43,6 +43,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     images: ["/brand/og-image.png"],
   },
+  verification: {
+    google: "obTSYIGdUGbFeQVSU_9YzivoCDwWUE6UfSQM0IOWLdc",
+  },
 };
 
 export const viewport: Viewport = {
