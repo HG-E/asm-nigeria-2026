@@ -2,8 +2,10 @@
 
 import { randomBytes } from "node:crypto"
 
+import { headers } from "next/headers"
 import { revalidatePath } from "next/cache"
 
+import { sendAccountWelcomeEmail } from "@/lib/account-email"
 import { requireRole } from "@/lib/auth"
 import { getActiveConference } from "@/lib/conference"
 import { createAdminClient } from "@/lib/supabase/admin"
@@ -16,7 +18,7 @@ function generateTempPassword() {
   return `Asm${randomBytes(9).toString("base64url")}!`
 }
 
-export type AddCommitteeMemberResult = { error: string } | { success: true; tempPassword: string }
+export type AddCommitteeMemberResult = { error: string } | { success: true; emailSent: boolean }
 
 export async function addCommitteeMemberAction(
   input: AddCommitteeMemberInput
@@ -69,8 +71,18 @@ export async function addCommitteeMemberAction(
     return { error: "Could not create the committee member. Please try again." }
   }
 
+  const originHeader = (await headers()).get("origin")
+  const origin = originHeader ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
+  const emailSent = await sendAccountWelcomeEmail({
+    admin,
+    email: data.email,
+    firstName: data.firstName,
+    roleLabel: "committee member",
+    origin,
+  })
+
   revalidatePath("/admin/committee")
-  return { success: true, tempPassword }
+  return { success: true, emailSent }
 }
 
 export async function toggleCommitteeMemberActiveAction(

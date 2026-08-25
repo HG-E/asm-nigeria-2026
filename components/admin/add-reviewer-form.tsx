@@ -29,7 +29,7 @@ import { addReviewerSchema, type AddReviewerInput } from "@/lib/validations/revi
 type Subtheme = { id: string; name: string }
 
 type SubmitOutcome =
-  | { kind: "created"; tempPassword: string }
+  | { kind: "created"; email: string; emailSent: boolean }
   | { kind: "reused" }
 
 export function AddReviewerForm({ subthemes }: { subthemes: Subtheme[] }) {
@@ -58,8 +58,8 @@ export function AddReviewerForm({ subthemes }: { subthemes: Subtheme[] }) {
       return
     }
     setOutcome(
-      "tempPassword" in result
-        ? { kind: "created", tempPassword: result.tempPassword }
+      "emailSent" in result
+        ? { kind: "created", email: values.email, emailSent: result.emailSent }
         : { kind: "reused" }
     )
     form.reset()
@@ -70,10 +70,18 @@ export function AddReviewerForm({ subthemes }: { subthemes: Subtheme[] }) {
       {outcome?.kind === "created" && (
         <Alert>
           <AlertDescription>
-            Reviewer account created. Share these credentials with them directly (email
-            delivery isn&apos;t configured yet):
-            <br />
-            Temporary password: <strong className="font-mono">{outcome.tempPassword}</strong>
+            {outcome.emailSent ? (
+              <>
+                Reviewer account created. An email with a link to set their password has been
+                sent to <strong>{outcome.email}</strong>.
+              </>
+            ) : (
+              <>
+                Reviewer account created, but the welcome email could not be sent. Ask them to
+                use &quot;Forgot password?&quot; on the login page with{" "}
+                <strong>{outcome.email}</strong> to set their password.
+              </>
+            )}
           </AlertDescription>
         </Alert>
       )}

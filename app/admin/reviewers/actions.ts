@@ -2,8 +2,10 @@
 
 import { randomBytes } from "node:crypto"
 
+import { headers } from "next/headers"
 import { revalidatePath } from "next/cache"
 
+import { sendAccountWelcomeEmail } from "@/lib/account-email"
 import { requireRole } from "@/lib/auth"
 import { getActiveConference } from "@/lib/conference"
 import { createAdminClient } from "@/lib/supabase/admin"
@@ -15,7 +17,7 @@ function generateTempPassword() {
 
 export type AddReviewerResult =
   | { error: string }
-  | { success: true; tempPassword: string }
+  | { success: true; emailSent: boolean }
   | { success: true; reusedExistingAccount: true }
 
 export async function addReviewerAction(input: AddReviewerInput): Promise<AddReviewerResult> {
@@ -102,8 +104,18 @@ export async function addReviewerAction(input: AddReviewerInput): Promise<AddRev
     return { error: "Could not create the reviewer profile. Please try again." }
   }
 
+  const originHeader = (await headers()).get("origin")
+  const origin = originHeader ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
+  const emailSent = await sendAccountWelcomeEmail({
+    admin,
+    email: data.email,
+    firstName: data.firstName,
+    roleLabel: "reviewer",
+    origin,
+  })
+
   revalidatePath("/admin/reviewers")
-  return { success: true, tempPassword }
+  return { success: true, emailSent }
 }
 
 export async function toggleReviewerActiveAction(

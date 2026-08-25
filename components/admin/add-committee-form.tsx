@@ -24,7 +24,7 @@ import {
 
 export function AddCommitteeForm() {
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const [tempPassword, setTempPassword] = useState<string | null>(null)
+  const [outcome, setOutcome] = useState<{ email: string; emailSent: boolean } | null>(null)
 
   const form = useForm<AddCommitteeMemberInput>({
     resolver: zodResolver(addCommitteeMemberSchema),
@@ -40,25 +40,33 @@ export function AddCommitteeForm() {
 
   async function onSubmit(values: AddCommitteeMemberInput) {
     setSubmitError(null)
-    setTempPassword(null)
+    setOutcome(null)
     const result = await addCommitteeMemberAction(values)
     if ("error" in result) {
       setSubmitError(result.error)
       return
     }
-    setTempPassword(result.tempPassword)
+    setOutcome({ email: values.email, emailSent: result.emailSent })
     form.reset()
   }
 
   return (
     <div className="space-y-4">
-      {tempPassword && (
+      {outcome && (
         <Alert>
           <AlertDescription>
-            Committee member account created. Share these credentials with them directly
-            (email delivery isn&apos;t configured yet):
-            <br />
-            Temporary password: <strong className="font-mono">{tempPassword}</strong>
+            {outcome.emailSent ? (
+              <>
+                Committee member account created. An email with a link to set their password
+                has been sent to <strong>{outcome.email}</strong>.
+              </>
+            ) : (
+              <>
+                Committee member account created, but the welcome email could not be sent. Ask
+                them to use &quot;Forgot password?&quot; on the login page with{" "}
+                <strong>{outcome.email}</strong> to set their password.
+              </>
+            )}
           </AlertDescription>
         </Alert>
       )}
