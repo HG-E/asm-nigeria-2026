@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 import { LandingPage } from "@/components/marketing/landing-page"
-import { ConferenceEventJsonLd } from "@/components/structured-data"
+import { ConferenceEventJsonLd, FaqJsonLd } from "@/components/structured-data"
 
 export const metadata: Metadata = {
   title: "ASM Nigeria Conference 2026 | One Health. One Future. One Scientific Community.",
@@ -28,6 +28,7 @@ export default function Home() {
   return (
     <>
       <ConferenceEventJsonLd />
+      <FaqJsonLd />
       <LandingPage />
     </>
   )
