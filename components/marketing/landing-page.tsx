@@ -226,17 +226,18 @@ const LATE_FEES = [
 const ACCOMMODATIONS = [
   {
     header: "ac-h-blue", name: "SMA Fathers House",
-    rows: [{ type: "Single Room", price: "₦15,000/night" }, { type: "Dormitory (up to 30)", price: "₦5,000/night" }],
+    rows: [{ type: "Single Room", price: "₦15,000/night" }, { type: "Dormitory (up to 20)", price: "₦5,000/night" }],
     distance: "10–16 minutes (8–10km) to the conference venue",
   },
   {
     header: "ac-h-dark", name: "DRACC",
     rows: [
+      { type: "Couple Single", price: "₦17,850" },
       { type: "Single Room", price: "₦15,750" },
       { type: "Double (sep. beds)", price: "₦21,000" },
       { type: "Standard", price: "₦26,250" },
       { type: "Suite", price: "₦31,500" },
-      { type: "Dormitory (12)", price: "₦55,500" },
+      { type: "Dormitory (12)", price: "₦5,500" },
     ],
     distance: "12–20 minutes drive (9–11km) to the conference venue",
   },
