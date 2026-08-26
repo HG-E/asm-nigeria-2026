@@ -386,10 +386,13 @@ const SUBCOMMITTEES = [
     name: "Registration and Accreditation Committee",
     members: [
       { position: "Chairman", name: "Dr. Ngozika Okey-Ndeche", institution: "Veritas University Abuja" },
-      { position: "Secretary", name: "Mrs. Precious Ishaku", institution: "Bingham University" },
       { position: "Member", name: "Mr. Halilu Hafiz", institution: "ATBUTH Bauchi" },
       { position: "Member", name: "Mr. Omada Stephen", institution: "NOUN Abuja" },
-      { position: "Member", name: "Volunteers", institution: "Abuja" },
+      { position: "Member", name: "Prof. Emmanuel Agada", institution: "Veritas University" },
+      { position: "Member", name: "Dr. Theresa Ozoude", institution: "Veritas University" },
+      { position: "Member", name: "Anthonia Oyegue", institution: "Veritas University" },
+      { position: "Member", name: "Mr. Anslem Maichiki", institution: "Veritas University" },
+      { position: "Member", name: "Aodonengen Michael", institution: "Veritas University" },
     ],
     tor: [
       "Develop and manage the conference registration process.",
@@ -502,6 +505,7 @@ const SUBCOMMITTEES = [
       { position: "Member", name: "Dr. Onyinyechi N. Akomah-Abadaike", institution: "University of Port Harcourt" },
       { position: "Member", name: "Mrs. Precious Ishaku", institution: "Bingham University, Karu" },
       { position: "Member", name: "Mercy Abosede Olaniyi", institution: "NIHORT" },
+      { position: "Partnership Liaison Executive", name: "Dr. Peter O. Nwadike", institution: "KNCV Nigeria, Abuja FCT" },
     ],
     tor: [
       "Identify and recruit exhibitors from academia, industry, government, and development organizations.",
