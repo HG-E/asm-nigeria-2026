@@ -1,3 +1,10 @@
+import {
+  currentRegistrationPeriod,
+  PARTICIPANT_CATEGORIES,
+  REGISTRATION_FEES,
+  REGISTRATION_PERIOD_CUTOFF,
+} from "@/lib/registration-fees"
+
 const BASE_URL = "https://www.asmnigeriaconference.com.ng"
 // The bare apex domain 308-redirects to BASE_URL (single hop, verified) --
 // listing it in sameAs tells consumers that don't follow redirects (some
@@ -26,10 +33,36 @@ export function OrganizationJsonLd() {
   )
 }
 
+// Strips the currency symbol/suffix and thousands separators so schema.org's
+// numeric-string Offer.price gets e.g. "25000" from "₦25,000" or "50" from
+// "$50 USD" -- REGISTRATION_FEES already carries the ISO currency separately.
+function numericPrice(raw: string): string {
+  return raw.replace(/[^\d.]/g, "")
+}
+
 // Event schema: the conference itself. Dates, venue, and mode all come
 // straight from the constants/copy already used by the homepage hero and
 // programme sections (components/marketing/landing-page.tsx).
 export function ConferenceEventJsonLd() {
+  const period = currentRegistrationPeriod()
+  const offers = PARTICIPANT_CATEGORIES.map((category) => {
+    const fee = REGISTRATION_FEES[category]
+    const offer: Record<string, string> = {
+      "@type": "Offer",
+      name: category,
+      price: numericPrice(fee[period]),
+      priceCurrency: fee.currency,
+      availability: "https://schema.org/InStock",
+      url: `${BASE_URL}/register-conference`,
+    }
+    // Early-bird rates have a real, known expiry; late rates don't end
+    // until the conference itself, so there's nothing honest to put here.
+    if (period === "early") {
+      offer.priceValidUntil = REGISTRATION_PERIOD_CUTOFF.slice(0, 10)
+    }
+    return offer
+  })
+
   const data = {
     "@context": "https://schema.org",
     "@type": "Event",
@@ -62,10 +95,11 @@ export function ConferenceEventJsonLd() {
       url: BASE_URL,
       email: "asmnigeriaonehealth@gmail.com",
     },
-    // No `offers` block: registration has multiple fee tiers (member,
-    // non-member, student, international, online) rather than one price,
-    // and Event.offers expects a single representative price -- omitting
-    // it avoids advertising one tier's price as "the" price.
+    // An earlier version omitted `offers` entirely because there's no
+    // single ticket price -- fixed properly here instead by listing one
+    // real Offer per participant category (schema.org allows an array),
+    // rather than picking one tier to misrepresent as "the" price.
+    offers,
   }
   return (
     <script
