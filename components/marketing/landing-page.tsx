@@ -392,7 +392,7 @@ const SUBCOMMITTEES = [
       { position: "Member", name: "Dr. Theresa Ozoude", institution: "Veritas University" },
       { position: "Member", name: "Anthonia Oyegue", institution: "Veritas University" },
       { position: "Member", name: "Mr. Anslem Maichiki", institution: "Veritas University" },
-      { position: "Member", name: "Aodonengen Michael", institution: "Veritas University" },
+      { position: "Secretary", name: "Aodonengen Michael", institution: "Veritas University" },
     ],
     tor: [
       "Develop and manage the conference registration process.",
