@@ -1,5 +1,6 @@
 import Link from "next/link"
 
+import { AttendedToggle } from "@/components/admin/attended-toggle"
 import { RegistrationVerificationPanel } from "@/components/admin/registration-verification-panel"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -61,6 +62,7 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
     pending: registrations?.filter((r) => r.payment_status === "pending").length ?? 0,
     verified: registrations?.filter((r) => r.payment_status === "verified").length ?? 0,
     rejected: registrations?.filter((r) => r.payment_status === "rejected").length ?? 0,
+    attended: registrations?.filter((r) => r.attended).length ?? 0,
   }
 
   return (
@@ -68,7 +70,8 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
       <div>
         <h1 className="text-2xl font-semibold">Conference Registrations</h1>
         <p className="text-muted-foreground text-sm">
-          {counts.total} total · {counts.pending} pending · {counts.verified} verified · {counts.rejected} rejected
+          {counts.total} total · {counts.pending} pending · {counts.verified} verified · {counts.rejected} rejected ·{" "}
+          {counts.attended} attended
         </p>
       </div>
 
@@ -103,6 +106,7 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
                 <TableHead>Amount</TableHead>
                 <TableHead>Files</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Attendance</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -150,6 +154,9 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
                     )}
                   </TableCell>
                   <TableCell>
+                    <AttendedToggle registrationId={r.id} attended={r.attended} />
+                  </TableCell>
+                  <TableCell>
                     <RegistrationVerificationPanel
                       registrationId={r.id}
                       status={r.payment_status as "pending" | "verified" | "rejected"}
@@ -159,7 +166,7 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
               ))}
               {(registrations?.length ?? 0) === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-muted-foreground text-center">
+                  <TableCell colSpan={8} className="text-muted-foreground text-center">
                     No registrations yet.
                   </TableCell>
                 </TableRow>

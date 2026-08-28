@@ -65,6 +65,34 @@ export async function verifyRegistrationAction(registrationId: string): Promise<
   return { success: true }
 }
 
+// Independent of payment status -- verified only means they paid, not that
+// they actually showed up. This is what gates Certificate of Participation
+// eligibility, set by hand after the conference.
+export async function toggleAttendedAction(registrationId: string, attended: boolean): Promise<RegistrationActionResult> {
+  const session = await requireRole("admin")
+  const supabase = await createClient()
+
+  const { error } = await supabase
+    .from("conference_registrations")
+    .update({ attended })
+    .eq("id", registrationId)
+
+  if (error) {
+    return { error: "Could not update attendance. Please try again." }
+  }
+
+  await supabase.from("audit_logs").insert({
+    actor_id: session.authUserId,
+    actor_email: session.email,
+    action: attended ? "registration_marked_attended" : "registration_marked_not_attended",
+    entity_type: "conference_registration",
+    entity_id: registrationId,
+  })
+
+  revalidatePath("/admin/registrations")
+  return { success: true }
+}
+
 export async function rejectRegistrationAction(registrationId: string, reason: string): Promise<RegistrationActionResult> {
   const session = await requireRole("admin")
   const supabase = await createClient()

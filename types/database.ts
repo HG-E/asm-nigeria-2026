@@ -236,6 +236,7 @@ export type Database = {
           payment_verified_at: string | null
           payment_rejection_reason: string | null
           ip_address: string | null
+          attended: boolean
           created_at: string
           updated_at: string
         }
@@ -260,6 +261,7 @@ export type Database = {
           payment_verified_at?: string | null
           payment_rejection_reason?: string | null
           ip_address?: string | null
+          attended?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -284,6 +286,7 @@ export type Database = {
           payment_verified_at?: string | null
           payment_rejection_reason?: string | null
           ip_address?: string | null
+          attended?: boolean
           created_at?: string
           updated_at?: string
         }
