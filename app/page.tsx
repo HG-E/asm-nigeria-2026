@@ -6,10 +6,10 @@ import { ConferenceEventJsonLd, FaqJsonLd } from "@/components/structured-data"
 export const metadata: Metadata = {
   title: "ASM Nigeria Conference 2026 | One Health. One Future. One Scientific Community.",
   description:
-    "The Maiden ASM Nigeria Conference — a national platform for scientific exchange, collaboration and innovation in microbiology. 22–25 November 2026, Abuja, Nigeria. Hybrid.",
+    "The Maiden American Society for Microbiology Nigeria Conference — a national platform for scientific exchange, collaboration and innovation in microbiology. 22–25 November 2026, Abuja, Nigeria. Hybrid.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Maiden ASM Nigeria Conference 2026 | Abuja, Nigeria",
+    title: "Maiden American Society for Microbiology Nigeria Conference 2026 | Abuja, Nigeria",
     description:
       "One Health. One Future. One Scientific Community. 22–25 November 2026 · Abuja, Nigeria · Hybrid Conference. Register & submit your abstract today.",
     type: "website",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Maiden ASM Nigeria Conference 2026",
+    title: "Maiden American Society for Microbiology Nigeria Conference 2026",
     description: "One Health. One Future. One Scientific Community. 22–25 Nov 2026, Abuja. Hybrid.",
     images: ["/brand/og-image.png"],
   },

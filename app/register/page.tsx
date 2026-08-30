@@ -14,7 +14,7 @@ import { createClient } from "@/lib/supabase/server"
 
 export const metadata: Metadata = {
   title: "Create an Author Account | ASM Nigeria 2026",
-  description: "Register an author account to submit and track abstracts for the Maiden ASM Nigeria Conference 2026.",
+  description: "Register an author account to submit and track abstracts for the Maiden American Society for Microbiology Nigeria Conference 2026.",
   alternates: { canonical: "/register" },
 }
 

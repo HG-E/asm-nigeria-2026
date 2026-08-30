@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 export const metadata = {
   title: "Register for ASM Nigeria 2026",
-  description: "Register to attend the Maiden ASM Nigeria Conference — 22-25 November 2026, Abuja, Nigeria. Hybrid conference.",
+  description: "Register to attend the Maiden American Society for Microbiology Nigeria Conference — 22-25 November 2026, Abuja, Nigeria. Hybrid conference.",
   alternates: { canonical: "/register-conference" },
 }
 

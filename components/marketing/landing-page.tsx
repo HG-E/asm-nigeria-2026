@@ -41,7 +41,7 @@ const TICKER_ITEMS = [
   "📅 Early Abstract Deadline: August 30, 2026",
   "💳 Early Registration Cutoff: October 22, 2026",
   "🌐 Hybrid Conference — attend in person in Abuja or join online",
-  "🇳🇬 Maiden ASM Nigeria Conference · 22–25 November 2026, Abuja",
+  "🇳🇬 Maiden American Society for Microbiology Nigeria Conference · 22–25 November 2026, Abuja",
 ]
 
 const WHY_CARDS = [
@@ -796,7 +796,7 @@ export function LandingPage() {
               <div className="hero-chip">
                 <span className="chip chip-white">
                   <span className="dot" />
-                  🇳🇬 Maiden ASM Nigeria Conference · Abuja 2026
+                  🇳🇬 Maiden American Society for Microbiology Nigeria Conference · Abuja 2026
                 </span>
               </div>
               <h1 className="display hero-title">
@@ -909,8 +909,9 @@ export function LandingPage() {
                 <h2 className="headline">A National Platform for Scientific Exchange</h2>
                 <div className="rule" />
                 <p className="body-lg">
-                  The ASM One Health Scientific Conference is the maiden ASM scientific conference in
-                  Nigeria, serving as a national platform for scientific exchange. It is a landmark
+                  The American Society for Microbiology (ASM) One Health Scientific Conference is the
+                  maiden ASM scientific conference in Nigeria, serving as a national platform for
+                  scientific exchange. It is a landmark
                   scientific gathering bringing together microbiologists, researchers, clinicians,
                   veterinarians, environmental scientists, public health professionals, students,
                   policymakers, industry professionals, and One Health stakeholders from Nigeria and
@@ -1056,7 +1057,7 @@ export function LandingPage() {
           <div className="wrap">
             <Reveal className="reveal-center" style={{ textAlign: "center" } as React.CSSProperties}>
               <span className="caption eyebrow" style={{ color: "var(--red)" }}>Planning Committee</span>
-              <h2 className="headline" id="committee-heading">Maiden ASM Nigeria Conference<br />Abuja 2026 — Subcommittees</h2>
+              <h2 className="headline" id="committee-heading">Maiden American Society for Microbiology Nigeria Conference<br />Abuja 2026 — Subcommittees</h2>
               <div className="rule rule-center" />
               <p className="body-lg">Ten subcommittees, drawn from institutions and organizations across Nigeria, plan and run every part of the conference.</p>
             </Reveal>
@@ -1535,7 +1536,7 @@ export function LandingPage() {
                   style={{ height: 36, width: "auto", objectFit: "contain", filter: "brightness(0) invert(1)", marginBottom: 12, display: "block" }}
                 />
                 <div className="fb-tagline">One Health. One Future. One Scientific Community.</div>
-                <div className="fb-desc">The Maiden ASM Nigeria Conference brings together One Health scientists and stakeholders for four days of science, dialogue, and discovery in Abuja.</div>
+                <div className="fb-desc">The Maiden American Society for Microbiology Nigeria Conference brings together One Health scientists and stakeholders for four days of science, dialogue, and discovery in Abuja.</div>
               </div>
               <div className="footer-col">
                 <h4>Conference</h4>

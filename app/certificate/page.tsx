@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export const metadata: Metadata = {
   title: "Download Your Certificate | ASM Nigeria 2026",
-  description: "Download your Certificate of Participation or Presentation for the Maiden ASM Nigeria Conference.",
+  description: "Download your Certificate of Participation or Presentation for the Maiden American Society for Microbiology Nigeria Conference.",
   alternates: { canonical: "/certificate" },
   robots: { index: false, follow: true },
 }
@@ -49,7 +49,7 @@ export default async function CertificatePage(props: PageProps<"/certificate">) 
             Download your certificate
           </h1>
           <p className="text-muted-foreground text-sm text-balance">
-            Certificate of Participation or Presentation for the Maiden ASM Nigeria Conference.
+            Certificate of Participation or Presentation for the Maiden American Society for Microbiology Nigeria Conference.
             Enter the reference number and email you used to register or submit.
           </p>
         </div>

@@ -66,9 +66,9 @@ export function ConferenceEventJsonLd() {
   const data = {
     "@context": "https://schema.org",
     "@type": "Event",
-    name: "Maiden ASM Nigeria Conference 2026 — One Health in Action",
+    name: "Maiden American Society for Microbiology Nigeria Conference 2026 — One Health in Action",
     description:
-      "The Maiden ASM Nigeria Conference, themed 'One Health in Action: Advancing Microbial Science for Human, Animal, Environmental, and Global Health.' A national platform for scientific exchange in microbiology, antimicrobial resistance, and One Health research.",
+      "The Maiden American Society for Microbiology Nigeria Conference, themed 'One Health in Action: Advancing Microbial Science for Human, Animal, Environmental, and Global Health.' A national platform for scientific exchange in microbiology, antimicrobial resistance, and One Health research.",
     startDate: "2026-11-22T09:00:00+01:00",
     endDate: "2026-11-25",
     eventAttendanceMode: "https://schema.org/MixedEventAttendanceMode",

@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "ASM Nigeria Conference 2026",
     short_name: "ASM Nigeria 2026",
     description:
-      "The Maiden ASM Nigeria Conference — One Health. One Future. One Scientific Community. 22-25 November 2026, Abuja, Nigeria.",
+      "The Maiden American Society for Microbiology Nigeria Conference — One Health. One Future. One Scientific Community. 22-25 November 2026, Abuja, Nigeria.",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",
