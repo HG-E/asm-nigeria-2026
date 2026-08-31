@@ -818,12 +818,12 @@
 .asm-landing .convener-side {
   display: flex;
   flex-direction: column;
+  align-self: start;
 }
 .asm-landing .convener-photo-full {
   width: 100%;
-  flex: 1;
-  min-height: 220px;
-  object-fit: contain;
+  aspect-ratio: 486 / 652;
+  object-fit: cover;
   object-position: top center;
   border-radius: var(--r-lg);
 }
@@ -848,7 +848,8 @@
     grid-template-columns: 1fr;
   }
   .asm-landing .convener-photo-full {
-    max-height: 320px;
+    max-width: 320px;
+    margin: 0 auto;
   }
 }
 .asm-landing .why-grid {
