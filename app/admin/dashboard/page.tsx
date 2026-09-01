@@ -1,5 +1,18 @@
 import Link from "next/link"
+import {
+  CheckCheck,
+  CircleCheck,
+  ClipboardList,
+  Clock,
+  Inbox,
+  Layers,
+  RotateCcw,
+  Search,
+  XCircle,
+} from "lucide-react"
 
+import { PageHeader } from "@/components/dashboard/page-header"
+import { StatCard, StatGrid, type StatAccent } from "@/components/dashboard/stat-card"
 import {
   Card,
   CardDescription,
@@ -21,17 +34,22 @@ export default async function AdminDashboardPage() {
 
   const count = (statuses: SubmissionStatus[]) => rows.filter((r) => statuses.includes(r.status)).length
 
-  const summary = [
-    ["Total", rows.length],
-    ["Submitted", count(["submitted"])],
-    ["Screening", count(["screening"])],
-    ["Under review", count(["assigned", "under_review"])],
-    ["Reviews completed", count(["reviews_completed"])],
-    ["Decision pending", count(["decision_pending"])],
-    ["Accepted", count(["accepted", "accepted_oral", "accepted_poster"])],
-    ["Revision required", count(["revision_required"])],
-    ["Rejected", count(["rejected"])],
-  ] as const
+  const summary: { label: string; value: number; icon: typeof Layers; accent: StatAccent }[] = [
+    { label: "Total", value: rows.length, icon: Layers, accent: "muted" },
+    { label: "Submitted", value: count(["submitted"]), icon: Inbox, accent: "blue" },
+    { label: "Screening", value: count(["screening"]), icon: Search, accent: "blue" },
+    { label: "Under review", value: count(["assigned", "under_review"]), icon: ClipboardList, accent: "blue" },
+    { label: "Reviews completed", value: count(["reviews_completed"]), icon: CheckCheck, accent: "blue" },
+    { label: "Decision pending", value: count(["decision_pending"]), icon: Clock, accent: "gold" },
+    {
+      label: "Accepted",
+      value: count(["accepted", "accepted_oral", "accepted_poster"]),
+      icon: CircleCheck,
+      accent: "gold",
+    },
+    { label: "Revision required", value: count(["revision_required"]), icon: RotateCcw, accent: "muted" },
+    { label: "Rejected", value: count(["rejected"]), icon: XCircle, accent: "red" },
+  ]
 
   const { count: reviewerCount } = await supabase
     .from("reviewer_profiles")
@@ -40,15 +58,10 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
-        <p className="text-muted-foreground text-sm">
-          ASM Nigeria 2026 conference overview.
-        </p>
-      </div>
+      <PageHeader title="Admin Dashboard" description="ASM Nigeria 2026 conference overview." />
 
       {(reviewerCount ?? 0) === 0 && (
-        <Card className="border-amber-500/50 bg-amber-500/5">
+        <Card className="border-destructive/30 bg-destructive/5">
           <CardHeader>
             <CardTitle className="text-base">No reviewers configured yet</CardTitle>
             <CardDescription>
@@ -62,16 +75,11 @@ export default async function AdminDashboardPage() {
         </Card>
       )}
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        {summary.map(([label, value]) => (
-          <Card key={label}>
-            <CardHeader className="pb-2">
-              <CardDescription>{label}</CardDescription>
-              <CardTitle className="text-2xl">{value}</CardTitle>
-            </CardHeader>
-          </Card>
+      <StatGrid>
+        {summary.map((s) => (
+          <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} accent={s.accent} />
         ))}
-      </div>
+      </StatGrid>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[

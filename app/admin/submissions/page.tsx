@@ -1,5 +1,7 @@
 import Link from "next/link"
+import { Search } from "lucide-react"
 
+import { PageHeader } from "@/components/dashboard/page-header"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -75,12 +77,7 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Submissions</h1>
-        <p className="text-muted-foreground text-sm">
-          All abstracts submitted to ASM Nigeria 2026.
-        </p>
-      </div>
+      <PageHeader title="Submissions" description="All abstracts submitted to ASM Nigeria 2026." />
 
       <Card>
         <CardHeader>
@@ -88,12 +85,15 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
         </CardHeader>
         <CardContent>
           <form className="flex flex-wrap gap-3" method="get">
-            <Input
-              name="q"
-              defaultValue={q}
-              placeholder="Search by title or reference number"
-              className="max-w-sm"
-            />
+            <div className="relative max-w-sm flex-1">
+              <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
+              <Input
+                name="q"
+                defaultValue={q}
+                placeholder="Search by title or reference number"
+                className="pl-8"
+              />
+            </div>
             <Select name="status" defaultValue={status}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="All statuses" />
@@ -115,6 +115,11 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
       </Card>
 
       <Card>
+        <CardHeader>
+          <CardTitle className="text-base">
+            Results{submissions ? ` (${submissions.length})` : ""}
+          </CardTitle>
+        </CardHeader>
         <CardContent>
           {!submissions || submissions.length === 0 ? (
             <p className="text-muted-foreground py-8 text-center text-sm">
