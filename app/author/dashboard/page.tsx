@@ -1,9 +1,19 @@
 import Link from "next/link"
+import {
+  CircleCheck,
+  ClipboardList,
+  FilePlus2,
+  Inbox,
+  Layers,
+  RotateCcw,
+  XCircle,
+} from "lucide-react"
 
+import { PageHeader } from "@/components/dashboard/page-header"
+import { StatCard, StatGrid, type StatAccent } from "@/components/dashboard/stat-card"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -79,45 +89,37 @@ export default async function AuthorDashboardPage() {
     rejected: rows.filter((r) => r.status === "rejected").length,
   }
 
+  const summaryCards: { label: string; value: number; icon: typeof Layers; accent: StatAccent }[] = [
+    { label: "Total", value: summary.total, icon: Layers, accent: "muted" },
+    { label: "Drafts", value: summary.drafts, icon: FilePlus2, accent: "muted" },
+    { label: "Submitted", value: summary.submitted, icon: Inbox, accent: "blue" },
+    { label: "Under review", value: summary.underReview, icon: ClipboardList, accent: "blue" },
+    { label: "Revision required", value: summary.revisionRequired, icon: RotateCcw, accent: "muted" },
+    { label: "Accepted", value: summary.accepted, icon: CircleCheck, accent: "gold" },
+    { label: "Rejected", value: summary.rejected, icon: XCircle, accent: "red" },
+  ]
+
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">
-            Welcome, {session.profile.first_name}
-          </h1>
-          {session.profile.asm_id_number && (
-            <p className="text-muted-foreground text-sm">
-              ASM ID Number: {session.profile.asm_id_number}
-            </p>
-          )}
-          <p className="text-muted-foreground text-sm">
-            Track and manage your abstract submissions.
-          </p>
-        </div>
-        <Link href="/author/submissions/new" className={buttonVariants()}>
-          + Submit New Abstract
-        </Link>
-      </div>
+      <PageHeader
+        title={`Welcome, ${session.profile.first_name}`}
+        description={
+          session.profile.asm_id_number
+            ? `ASM ID ${session.profile.asm_id_number} · Track and manage your abstract submissions.`
+            : "Track and manage your abstract submissions."
+        }
+        actions={
+          <Link href="/author/submissions/new" className={buttonVariants()}>
+            + Submit New Abstract
+          </Link>
+        }
+      />
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-7">
-        {[
-          ["Total", summary.total],
-          ["Drafts", summary.drafts],
-          ["Submitted", summary.submitted],
-          ["Under review", summary.underReview],
-          ["Revision required", summary.revisionRequired],
-          ["Accepted", summary.accepted],
-          ["Rejected", summary.rejected],
-        ].map(([label, value]) => (
-          <Card key={label as string}>
-            <CardHeader className="pb-2">
-              <CardDescription>{label}</CardDescription>
-              <CardTitle className="text-2xl">{value}</CardTitle>
-            </CardHeader>
-          </Card>
+      <StatGrid className="lg:grid-cols-7">
+        {summaryCards.map((s) => (
+          <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} accent={s.accent} />
         ))}
-      </div>
+      </StatGrid>
 
       <Card>
         <CardHeader>

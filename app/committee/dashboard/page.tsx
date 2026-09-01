@@ -1,10 +1,21 @@
 import Link from "next/link"
+import {
+  CheckCheck,
+  CircleCheck,
+  ClipboardList,
+  Clock,
+  Layers,
+  RotateCcw,
+  Search,
+  XCircle,
+} from "lucide-react"
 
+import { PageHeader } from "@/components/dashboard/page-header"
+import { StatCard, StatGrid, type StatAccent } from "@/components/dashboard/stat-card"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -35,36 +46,29 @@ export default async function CommitteeDashboardPage() {
   const rows = submissions ?? []
   const count = (statuses: SubmissionStatus[]) => rows.filter((r) => statuses.includes(r.status)).length
 
-  const summary = [
-    ["Total", rows.length],
-    ["Pending screening", count(["submitted", "screening"])],
-    ["Under review", count(["assigned", "under_review"])],
-    ["Reviews completed", count(["reviews_completed"])],
-    ["Decision pending", count(["decision_pending"])],
-    ["Accepted", count(["accepted", "accepted_oral", "accepted_poster"])],
-    ["Revision required", count(["revision_required"])],
-    ["Rejected", count(["rejected"])],
-  ] as const
+  const summary: { label: string; value: number; icon: typeof Layers; accent: StatAccent }[] = [
+    { label: "Total", value: rows.length, icon: Layers, accent: "muted" },
+    { label: "Pending screening", value: count(["submitted", "screening"]), icon: Search, accent: "blue" },
+    { label: "Under review", value: count(["assigned", "under_review"]), icon: ClipboardList, accent: "blue" },
+    { label: "Reviews completed", value: count(["reviews_completed"]), icon: CheckCheck, accent: "blue" },
+    { label: "Decision pending", value: count(["decision_pending"]), icon: Clock, accent: "gold" },
+    { label: "Accepted", value: count(["accepted", "accepted_oral", "accepted_poster"]), icon: CircleCheck, accent: "gold" },
+    { label: "Revision required", value: count(["revision_required"]), icon: RotateCcw, accent: "muted" },
+    { label: "Rejected", value: count(["rejected"]), icon: XCircle, accent: "red" },
+  ]
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Scientific Committee Dashboard</h1>
-        <p className="text-muted-foreground text-sm">
-          ASM Nigeria 2026 — review outcomes and final decisions.
-        </p>
-      </div>
+      <PageHeader
+        title="Scientific Committee Dashboard"
+        description="ASM Nigeria 2026 — review outcomes and final decisions."
+      />
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {summary.map(([label, value]) => (
-          <Card key={label}>
-            <CardHeader className="pb-2">
-              <CardDescription>{label}</CardDescription>
-              <CardTitle className="text-2xl">{value}</CardTitle>
-            </CardHeader>
-          </Card>
+      <StatGrid>
+        {summary.map((s) => (
+          <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} accent={s.accent} />
         ))}
-      </div>
+      </StatGrid>
 
       <Card>
         <CardHeader>

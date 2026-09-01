@@ -1,5 +1,8 @@
 import Link from "next/link"
+import { CheckCheck, Clock, Layers, UserCheck, XCircle } from "lucide-react"
 
+import { PageHeader } from "@/components/dashboard/page-header"
+import { StatCard, StatGrid, type StatAccent } from "@/components/dashboard/stat-card"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -65,25 +68,36 @@ export default async function RegistrationDeskPage(props: PageProps<"/registrati
     attended: registrations?.filter((r) => r.attended).length ?? 0,
   }
 
+  const summary: { label: string; value: number; icon: typeof Layers; accent: StatAccent }[] = [
+    { label: "Total", value: counts.total, icon: Layers, accent: "muted" },
+    { label: "Pending", value: counts.pending, icon: Clock, accent: "gold" },
+    { label: "Verified", value: counts.verified, icon: CheckCheck, accent: "gold" },
+    { label: "Rejected", value: counts.rejected, icon: XCircle, accent: "red" },
+    { label: "Attended", value: counts.attended, icon: UserCheck, accent: "blue" },
+  ]
+
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold">Conference Registrations</h1>
-          <p className="text-muted-foreground text-sm">
-            {counts.total} total · {counts.pending} pending · {counts.verified} verified · {counts.rejected} rejected ·{" "}
-            {counts.attended} attended
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Link href="/registration-desk/export?format=csv" className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>
-            Download CSV
-          </Link>
-          <Link href="/registration-desk/export?format=xlsx" className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>
-            Download XLSX
-          </Link>
-        </div>
-      </div>
+      <PageHeader
+        title="Conference Registrations"
+        description="All conference attendance registrations."
+        actions={
+          <>
+            <Link href="/registration-desk/export?format=csv" className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>
+              Download CSV
+            </Link>
+            <Link href="/registration-desk/export?format=xlsx" className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>
+              Download XLSX
+            </Link>
+          </>
+        }
+      />
+
+      <StatGrid>
+        {summary.map((s) => (
+          <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} accent={s.accent} />
+        ))}
+      </StatGrid>
 
       <form className="flex flex-wrap gap-3">
         <Input name="q" placeholder="Search name, email, or reference" defaultValue={q} className="max-w-xs" />

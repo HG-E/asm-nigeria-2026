@@ -1,10 +1,12 @@
 import Link from "next/link"
+import { AlertTriangle, CheckCheck, ClipboardList, Clock } from "lucide-react"
 
+import { PageHeader } from "@/components/dashboard/page-header"
+import { StatCard, StatGrid, type StatAccent } from "@/components/dashboard/stat-card"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -42,28 +44,25 @@ export default async function ReviewerDashboardPage() {
       a.due_date < nowIso
   )
 
+  const summary: { label: string; value: number; icon: typeof ClipboardList; accent: StatAccent }[] = [
+    { label: "Assigned", value: rows.length, icon: ClipboardList, accent: "blue" },
+    { label: "Pending", value: pending.length, icon: Clock, accent: "gold" },
+    { label: "Completed", value: completed.length, icon: CheckCheck, accent: "gold" },
+    { label: "Overdue", value: overdue.length, icon: AlertTriangle, accent: "red" },
+  ]
+
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Welcome, {session.profile.first_name}</h1>
-        <p className="text-muted-foreground text-sm">Your assigned abstracts for scientific review.</p>
-      </div>
+      <PageHeader
+        title={`Welcome, ${session.profile.first_name}`}
+        description="Your assigned abstracts for scientific review."
+      />
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {[
-          ["Assigned", rows.length],
-          ["Pending", pending.length],
-          ["Completed", completed.length],
-          ["Overdue", overdue.length],
-        ].map(([label, value]) => (
-          <Card key={label as string}>
-            <CardHeader className="pb-2">
-              <CardDescription>{label}</CardDescription>
-              <CardTitle className="text-2xl">{value}</CardTitle>
-            </CardHeader>
-          </Card>
+      <StatGrid className="sm:grid-cols-4">
+        {summary.map((s) => (
+          <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} accent={s.accent} />
         ))}
-      </div>
+      </StatGrid>
 
       <Card>
         <CardHeader>

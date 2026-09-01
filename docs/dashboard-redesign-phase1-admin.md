@@ -1,4 +1,4 @@
-# Dashboard UI/UX redesign — sidebar shell + shared primitives (Phase 1: Admin)
+# Dashboard UI/UX redesign — sidebar shell + shared primitives
 
 ## Context
 
@@ -126,8 +126,59 @@ portals in a follow-up pass.
 4. Committed, pushed, deployed, verified live: `/admin` and its subpages
    respond correctly (redirect to login when unauthenticated, not a 500).
 
-**Status: Phase 1 (admin portal) shipped and live.** Author, committee,
-reviewer, and registration-desk portals are the next increments, pending
-go-ahead.
+**Status: Phase 1 (admin portal) shipped and live.**
+
+## Phase 2 — author, committee, reviewer, registration-desk portals
+
+With the shell and primitives already proven in Phase 1, this pass was
+mechanical: apply `DashboardShell` to the remaining four portal layouts and
+`PageHeader`/`StatGrid`/`StatCard` to their landing/dashboard pages, reusing
+the exact same icon/accent conventions established in Phase 1 (blue =
+in-progress, gold = accepted/pending, red = rejected, muted = neutral).
+
+- **`app/author/layout.tsx`** — 2-item nav (Dashboard, Profile). Footer role
+  label includes the ASM ID number when present, matching what the old
+  top-bar used to show.
+- **`app/author/dashboard/page.tsx`** — `PageHeader` (with the "+ Submit New
+  Abstract" button as its `actions` slot) + 7-stat `StatGrid`.
+- **`app/committee/layout.tsx`** / **`app/reviewer/layout.tsx`** —
+  single-item nav (Dashboard only — neither portal has other pages in its
+  top-level nav). Same shell as everywhere else for chrome consistency even
+  though there's only one destination.
+- **`app/committee/dashboard/page.tsx`** — `PageHeader` + 8-stat `StatGrid`.
+- **`app/reviewer/dashboard/page.tsx`** — `PageHeader` + 4-stat `StatGrid`
+  (Assigned/Pending/Completed/Overdue).
+- **`app/registration-desk/layout.tsx`** — single-item nav (Registrations).
+  Role label reads "Admin" instead of "Registration Desk" when an actual
+  admin is viewing it (this portal's access check also allows admins
+  through, same as before).
+- **`app/registration-desk/page.tsx`** — the inline "X total · Y pending..."
+  text line replaced with a proper 5-stat `StatGrid` (Total/Pending/
+  Verified/Rejected/Attended); `PageHeader`'s `actions` slot now holds the
+  CSV/XLSX download buttons that used to sit in a hand-built flex row.
+
+### Verification (as executed)
+
+1. `npx tsc --noEmit -p .`, `npm run lint`, `npm run build` — all clean.
+2. Live visual check (desktop 1440px + mobile 390px) via four disposable
+   test accounts, one per role (`author`, `committee`, `reviewer`,
+   `registration_desk`), screenshotting each portal's dashboard: sidebar,
+   nav, active-route highlighting, stat cards, and mobile layout all
+   confirmed correct on every portal, including the single-nav-item
+   portals (committee/reviewer) and the registration-desk page's new stat
+   row.
+3. Committed, pushed, deployed, verified live: every portal's landing
+   route responds correctly (redirects to login when unauthenticated, not
+   a 500).
+
+**Status: Phase 2 shipped and live — the redesign now covers every internal
+portal.** Remaining optional follow-up (not requested, noted for
+completeness): the deeper subpages within each portal beyond the ones
+touched here (e.g. `/author/submissions/[id]`, `/reviewer/assignments/[id]`,
+`/committee/submissions/[id]`, admin's registrations/reviewers/subthemes/
+conference/notifications/audit-logs pages) still use their original,
+un-restyled content — they already inherit the new shell's chrome via the
+layout change, but their own internal layout/typography hasn't been swept
+for the same polish as the landing pages.
 
 **Status: in progress.**
