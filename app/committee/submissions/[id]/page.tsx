@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { proposeDecisionAction } from "./actions"
 import { DecisionAttachmentUpload } from "@/components/committee/decision-attachment-upload"
 import { DecisionForm } from "@/components/committee/decision-form"
+import { PageHeader } from "@/components/dashboard/page-header"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { requireRole } from "@/lib/auth"
@@ -85,13 +86,11 @@ export default async function CommitteeSubmissionDetailPage(
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">{submission.title || "Untitled"}</h1>
-          <p className="text-muted-foreground font-mono text-sm">{submission.reference_number}</p>
-        </div>
-        <Badge variant="secondary">{submission.status.replaceAll("_", " ")}</Badge>
-      </div>
+      <PageHeader
+        title={submission.title || "Untitled"}
+        description={<span className="font-mono">{submission.reference_number}</span>}
+        actions={<Badge variant="secondary">{submission.status.replaceAll("_", " ")}</Badge>}
+      />
 
       <Card>
         <CardHeader>

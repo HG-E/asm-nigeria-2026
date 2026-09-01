@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 
 import { declareConflictAction, saveReviewDraftAction, submitReviewAction } from "./actions"
+import { PageHeader } from "@/components/dashboard/page-header"
 import { ConflictDeclaration } from "@/components/reviewer/conflict-declaration"
 import { ReviewForm } from "@/components/reviewer/review-form"
 import { Badge } from "@/components/ui/badge"
@@ -53,13 +54,11 @@ export default async function ReviewAssignmentPage(
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">{submission.title}</h1>
-          <p className="text-muted-foreground font-mono text-sm">{submission.reference_number}</p>
-        </div>
-        <Badge variant="secondary">{assignment.status.replaceAll("_", " ")}</Badge>
-      </div>
+      <PageHeader
+        title={submission.title}
+        description={<span className="font-mono">{submission.reference_number}</span>}
+        actions={<Badge variant="secondary">{assignment.status.replaceAll("_", " ")}</Badge>}
+      />
 
       <Card>
         <CardHeader>

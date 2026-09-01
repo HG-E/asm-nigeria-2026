@@ -286,3 +286,65 @@ where it would live across the public site and every portal).
 
 **Status: Phase 4 shipped and live — dark mode now actually works,
 site-wide, following the visitor's OS/browser preference.**
+
+## Phase 5 — full-flow stress test, one real bug found, then the detail-page sweep
+
+Before touching anything else, ran a deliberate stress/edge-case pass on the
+two features covered in the operator guide sent to the product owner
+(registration desk access, and the committee/admin corrected-file flow),
+using only disposable `@example.com` accounts and disposable submissions —
+never touching real data. 11 checks total:
+
+- Registration desk sees every historical registration, not just new ones
+  (confirmed row-for-row against the database).
+- Registration desk is blocked from `/admin/exports` even by direct URL,
+  and from pulling other datasets (e.g. review results) via the general
+  export route.
+- Registration desk's own CSV export matches the database exactly.
+- A file attached to one decision round doesn't leak into a later round on
+  the same submission (multi-cycle isolation).
+- A wrong file type (`.exe`) and an oversized file are both rejected by the
+  attachment upload, not silently accepted.
+
+**Found and fixed a real bug in the process:** once a submission's first
+decision was finalized (e.g. Minor Revision), the committee/admin propose
+form permanently locked itself as "already finalized" — even after the
+author revised and resubmitted, putting the submission legitimately back
+into an awaiting-decision state. The code's own comment already described
+the intended fix ("a finalized decision from an earlier round is history,
+not a lock on the current round"), but the logic still gated on whether the
+*latest* decision was final rather than on the submission's *current*
+status. Fixed in both `app/committee/submissions/[id]/page.tsx` and
+`app/admin/submissions/[id]/page.tsx` (duplicated logic, admin doubles as
+committee via the role hierarchy): the propose form now only locks when the
+submission isn't currently awaiting a decision. Verified with a real
+two-round run (submit → minor revision + attachment → finalize → author
+resubmits → second decision proposed and finalized), and re-ran the
+existing single-round regression test to confirm no regression.
+
+**Then the detail-page sweep** (the "best next" item, agreed after the
+stress test): `app/admin/submissions/[id]/page.tsx`,
+`app/committee/submissions/[id]/page.tsx`, and
+`app/reviewer/assignments/[id]/page.tsx` all had the same plain
+`<h1>+<Badge>` header the list pages used to have — swapped to the shared
+`PageHeader`, badge moved into its `actions` slot, reference number kept in
+monospace via a styled description node.
+`app/author/submissions/[id]/page.tsx` was deliberately left as-is: it's a
+multi-step wizard in a single centered card (not a list-style page), and
+already reads cleanly in that format — forcing `PageHeader` onto it would
+fit worse, not better, so it was excluded rather than changed for
+uniformity's sake alone.
+
+### Verification (as executed)
+
+1. `npx tsc --noEmit -p .`, `npm run lint`, `npm run build` — all clean.
+2. Full stress-test script run twice (once caught the real bug above, once
+   confirmed the fix): 11/11 checks passed on the second run.
+3. Re-ran the permanent `npm run test:decision-attachment` regression test
+   after both the bug fix and the detail-page sweep — still passes.
+4. Live screenshots of `/admin/submissions/[id]` and the author's
+   revision-required view (via a disposable submission) to confirm the new
+   headers render correctly and nothing regressed.
+5. Committed, pushed, deployed, verified live.
+
+**Status: Phase 5 shipped and live.**
