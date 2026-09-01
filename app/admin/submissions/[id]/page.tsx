@@ -4,10 +4,12 @@ import { proposeDecisionAction } from "@/app/committee/submissions/[id]/actions"
 import { DecisionFinalizePanel } from "@/components/admin/decision-finalize-panel"
 import { PaymentVerificationPanel } from "@/components/admin/payment-verification-panel"
 import { ReviewerAssignmentPanel } from "@/components/admin/reviewer-assignment-panel"
+import { DecisionAttachmentUpload } from "@/components/committee/decision-attachment-upload"
 import { DecisionForm } from "@/components/committee/decision-form"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { requireRole } from "@/lib/auth"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 
 export default async function AdminSubmissionDetailPage(
@@ -80,6 +82,20 @@ export default async function AdminSubmissionDetailPage(
       .createSignedUrl(submission.payment_receipt_path, 60 * 10)
     receiptUrl = signed?.signedUrl ?? null
   }
+
+  // Signed separately from the draft-decision copy below: latestDecision may
+  // already be final (draftDecision null) by the time this page is viewed,
+  // and the Finalize panel needs to show whatever was actually attached
+  // regardless of whether a new round is currently proposable.
+  let latestAttachmentUrl: string | null = null
+  if (latestDecision?.attachment_path) {
+    const { data: signed } = await createAdminClient()
+      .storage.from("decision-attachments")
+      .createSignedUrl(latestDecision.attachment_path, 60 * 10)
+    latestAttachmentUrl = signed?.signedUrl ?? null
+  }
+  const draftAttachmentUrl =
+    draftDecision?.id === latestDecision?.id ? latestAttachmentUrl : null
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -238,6 +254,15 @@ export default async function AdminSubmissionDetailPage(
             }}
             onSave={proposeDecisionAction.bind(null, id)}
           />
+          <div className="mt-6 border-t pt-4">
+            <h3 className="mb-2 text-sm font-medium">Corrected file for author</h3>
+            <DecisionAttachmentUpload
+              submissionId={id}
+              decisionId={draftDecision?.id ?? null}
+              currentFileName={draftDecision?.attachment_file_name ?? null}
+              downloadUrl={draftAttachmentUrl}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -257,6 +282,8 @@ export default async function AdminSubmissionDetailPage(
                     authorMessage: latestDecision.author_message,
                     revisionDeadline: latestDecision.revision_deadline,
                     isFinal: latestDecision.is_final,
+                    attachmentFileName: latestDecision.attachment_file_name,
+                    attachmentUrl: latestAttachmentUrl,
                   }
                 : null
             }

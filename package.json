@@ -11,7 +11,8 @@
     "db:inspect-policies": "node --env-file=.env.local scripts/inspect-policies.mjs",
     "db:migrate": "node --env-file=.env.local scripts/apply-migration.mjs",
     "test:smoke": "node scripts/smoke-test.mjs",
-    "test:wizard": "node --env-file=.env.local scripts/wizard-e2e-test.mjs"
+    "test:wizard": "node --env-file=.env.local scripts/wizard-e2e-test.mjs",
+    "test:decision-attachment": "node --env-file=.env.local scripts/decision-attachment-e2e-test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

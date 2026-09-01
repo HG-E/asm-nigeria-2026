@@ -3,10 +3,16 @@
 import { revalidatePath } from "next/cache"
 
 import { requireRole } from "@/lib/auth"
+import { getActiveConference } from "@/lib/conference"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 import { decisionSchema, type DecisionInput } from "@/lib/validations/decision"
 
 export type ActionResult = { error: string } | { success: true }
+
+function sanitizeForPath(name: string): string {
+  return name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-150)
+}
 
 export async function proposeDecisionAction(
   submissionId: string,
@@ -87,5 +93,83 @@ export async function proposeDecisionAction(
   })
 
   revalidatePath(`/committee/submissions/${submissionId}`)
+  return { success: true }
+}
+
+export async function uploadDecisionAttachmentAction(
+  submissionId: string,
+  formData: FormData
+): Promise<ActionResult> {
+  const session = await requireRole("committee")
+
+  const file = formData.get("file")
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "Please choose a file to upload." }
+  }
+
+  const supabase = await createClient()
+
+  const { data: draft } = await supabase
+    .from("decisions")
+    .select("id, is_final, attachment_path")
+    .eq("submission_id", submissionId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (!draft) {
+    return { error: "Save the decision before attaching a file." }
+  }
+  if (draft.is_final) {
+    return { error: "This decision has already been finalized and can no longer be changed." }
+  }
+
+  const conference = await getActiveConference()
+  const extension = file.name.split(".").pop()?.toLowerCase() ?? ""
+  const maxBytes = (conference?.max_file_size_mb ?? 10) * 1024 * 1024
+  if (conference && !conference.allowed_file_types.includes(extension)) {
+    return { error: "This file type is not permitted." }
+  }
+  if (file.size > maxBytes) {
+    return { error: "This file exceeds the maximum size allowed." }
+  }
+
+  const admin = createAdminClient()
+  const path = `${submissionId}/${draft.id}-${Date.now()}-${sanitizeForPath(file.name)}`
+  const { error: uploadError } = await admin.storage
+    .from("decision-attachments")
+    .upload(path, await file.arrayBuffer(), { contentType: file.type || undefined })
+
+  if (uploadError) {
+    return { error: "Upload failed. Please try again." }
+  }
+
+  const { error: updateError } = await supabase
+    .from("decisions")
+    .update({ attachment_path: path, attachment_file_name: file.name })
+    .eq("id", draft.id)
+
+  if (updateError) {
+    await admin.storage.from("decision-attachments").remove([path])
+    return { error: "Could not save the attachment. Please try again." }
+  }
+
+  // Best-effort cleanup of the previous file when replacing; the new
+  // attachment is already committed above regardless of this outcome.
+  if (draft.attachment_path) {
+    await admin.storage.from("decision-attachments").remove([draft.attachment_path])
+  }
+
+  await supabase.from("audit_logs").insert({
+    actor_id: session.authUserId,
+    actor_email: session.email,
+    action: "decision_attachment_uploaded",
+    entity_type: "submission",
+    entity_id: submissionId,
+    metadata: { decision_id: draft.id, file_name: file.name },
+  })
+
+  revalidatePath(`/committee/submissions/${submissionId}`)
+  revalidatePath(`/admin/submissions/${submissionId}`)
   return { success: true }
 }

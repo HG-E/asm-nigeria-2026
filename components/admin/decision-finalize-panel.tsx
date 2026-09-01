@@ -1,6 +1,7 @@
 "use client"
 
 import { useTransition } from "react"
+import Link from "next/link"
 import { toast } from "sonner"
 
 import { finalizeDecisionAction } from "@/app/admin/submissions/[id]/actions"
@@ -14,6 +15,8 @@ type Decision = {
   authorMessage: string | null
   revisionDeadline: string | null
   isFinal: boolean
+  attachmentFileName: string | null
+  attachmentUrl: string | null
 }
 
 export function DecisionFinalizePanel({
@@ -63,6 +66,23 @@ export function DecisionFinalizePanel({
         <p>
           <span className="text-muted-foreground">Message to author: </span>
           {decision.authorMessage}
+        </p>
+      )}
+      {decision.attachmentFileName && (
+        <p>
+          <span className="text-muted-foreground">Attached file: </span>
+          {decision.attachmentUrl ? (
+            <Link
+              href={decision.attachmentUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary underline underline-offset-4"
+            >
+              {decision.attachmentFileName}
+            </Link>
+          ) : (
+            decision.attachmentFileName
+          )}
         </p>
       )}
       {decision.revisionDeadline && (

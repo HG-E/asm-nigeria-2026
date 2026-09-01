@@ -1,10 +1,12 @@
 import { notFound } from "next/navigation"
 
 import { proposeDecisionAction } from "./actions"
+import { DecisionAttachmentUpload } from "@/components/committee/decision-attachment-upload"
 import { DecisionForm } from "@/components/committee/decision-form"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { requireRole } from "@/lib/auth"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 
 export default async function CommitteeSubmissionDetailPage(
@@ -70,6 +72,14 @@ export default async function CommitteeSubmissionDetailPage(
   // pre-fill, which would misleadingly suggest it as the starting point
   // for a new round's proposal.
   const decisionToDisplay = hasFinalDecision ? latestDecision : draftDecision
+
+  let attachmentUrl: string | null = null
+  if (draftDecision?.attachment_path) {
+    const { data: signed } = await createAdminClient()
+      .storage.from("decision-attachments")
+      .createSignedUrl(draftDecision.attachment_path, 60 * 10)
+    attachmentUrl = signed?.signedUrl ?? null
+  }
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -200,6 +210,15 @@ export default async function CommitteeSubmissionDetailPage(
             }}
             onSave={proposeDecisionAction.bind(null, id)}
           />
+          <div className="mt-6 border-t pt-4">
+            <h3 className="mb-2 text-sm font-medium">Corrected file for author</h3>
+            <DecisionAttachmentUpload
+              submissionId={id}
+              decisionId={draftDecision?.id ?? null}
+              currentFileName={draftDecision?.attachment_file_name ?? null}
+              downloadUrl={attachmentUrl}
+            />
+          </div>
         </CardContent>
       </Card>
     </div>

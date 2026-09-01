@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { requireAuth } from "@/lib/auth"
 import { getActiveConference } from "@/lib/conference"
 import { STATUS_HINTS } from "@/lib/submission-status"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 import { WITHDRAWABLE_STATUSES } from "@/lib/validations/submission"
 
@@ -71,7 +72,7 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
           .maybeSingle(),
         supabase
           .from("decisions")
-          .select("author_message, revision_deadline")
+          .select("author_message, revision_deadline, attachment_path, attachment_file_name")
           .eq("submission_id", id)
           .order("created_at", { ascending: false })
           .limit(1)
@@ -79,6 +80,14 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
       ])
 
     const defaultAbstractText = draftVersion?.abstract_text ?? currentVersionRow?.abstract_text ?? ""
+
+    let decisionAttachmentUrl: string | null = null
+    if (decision?.attachment_path) {
+      const { data: signed } = await createAdminClient()
+        .storage.from("decision-attachments")
+        .createSignedUrl(decision.attachment_path, 60 * 10)
+      decisionAttachmentUrl = signed?.signedUrl ?? null
+    }
 
     return (
       <Card className="mx-auto max-w-2xl">
@@ -95,7 +104,7 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
             <dd className="capitalize">Revision required</dd>
           </dl>
 
-          {(decision?.author_message || decision?.revision_deadline) && (
+          {(decision?.author_message || decision?.revision_deadline || decision?.attachment_path) && (
             <Alert>
               <AlertDescription className="space-y-1">
                 {decision.revision_deadline && (
@@ -105,6 +114,19 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
                   </p>
                 )}
                 {decision.author_message && <p>{decision.author_message}</p>}
+                {decision.attachment_path && decisionAttachmentUrl && (
+                  <p>
+                    <Link
+                      href={decisionAttachmentUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline underline-offset-4"
+                    >
+                      Download reviewer&apos;s corrected file
+                      {decision.attachment_file_name ? ` (${decision.attachment_file_name})` : ""}
+                    </Link>
+                  </p>
+                )}
               </AlertDescription>
             </Alert>
           )}
@@ -139,13 +161,21 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
     const { data: finalDecision } = DECIDED_STATUSES.includes(submission.status)
       ? await supabase
           .from("decisions")
-          .select("decision, author_message")
+          .select("decision, author_message, attachment_path, attachment_file_name")
           .eq("submission_id", id)
           .eq("is_final", true)
           .order("created_at", { ascending: false })
           .limit(1)
           .maybeSingle()
       : { data: null }
+
+    let finalAttachmentUrl: string | null = null
+    if (finalDecision?.attachment_path) {
+      const { data: signed } = await createAdminClient()
+        .storage.from("decision-attachments")
+        .createSignedUrl(finalDecision.attachment_path, 60 * 10)
+      finalAttachmentUrl = signed?.signedUrl ?? null
+    }
 
     return (
       <Card className="mx-auto max-w-2xl">
@@ -178,13 +208,28 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
             </dd>
           </dl>
 
-          {finalDecision?.author_message && (
+          {(finalDecision?.author_message || finalDecision?.attachment_path) && (
             <Alert
               variant={
                 finalDecision.decision === "rejected" ? "destructive" : "default"
               }
             >
-              <AlertDescription>{finalDecision.author_message}</AlertDescription>
+              <AlertDescription className="space-y-1">
+                {finalDecision.author_message && <p>{finalDecision.author_message}</p>}
+                {finalDecision.attachment_path && finalAttachmentUrl && (
+                  <p>
+                    <Link
+                      href={finalAttachmentUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline underline-offset-4"
+                    >
+                      Download reviewer&apos;s corrected file
+                      {finalDecision.attachment_file_name ? ` (${finalDecision.attachment_file_name})` : ""}
+                    </Link>
+                  </p>
+                )}
+              </AlertDescription>
             </Alert>
           )}
 

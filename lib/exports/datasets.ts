@@ -279,6 +279,44 @@ export const EXPORT_DATASETS: ExportDataset[] = [
       return { headers, rows }
     },
   },
+  {
+    slug: "conference-registrations",
+    label: "Conference Registrations",
+    description: "All conference attendance registrations, for badge printing and check-in.",
+    async fetch(supabase) {
+      const { data } = await supabase
+        .from("conference_registrations")
+        .select(
+          "reference_number, full_name, email, phone, institution, participant_category, attendance_mode, payment_status, attended, created_at"
+        )
+        .order("created_at")
+      const headers = [
+        "Reference Number",
+        "Full Name",
+        "Email",
+        "Phone",
+        "Institution",
+        "Participant Category",
+        "Attendance Mode",
+        "Payment Status",
+        "Attended",
+        "Registered At",
+      ]
+      const rows = (data ?? []).map((r): ExportCell[] => [
+        r.reference_number,
+        r.full_name,
+        r.email,
+        r.phone,
+        r.institution,
+        r.participant_category,
+        r.attendance_mode,
+        r.payment_status,
+        r.attended ? "Yes" : "No",
+        r.created_at,
+      ])
+      return { headers, rows }
+    },
+  },
 ]
 
 export function getDataset(slug: string): ExportDataset | undefined {

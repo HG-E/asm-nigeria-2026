@@ -854,6 +854,8 @@ export type Database = {
           author_message: string | null
           revision_deadline: string | null
           is_final: boolean
+          attachment_path: string | null
+          attachment_file_name: string | null
           created_at: string
           updated_at: string
         }
@@ -867,6 +869,8 @@ export type Database = {
           author_message?: string | null
           revision_deadline?: string | null
           is_final?: boolean
+          attachment_path?: string | null
+          attachment_file_name?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -880,6 +884,8 @@ export type Database = {
           author_message?: string | null
           revision_deadline?: string | null
           is_final?: boolean
+          attachment_path?: string | null
+          attachment_file_name?: string | null
           created_at?: string
           updated_at?: string
         }
