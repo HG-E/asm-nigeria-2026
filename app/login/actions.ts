@@ -62,6 +62,7 @@ export async function loginAction(input: LoginInput): Promise<LoginResult> {
       committee: "/committee/dashboard",
       admin: "/admin/dashboard",
       super_admin: "/admin/dashboard",
+      registration_desk: "/registration-desk",
     }[profile?.role ?? "author"] ?? "/author/dashboard"
 
   return { success: true, redirectTo }

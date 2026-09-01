@@ -16,6 +16,7 @@ const NAV = [
   { href: "/admin/registrations", label: "Registrations" },
   { href: "/admin/reviewers", label: "Reviewers" },
   { href: "/admin/committee", label: "Committee" },
+  { href: "/admin/registration-desk", label: "Registration Desk" },
   { href: "/admin/subthemes", label: "Subthemes" },
   { href: "/admin/conference", label: "Conference" },
   { href: "/admin/notifications", label: "Notifications" },

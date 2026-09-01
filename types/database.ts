@@ -1139,7 +1139,7 @@ export type Database = {
         | "accepted_poster"
         | "rejected"
         | "withdrawn"
-      user_role: "author" | "reviewer" | "committee" | "admin" | "super_admin"
+      user_role: "author" | "reviewer" | "committee" | "admin" | "super_admin" | "registration_desk"
     }
   }
 }

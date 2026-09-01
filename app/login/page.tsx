@@ -26,6 +26,7 @@ const DASHBOARD_BY_ROLE: Record<string, string> = {
   committee: "/committee/dashboard",
   admin: "/admin/dashboard",
   super_admin: "/admin/dashboard",
+  registration_desk: "/registration-desk",
 }
 
 export default async function LoginPage(props: PageProps<"/login">) {

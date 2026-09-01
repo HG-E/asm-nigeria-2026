@@ -43,6 +43,7 @@ export async function requireAuth() {
 // UX-layer guard only. RLS is the actual trust boundary.
 const ROLE_RANK: Record<UserRole, number> = {
   author: 0,
+  registration_desk: 0,
   reviewer: 1,
   committee: 2,
   admin: 3,
@@ -52,6 +53,20 @@ const ROLE_RANK: Record<UserRole, number> = {
 export async function requireRole(minimumRole: UserRole) {
   const session = await requireAuth()
   if (ROLE_RANK[session.profile.role] < ROLE_RANK[minimumRole]) {
+    redirect("/")
+  }
+  return session
+}
+
+// registration_desk sits beside the author<reviewer<committee<admin ladder,
+// not on it -- it needs exactly one capability (viewing registrations)
+// regardless of rank, so this checks role identity rather than a floor.
+// Admins/super_admins still pass, matching how they already see
+// /admin/registrations.
+export async function requireRegistrationAccess() {
+  const session = await requireAuth()
+  const role = session.profile.role
+  if (role !== "registration_desk" && ROLE_RANK[role] < ROLE_RANK.admin) {
     redirect("/")
   }
   return session
