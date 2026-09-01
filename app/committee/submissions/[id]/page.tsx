@@ -56,14 +56,16 @@ export default async function CommitteeSubmissionDetailPage(
   // A finalized decision from an earlier review round (the committee asked
   // for a revision, the author resubmitted) is history, not a lock on the
   // current round -- only the submission's own status says whether a new
-  // decision can be proposed right now. Distinguish "already decided" from
-  // "not decided yet, reviews still in progress" -- both lock the form, but
-  // showing the same "finalized and can no longer be changed" copy for a
-  // submission with zero decision history was actively misleading.
+  // decision can be proposed right now. Gate on that status FIRST: if the
+  // submission is back in a decidable status, the form is open regardless
+  // of any past final decision (bug found via testing: checking
+  // `latestDecision.is_final` first permanently locked the form after the
+  // very first decision, even once the author resubmitted and a genuine
+  // second round was awaiting one).
   const DECIDABLE_STATUSES = ["reviews_completed", "decision_pending"]
+  const isDecidableNow = DECIDABLE_STATUSES.includes(submission.status)
   const hasFinalDecision = latestDecision?.is_final ?? false
-  const isNotYetDecidable = !hasFinalDecision && !DECIDABLE_STATUSES.includes(submission.status)
-  const lockReason = hasFinalDecision ? "final" : isNotYetDecidable ? "not_decidable" : null
+  const lockReason = isDecidableNow ? null : hasFinalDecision ? "final" : "not_decidable"
   const draftDecision = latestDecision && !latestDecision.is_final ? latestDecision : null
   // What the form should show: the actual final decision once locked (so a
   // committee member reviewing it back sees what was really decided,
@@ -71,7 +73,7 @@ export default async function CommitteeSubmissionDetailPage(
   // is still being proposed -- never a past round's final decision as a
   // pre-fill, which would misleadingly suggest it as the starting point
   // for a new round's proposal.
-  const decisionToDisplay = hasFinalDecision ? latestDecision : draftDecision
+  const decisionToDisplay = lockReason === "final" ? latestDecision : draftDecision
 
   let attachmentUrl: string | null = null
   if (draftDecision?.attachment_path) {

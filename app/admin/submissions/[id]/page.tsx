@@ -62,12 +62,18 @@ export default async function AdminSubmissionDetailPage(
   // via the role hierarchy -- this mirrors /committee/submissions/[id]'s propose
   // form directly on the admin page so ASM can propose AND finalize in one place,
   // without needing a separate committee-role account for a single-person review.
+  //
+  // Gate on the submission's current status FIRST, not on whether the latest
+  // decision happens to be final -- a past round's final decision is history,
+  // not a permanent lock, once the author has resubmitted and the submission
+  // is legitimately back in a decidable status (bug found via testing:
+  // checking is_final first blocked ever proposing a second decision at all).
   const DECIDABLE_STATUSES = ["reviews_completed", "decision_pending"]
+  const isDecidableNow = DECIDABLE_STATUSES.includes(submission.status)
   const hasFinalDecision = latestDecision?.is_final ?? false
-  const isNotYetDecidable = !hasFinalDecision && !DECIDABLE_STATUSES.includes(submission.status)
-  const proposeLockReason = hasFinalDecision ? "final" : isNotYetDecidable ? "not_decidable" : null
+  const proposeLockReason = isDecidableNow ? null : hasFinalDecision ? "final" : "not_decidable"
   const draftDecision = latestDecision && !latestDecision.is_final ? latestDecision : null
-  const decisionToPropose = hasFinalDecision ? latestDecision : draftDecision
+  const decisionToPropose = proposeLockReason === "final" ? latestDecision : draftDecision
 
   const { data: reviewerPool } = await supabase
     .from("reviewer_profiles")
