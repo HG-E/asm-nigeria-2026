@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Source_Serif_4 } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { InstallPrompt } from "@/components/install-prompt";
 import { OfflineBanner } from "@/components/offline-banner";
@@ -59,6 +60,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${sourceSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* The full dark-mode token set in globals.css (.dark { ... }) has
+            never had anything to actually apply the "dark" class -- this
+            is that switch, following the OS/browser preference. Runs
+            before paint (beforeInteractive) so there's no flash of the
+            wrong theme, and only touches documentElement.classList, so it
+            can't cause a hydration mismatch. */}
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`try {
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+              document.documentElement.classList.add('dark');
+            }
+          } catch (e) {}`}
+        </Script>
         <OrganizationJsonLd />
         <RegisterServiceWorker />
         <OfflineBanner />

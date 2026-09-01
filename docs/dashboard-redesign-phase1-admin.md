@@ -243,3 +243,46 @@ which would work against the "fast load" ask.
 5. Committed, pushed, deployed, verified live.
 
 **Status: Phase 3 shipped and live.**
+
+## Phase 4 — dark mode was never actually activating (found and fixed)
+
+Went to close out the Phase 1/2/3 "dark mode not explicitly verified" caveat
+and found dark mode had never worked on this site at all — not something
+this redesign broke, a pre-existing gap. `app/globals.css` has a complete,
+correctly-designed `.dark { ... }` token block (confirmed: `--background`,
+`--primary`, `--sidebar*`, every token has a real dark counterpart), gated
+by Tailwind's `@custom-variant dark (&:is(.dark *));` — i.e. it only
+activates when something adds a `dark` class to an ancestor element.
+Nothing in the codebase ever did that: no theme provider, no toggle
+component, no script reading `prefers-color-scheme`. Confirmed via grep
+that zero `dark:`-prefixed Tailwind utility classes are used anywhere
+either, so this wasn't a partially-working system — the entire dark
+palette was unreachable dead code, and every visitor saw light mode
+regardless of their OS setting.
+
+**Fix**: `app/layout.tsx` now has a small inline script
+(`next/script`, `strategy="beforeInteractive"` — runs before paint, so
+there's no flash of the wrong theme) that checks
+`window.matchMedia('(prefers-color-scheme: dark)')` and adds the `dark`
+class to `documentElement` if the OS/browser prefers dark. This is the
+standard technique (the same one libraries like `next-themes` use
+internally) — auto-follows system preference, no user-facing toggle added
+(none was requested; adding one is a separate, bigger UI decision about
+where it would live across the public site and every portal).
+
+### Verification
+
+1. `npx tsc --noEmit -p .` — clean.
+2. Live check: emulated `prefers-color-scheme: dark` in a real browser
+   session, logged in as a disposable admin account, and confirmed dark
+   mode now genuinely activates — before the fix, screenshots came back in
+   light colors despite the emulated preference; after, the sidebar, stat
+   cards, and sticky-column tables (scrolled right, to specifically check
+   the sticky column's background adapts rather than showing a light seam
+   against the dark row) all rendered correctly with proper contrast.
+   Confirmed on `/admin/dashboard`, `/admin/registrations` (including
+   scrolled), `/admin/exports`, and mobile.
+3. Committed, pushed, deployed.
+
+**Status: Phase 4 shipped and live — dark mode now actually works,
+site-wide, following the visitor's OS/browser preference.**
