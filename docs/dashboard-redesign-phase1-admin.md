@@ -172,13 +172,74 @@ in-progress, gold = accepted/pending, red = rejected, muted = neutral).
    a 500).
 
 **Status: Phase 2 shipped and live — the redesign now covers every internal
-portal.** Remaining optional follow-up (not requested, noted for
-completeness): the deeper subpages within each portal beyond the ones
-touched here (e.g. `/author/submissions/[id]`, `/reviewer/assignments/[id]`,
-`/committee/submissions/[id]`, admin's registrations/reviewers/subthemes/
-conference/notifications/audit-logs pages) still use their original,
-un-restyled content — they already inherit the new shell's chrome via the
-layout change, but their own internal layout/typography hasn't been swept
-for the same polish as the landing pages.
+portal.**
 
-**Status: in progress.**
+## Phase 3 — real bug fix (sticky table columns) + full admin subpage sweep + hover/animation polish
+
+Product owner flagged a real, concrete bug with a screenshot: on
+`/admin/registrations`, scrolling the table horizontally lost the Reference
+and Name columns — the only way to identify which row was which — leaving
+Category/Amount/Files/Status visible with no way to tell whose record it
+was. This is a well-known data-table problem with a standard fix used by
+every comparable product (Stripe, Linear, GitHub, Notion, Airtable all pin
+an identity column): make the leftmost "who is this row" column `sticky
+left-0`, so it never scrolls out of view.
+
+**The fix, applied to every table wide enough to need it:**
+`/admin/registrations`, `/admin/submissions`, `/admin/notifications`,
+`/admin/reviewers`, `/admin/committee`, `/admin/audit-logs`, and the
+registration-desk portal's own table. In each case the identity information
+(name/title + its secondary identifier — email, reference number, or
+timestamp) was merged into a single cell where it wasn't already, then
+pinned with `sticky left-0 z-10 bg-card border-r` on both the header and
+body cells — `bg-card` so scrolled content doesn't show through, `border-r`
+as a visible separator, matching the same treatment on `<th>` and `<td>` so
+header and body stay aligned. This also *reduced* column count on the
+widest tables (registrations 8→7, submissions 7→6, notifications 8→7),
+which independently helps: less to scroll through in the first place.
+
+**Full admin subpage sweep:** every remaining `/admin/*` page that still had
+a plain `<h1>+<p>` header (`reviewers`, `subthemes`, `conference`,
+`notifications`, `audit-logs`, `exports`, `committee`, `registration-desk`)
+now uses the shared `PageHeader`, matching the pages already converted in
+Phases 1–2 — this was the "little misalignment" the product owner was
+seeing: inconsistent header treatment page-to-page.
+
+**Hover and entrance animation, CSS-only (no new dependency, no runtime
+cost):** this project already has `tw-animate-css` installed and in use
+elsewhere (`TooltipContent` already used its `animate-in`/`fade-in`/
+`zoom-in` utilities) — reused it rather than adding a JS animation library,
+which would work against the "fast load" ask.
+- `StatCard`: hover lift (`-translate-y-0.5` + `shadow-md`) and a subtle
+  icon-circle scale on hover.
+- `StatGrid` / `PageHeader`: a brief fade+slide-up on mount
+  (`animate-in fade-in-0 slide-in-from-bottom-*`).
+- `DashboardShell`'s sidebar nav items: added `transition-colors` so the
+  hover/active state change isn't an instant snap.
+- Exports page's dataset cards: same hover-lift + entrance animation as
+  `StatCard`, for visual consistency between the two card grids admins see
+  most.
+
+### Verification (as executed)
+
+1. `npx tsc --noEmit -p .`, `npm run lint`, `npm run build` — all clean.
+2. Live verification with a disposable admin test account, specifically
+   targeting the reported bug: navigated to each fixed table and
+   programmatically scrolled it fully right, screenshotting before and
+   after — confirmed the identity column stays pinned and readable while
+   the rest of the row scrolls underneath it, on `/admin/registrations`
+   (the exact page from the bug report), `/admin/submissions`, and the
+   registration-desk portal. `/admin/notifications` didn't have anything to
+   scroll at the tested viewport width (its columns already fit), so the
+   sticky styling there is inert-but-correct — it activates automatically
+   on narrower screens or longer content.
+3. Screenshotted every other touched admin subpage (dashboard, reviewers,
+   committee, audit-logs, exports, subthemes, conference,
+   admin/registration-desk) to confirm `PageHeader` renders consistently
+   and nothing regressed.
+4. Dark mode not explicitly screenshotted this pass either — same standing
+   caveat as Phase 1, relies on existing `.dark` tokens rather than new
+   logic.
+5. Committed, pushed, deployed, verified live.
+
+**Status: Phase 3 shipped and live.**

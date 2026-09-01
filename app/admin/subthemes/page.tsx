@@ -1,5 +1,6 @@
 import { createSubthemeAction, updateSubthemeAction } from "./actions"
 import { SubthemeEditor } from "@/components/admin/subtheme-editor"
+import { PageHeader } from "@/components/dashboard/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { requireRole } from "@/lib/auth"
 import { createClient } from "@/lib/supabase/server"
@@ -24,13 +25,10 @@ export default async function AdminSubthemesPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Subthemes</h1>
-        <p className="text-muted-foreground text-sm">
-          Authors select from these when submitting an abstract. Inactive subthemes are
-          hidden from authors but still shown here so they can be re-enabled.
-        </p>
-      </div>
+      <PageHeader
+        title="Subthemes"
+        description="Authors select from these when submitting an abstract. Inactive subthemes are hidden from authors but still shown here so they can be re-enabled."
+      />
 
       <div className="space-y-4">
         {subthemes?.map((subtheme) => (

@@ -120,12 +120,11 @@ export default async function RegistrationDeskPage(props: PageProps<"/registrati
         <CardHeader>
           <CardTitle className="text-base">Registrations</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0 sm:px-6">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Reference</TableHead>
-                <TableHead>Name</TableHead>
+                <TableHead className="bg-card sticky left-0 z-10 border-r">Registrant</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Files</TableHead>
@@ -136,10 +135,10 @@ export default async function RegistrationDeskPage(props: PageProps<"/registrati
             <TableBody>
               {(registrations ?? []).map((r) => (
                 <TableRow key={r.id}>
-                  <TableCell className="font-mono text-xs">{r.reference_number ?? "—"}</TableCell>
-                  <TableCell>
-                    <div>{r.full_name}</div>
+                  <TableCell className="bg-card sticky left-0 z-10 border-r">
+                    <div className="font-medium">{r.full_name}</div>
                     <div className="text-muted-foreground text-xs">{r.email}</div>
+                    <div className="text-muted-foreground font-mono text-xs">{r.reference_number ?? "—"}</div>
                   </TableCell>
                   <TableCell className="text-sm">
                     {r.participant_category}
@@ -181,7 +180,7 @@ export default async function RegistrationDeskPage(props: PageProps<"/registrati
               ))}
               {(registrations?.length ?? 0) === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-muted-foreground text-center">
+                  <TableCell colSpan={6} className="text-muted-foreground text-center">
                     No registrations yet.
                   </TableCell>
                 </TableRow>

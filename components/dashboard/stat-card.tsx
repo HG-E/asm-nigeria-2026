@@ -26,12 +26,12 @@ export function StatCard({
   hint?: string
 }) {
   return (
-    <Card>
+    <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
       <CardContent className="flex items-center gap-3">
         {Icon && (
           <div
             className={cn(
-              "flex size-9 shrink-0 items-center justify-center rounded-lg",
+              "flex size-9 shrink-0 items-center justify-center rounded-lg transition-transform duration-200 group-hover/card:scale-105",
               ACCENT_ICON_CLASSES[accent]
             )}
           >
@@ -56,7 +56,12 @@ export function StatGrid({
   className?: string
 }) {
   return (
-    <div className={cn("grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5", className)}>
+    <div
+      className={cn(
+        "animate-in fade-in-0 slide-in-from-bottom-2 grid grid-cols-2 gap-4 duration-500 sm:grid-cols-3 lg:grid-cols-5",
+        className
+      )}
+    >
       {children}
     </div>
   )

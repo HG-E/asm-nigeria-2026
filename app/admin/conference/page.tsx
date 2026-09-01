@@ -1,5 +1,6 @@
 import { updateConferenceAction } from "./actions"
 import { ConferenceSettingsForm } from "@/components/admin/conference-settings-form"
+import { PageHeader } from "@/components/dashboard/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { requireRole } from "@/lib/auth"
 import { createClient } from "@/lib/supabase/server"
@@ -24,13 +25,10 @@ export default async function AdminConferencePage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Conference Settings</h1>
-        <p className="text-muted-foreground text-sm">
-          These settings apply conference-wide, including the abstract word limit and
-          file rules enforced during submission.
-        </p>
-      </div>
+      <PageHeader
+        title="Conference Settings"
+        description="These settings apply conference-wide, including the abstract word limit and file rules enforced during submission."
+      />
       <Card>
         <CardHeader>
           <CardTitle className="text-base">{conference.name}</CardTitle>

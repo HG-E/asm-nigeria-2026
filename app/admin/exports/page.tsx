@@ -1,3 +1,4 @@
+import { PageHeader } from "@/components/dashboard/page-header"
 import { buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { EXPORT_DATASETS } from "@/lib/exports/datasets"
@@ -9,17 +10,14 @@ export default async function AdminExportsPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Exports</h1>
-        <p className="text-muted-foreground text-sm">
-          Download submission records for the Book of Abstracts, reviewer records, and
-          conference reporting.
-        </p>
-      </div>
+      <PageHeader
+        title="Exports"
+        description="Download submission records for the Book of Abstracts, reviewer records, and conference reporting."
+      />
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="animate-in fade-in-0 slide-in-from-bottom-2 grid gap-4 duration-500 sm:grid-cols-2">
         {EXPORT_DATASETS.map((dataset) => (
-          <Card key={dataset.slug}>
+          <Card key={dataset.slug} className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
             <CardHeader>
               <CardTitle className="text-base">{dataset.label}</CardTitle>
               <CardDescription>{dataset.description}</CardDescription>

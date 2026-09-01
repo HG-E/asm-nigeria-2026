@@ -1,5 +1,6 @@
 import { AddCommitteeForm } from "@/components/admin/add-committee-form"
 import { CommitteeRow } from "@/components/admin/committee-row"
+import { PageHeader } from "@/components/dashboard/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Table,
@@ -23,13 +24,10 @@ export default async function AdminCommitteePage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Scientific Committee</h1>
-        <p className="text-muted-foreground text-sm">
-          Committee members review reviewer scores and recommendations, and propose final
-          decisions for admin sign-off.
-        </p>
-      </div>
+      <PageHeader
+        title="Scientific Committee"
+        description="Committee members review reviewer scores and recommendations, and propose final decisions for admin sign-off."
+      />
 
       <Card>
         <CardHeader>
@@ -44,16 +42,15 @@ export default async function AdminCommitteePage() {
         <CardHeader>
           <CardTitle>Current Members ({members?.length ?? 0})</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0 sm:px-6">
           {!members || members.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No committee members added yet.</p>
+            <p className="text-muted-foreground px-6 text-sm sm:px-0">No committee members added yet.</p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
+                  <TableHead className="bg-card sticky left-0 z-10 border-r">Member</TableHead>
                   <TableHead>Title</TableHead>
-                  <TableHead>Email</TableHead>
                   <TableHead>Institution</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead />
@@ -62,11 +59,13 @@ export default async function AdminCommitteePage() {
               <TableBody>
                 {members.map((m) => (
                   <TableRow key={m.id}>
-                    <TableCell>
-                      {m.user_profiles?.first_name} {m.user_profiles?.last_name}
+                    <TableCell className="bg-card sticky left-0 z-10 border-r">
+                      <div className="font-medium">
+                        {m.user_profiles?.first_name} {m.user_profiles?.last_name}
+                      </div>
+                      <div className="text-muted-foreground text-xs">{m.user_profiles?.email}</div>
                     </TableCell>
                     <TableCell>{m.title ?? "—"}</TableCell>
-                    <TableCell>{m.user_profiles?.email}</TableCell>
                     <TableCell>{m.user_profiles?.institution ?? "—"}</TableCell>
                     <TableCell colSpan={2}>
                       <CommitteeRow memberId={m.id} isActive={m.is_active} />

@@ -67,7 +67,12 @@ export function DashboardShell({
                     const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
                     return (
                       <SidebarMenuItem key={item.href}>
-                        <SidebarMenuButton isActive={isActive} tooltip={item.label} render={<Link href={item.href} />}>
+                        <SidebarMenuButton
+                          isActive={isActive}
+                          tooltip={item.label}
+                          className="transition-colors duration-150"
+                          render={<Link href={item.href} />}
+                        >
                           {item.icon}
                           <span>{item.label}</span>
                         </SidebarMenuButton>

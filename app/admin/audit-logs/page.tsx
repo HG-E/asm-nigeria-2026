@@ -1,3 +1,4 @@
+import { PageHeader } from "@/components/dashboard/page-header"
 import {
   Card,
   CardContent,
@@ -27,17 +28,12 @@ export default async function AdminAuditLogsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Audit Logs</h1>
-        <p className="text-muted-foreground text-sm">
-          Most recent 200 system actions.
-        </p>
-      </div>
+      <PageHeader title="Audit Logs" description="Most recent 200 system actions." />
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Recent activity</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0 sm:px-6">
           {!logs || logs.length === 0 ? (
             <p className="text-muted-foreground py-8 text-center text-sm">
               No activity recorded yet.
@@ -46,7 +42,7 @@ export default async function AdminAuditLogsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>When</TableHead>
+                  <TableHead className="bg-card sticky left-0 z-10 border-r">When</TableHead>
                   <TableHead>Actor</TableHead>
                   <TableHead>Action</TableHead>
                   <TableHead>Entity</TableHead>
@@ -56,7 +52,7 @@ export default async function AdminAuditLogsPage() {
               <TableBody>
                 {logs.map((log) => (
                   <TableRow key={log.id}>
-                    <TableCell className="text-muted-foreground text-xs">
+                    <TableCell className="bg-card sticky left-0 z-10 border-r text-xs text-nowrap">
                       {new Date(log.created_at).toLocaleString()}
                     </TableCell>
                     <TableCell>{log.actor_email ?? "System"}</TableCell>

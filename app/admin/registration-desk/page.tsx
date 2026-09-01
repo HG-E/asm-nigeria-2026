@@ -1,4 +1,5 @@
 import { AddRegistrationDeskForm } from "@/components/admin/add-registration-desk-form"
+import { PageHeader } from "@/components/dashboard/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Table,
@@ -26,14 +27,16 @@ export default async function AdminRegistrationDeskPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Registration Desk</h1>
-        <p className="text-muted-foreground text-sm">
-          Registration desk accounts can view and export the conference registrations list at{" "}
-          <code>/registration-desk</code> — nothing else. They cannot see abstracts, reviews,
-          decisions, or committee data.
-        </p>
-      </div>
+      <PageHeader
+        title="Registration Desk"
+        description={
+          <>
+            Registration desk accounts can view and export the conference registrations list at{" "}
+            <code>/registration-desk</code> — nothing else. They cannot see abstracts, reviews,
+            decisions, or committee data.
+          </>
+        }
+      />
 
       <Card>
         <CardHeader>

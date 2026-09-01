@@ -120,7 +120,7 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
             Results{submissions ? ` (${submissions.length})` : ""}
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0 sm:px-6">
           {!submissions || submissions.length === 0 ? (
             <p className="text-muted-foreground py-8 text-center text-sm">
               No submissions match your search.
@@ -129,8 +129,7 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Reference</TableHead>
-                  <TableHead>Title</TableHead>
+                  <TableHead className="bg-card sticky left-0 z-10 border-r">Submission</TableHead>
                   <TableHead>Author</TableHead>
                   <TableHead>Subtheme</TableHead>
                   <TableHead>Status</TableHead>
@@ -141,13 +140,11 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
               <TableBody>
                 {submissions.map((s) => (
                   <TableRow key={s.id}>
-                    <TableCell className="font-mono text-xs">
-                      {s.reference_number ?? "—"}
-                    </TableCell>
-                    <TableCell className="max-w-xs truncate">
-                      <Link href={`/admin/submissions/${s.id}`} className="hover:underline">
+                    <TableCell className="bg-card sticky left-0 z-10 max-w-64 border-r">
+                      <Link href={`/admin/submissions/${s.id}`} className="block truncate font-medium hover:underline">
                         {s.title || "Untitled"}
                       </Link>
+                      <div className="text-muted-foreground font-mono text-xs">{s.reference_number ?? "—"}</div>
                     </TableCell>
                     <TableCell>
                       {s.user_profiles

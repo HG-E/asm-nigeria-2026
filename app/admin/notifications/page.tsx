@@ -1,6 +1,10 @@
+import { CheckCheck, Clock, Layers, XCircle } from "lucide-react"
+
 import { RetryNotificationButton } from "@/components/admin/retry-notification-button"
+import { PageHeader } from "@/components/dashboard/page-header"
+import { StatCard, StatGrid, type StatAccent } from "@/components/dashboard/stat-card"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -43,36 +47,31 @@ export default async function AdminNotificationsPage() {
     failed: rows.filter((n) => n.status === "failed").length,
   }
 
+  const cards: { label: string; value: number; icon: typeof Layers; accent: StatAccent }[] = [
+    { label: "Total", value: summary.total, icon: Layers, accent: "muted" },
+    { label: "Sent", value: summary.sent, icon: CheckCheck, accent: "gold" },
+    { label: "Pending", value: summary.pending, icon: Clock, accent: "blue" },
+    { label: "Failed", value: summary.failed, icon: XCircle, accent: "red" },
+  ]
+
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Notifications</h1>
-        <p className="text-muted-foreground text-sm">
-          Every email the system has attempted to send, most recent 200.
-        </p>
-      </div>
+      <PageHeader
+        title="Notifications"
+        description="Every email the system has attempted to send, most recent 200."
+      />
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {[
-          ["Total", summary.total],
-          ["Sent", summary.sent],
-          ["Pending", summary.pending],
-          ["Failed", summary.failed],
-        ].map(([label, value]) => (
-          <Card key={label as string}>
-            <CardHeader className="pb-2">
-              <CardDescription>{label}</CardDescription>
-              <CardTitle className="text-2xl">{value}</CardTitle>
-            </CardHeader>
-          </Card>
+      <StatGrid className="sm:grid-cols-4">
+        {cards.map((s) => (
+          <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} accent={s.accent} />
         ))}
-      </div>
+      </StatGrid>
 
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Log</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0 sm:px-6">
           {rows.length === 0 ? (
             <p className="text-muted-foreground py-8 text-center text-sm">
               No notifications recorded yet.
@@ -81,8 +80,7 @@ export default async function AdminNotificationsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>When</TableHead>
-                  <TableHead>Recipient</TableHead>
+                  <TableHead className="bg-card sticky left-0 z-10 border-r">Recipient</TableHead>
                   <TableHead>Submission</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Subject</TableHead>
@@ -94,10 +92,12 @@ export default async function AdminNotificationsPage() {
               <TableBody>
                 {rows.map((n) => (
                   <TableRow key={n.id}>
-                    <TableCell className="text-muted-foreground text-xs">
-                      {new Date(n.created_at).toLocaleString()}
+                    <TableCell className="bg-card sticky left-0 z-10 max-w-48 border-r">
+                      <div className="truncate text-xs">{n.recipient_email}</div>
+                      <div className="text-muted-foreground text-xs">
+                        {new Date(n.created_at).toLocaleString()}
+                      </div>
                     </TableCell>
-                    <TableCell className="max-w-48 truncate text-xs">{n.recipient_email}</TableCell>
                     <TableCell className="font-mono text-xs">
                       {n.submissions?.reference_number ?? "—"}
                     </TableCell>

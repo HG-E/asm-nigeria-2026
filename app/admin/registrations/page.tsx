@@ -1,7 +1,10 @@
 import Link from "next/link"
+import { CheckCheck, Clock, Layers, UserCheck, XCircle } from "lucide-react"
 
 import { AttendedToggle } from "@/components/admin/attended-toggle"
 import { RegistrationVerificationPanel } from "@/components/admin/registration-verification-panel"
+import { PageHeader } from "@/components/dashboard/page-header"
+import { StatCard, StatGrid, type StatAccent } from "@/components/dashboard/stat-card"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -65,15 +68,23 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
     attended: registrations?.filter((r) => r.attended).length ?? 0,
   }
 
+  const summary: { label: string; value: number; icon: typeof Layers; accent: StatAccent }[] = [
+    { label: "Total", value: counts.total, icon: Layers, accent: "muted" },
+    { label: "Pending", value: counts.pending, icon: Clock, accent: "gold" },
+    { label: "Verified", value: counts.verified, icon: CheckCheck, accent: "gold" },
+    { label: "Rejected", value: counts.rejected, icon: XCircle, accent: "red" },
+    { label: "Attended", value: counts.attended, icon: UserCheck, accent: "blue" },
+  ]
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Conference Registrations</h1>
-        <p className="text-muted-foreground text-sm">
-          {counts.total} total · {counts.pending} pending · {counts.verified} verified · {counts.rejected} rejected ·{" "}
-          {counts.attended} attended
-        </p>
-      </div>
+      <PageHeader title="Conference Registrations" description="All conference attendance registrations." />
+
+      <StatGrid>
+        {summary.map((s) => (
+          <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} accent={s.accent} />
+        ))}
+      </StatGrid>
 
       <form className="flex flex-wrap gap-3">
         <Input name="q" placeholder="Search name, email, or reference" defaultValue={q} className="max-w-xs" />
@@ -96,12 +107,11 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
         <CardHeader>
           <CardTitle className="text-base">Registrations</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0 sm:px-6">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Reference</TableHead>
-                <TableHead>Name</TableHead>
+                <TableHead className="bg-card sticky left-0 z-10 border-r">Registrant</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Files</TableHead>
@@ -113,10 +123,10 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
             <TableBody>
               {(registrations ?? []).map((r) => (
                 <TableRow key={r.id}>
-                  <TableCell className="font-mono text-xs">{r.reference_number ?? "—"}</TableCell>
-                  <TableCell>
-                    <div>{r.full_name}</div>
+                  <TableCell className="bg-card sticky left-0 z-10 border-r">
+                    <div className="font-medium">{r.full_name}</div>
                     <div className="text-muted-foreground text-xs">{r.email}</div>
+                    <div className="text-muted-foreground font-mono text-xs">{r.reference_number ?? "—"}</div>
                   </TableCell>
                   <TableCell className="text-sm">
                     {r.participant_category}
@@ -166,7 +176,7 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
               ))}
               {(registrations?.length ?? 0) === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-muted-foreground text-center">
+                  <TableCell colSpan={7} className="text-muted-foreground text-center">
                     No registrations yet.
                   </TableCell>
                 </TableRow>
