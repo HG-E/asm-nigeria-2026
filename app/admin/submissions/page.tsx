@@ -3,7 +3,7 @@ import { Search } from "lucide-react"
 
 import { PageHeader } from "@/components/dashboard/page-header"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import {
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table"
 import { requireRole } from "@/lib/auth"
 import { createClient } from "@/lib/supabase/server"
+import { cn } from "@/lib/utils"
 import type { Database } from "@/types/database"
 
 type SubmissionStatus = Database["public"]["Enums"]["submission_status"]
@@ -56,7 +57,17 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
   const supabase = await createClient()
 
   const q = typeof searchParams.q === "string" ? searchParams.q : ""
+  // Comma-separated so a dashboard stat card that groups several statuses
+  // together (e.g. "Under review" = assigned + under_review) can link
+  // straight into a correctly-filtered list here, not just a single status.
   const status = typeof searchParams.status === "string" ? searchParams.status : ""
+  const statusList = status ? status.split(",").filter(Boolean) : []
+  const subtheme = typeof searchParams.subtheme === "string" ? searchParams.subtheme : ""
+
+  const { data: subthemes } = await supabase
+    .from("conference_subthemes")
+    .select("id, name")
+    .order("name", { ascending: true })
 
   let query = supabase
     .from("submissions")
@@ -69,8 +80,13 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
   if (q) {
     query = query.or(`title.ilike.%${q}%,reference_number.ilike.%${q}%`)
   }
-  if (status) {
-    query = query.eq("status", status as SubmissionStatus)
+  if (statusList.length === 1) {
+    query = query.eq("status", statusList[0] as SubmissionStatus)
+  } else if (statusList.length > 1) {
+    query = query.in("status", statusList as SubmissionStatus[])
+  }
+  if (subtheme) {
+    query = query.eq("subtheme_id", subtheme)
   }
 
   const { data: submissions } = await query
@@ -94,7 +110,7 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
                 className="pl-8"
               />
             </div>
-            <Select name="status" defaultValue={status}>
+            <Select name="status" defaultValue={statusList.length === 1 ? statusList[0] : ""}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="All statuses" />
               </SelectTrigger>
@@ -107,9 +123,27 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
                 ))}
               </SelectContent>
             </Select>
+            <Select name="subtheme" defaultValue={subtheme}>
+              <SelectTrigger className="w-56">
+                <SelectValue placeholder="All subthemes" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All subthemes</SelectItem>
+                {(subthemes ?? []).map((s) => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Button type="submit" variant="outline">
               Apply
             </Button>
+            {(q || status || subtheme) && (
+              <Link href="/admin/submissions" className={cn(buttonVariants({ variant: "ghost" }))}>
+                Clear
+              </Link>
+            )}
           </form>
         </CardContent>
       </Card>

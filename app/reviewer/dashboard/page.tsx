@@ -21,9 +21,12 @@ import {
 import { requireRole } from "@/lib/auth"
 import { createClient } from "@/lib/supabase/server"
 
-export default async function ReviewerDashboardPage() {
+export default async function ReviewerDashboardPage(props: PageProps<"/reviewer/dashboard">) {
   const session = await requireRole("reviewer")
+  const searchParams = await props.searchParams
   const supabase = await createClient()
+
+  const filter = typeof searchParams.filter === "string" ? searchParams.filter : ""
 
   const { data: assignments } = await supabase
     .from("review_assignments")
@@ -32,24 +35,30 @@ export default async function ReviewerDashboardPage() {
     .eq("is_active", true)
     .order("assigned_at", { ascending: false })
 
-  const rows = assignments ?? []
+  const allRows = assignments ?? []
   const nowIso = new Date().toISOString()
+  const isOpen = (a: (typeof allRows)[number]) => a.status === "pending" || a.status === "in_progress"
+  const isOverdue = (a: (typeof allRows)[number]) => isOpen(a) && !!a.due_date && a.due_date < nowIso
 
-  const pending = rows.filter((a) => a.status === "pending" || a.status === "in_progress")
-  const completed = rows.filter((a) => a.status === "completed")
-  const overdue = rows.filter(
-    (a) =>
-      (a.status === "pending" || a.status === "in_progress") &&
-      a.due_date &&
-      a.due_date < nowIso
-  )
+  const pending = allRows.filter(isOpen)
+  const completed = allRows.filter((a) => a.status === "completed")
+  const overdue = allRows.filter(isOverdue)
 
-  const summary: { label: string; value: number; icon: typeof ClipboardList; accent: StatAccent }[] = [
-    { label: "Assigned", value: rows.length, icon: ClipboardList, accent: "blue" },
-    { label: "Pending", value: pending.length, icon: Clock, accent: "gold" },
-    { label: "Completed", value: completed.length, icon: CheckCheck, accent: "gold" },
-    { label: "Overdue", value: overdue.length, icon: AlertTriangle, accent: "red" },
+  const summary: { label: string; value: number; icon: typeof ClipboardList; accent: StatAccent; href: string }[] = [
+    { label: "Assigned", value: allRows.length, icon: ClipboardList, accent: "blue", href: "/reviewer/dashboard" },
+    { label: "Pending", value: pending.length, icon: Clock, accent: "gold", href: "/reviewer/dashboard?filter=pending" },
+    { label: "Completed", value: completed.length, icon: CheckCheck, accent: "gold", href: "/reviewer/dashboard?filter=completed" },
+    { label: "Overdue", value: overdue.length, icon: AlertTriangle, accent: overdue.length > 0 ? "red" : "muted", href: "/reviewer/dashboard?filter=overdue" },
   ]
+
+  const rows =
+    filter === "pending"
+      ? pending
+      : filter === "completed"
+        ? completed
+        : filter === "overdue"
+          ? overdue
+          : allRows
 
   return (
     <div className="space-y-8">
@@ -60,18 +69,25 @@ export default async function ReviewerDashboardPage() {
 
       <StatGrid className="sm:grid-cols-4">
         {summary.map((s) => (
-          <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} accent={s.accent} />
+          <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} accent={s.accent} href={s.href} />
         ))}
       </StatGrid>
 
       <Card>
         <CardHeader>
-          <CardTitle>Assigned abstracts</CardTitle>
+          <CardTitle>
+            {filter ? `${filter[0].toUpperCase()}${filter.slice(1)} abstracts` : "Assigned abstracts"} ({rows.length})
+            {filter && (
+              <Link href="/reviewer/dashboard" className="text-muted-foreground ml-2 text-xs font-normal hover:underline">
+                Clear filter
+              </Link>
+            )}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {rows.length === 0 ? (
             <p className="text-muted-foreground py-8 text-center text-sm">
-              No abstracts assigned yet.
+              {allRows.length === 0 ? "No abstracts assigned yet." : "No abstracts match this filter."}
             </p>
           ) : (
             <Table>

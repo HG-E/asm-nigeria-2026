@@ -21,6 +21,10 @@ const TYPE_LABELS: Record<string, string> = {
   reviewer_assignment: "Reviewer assignment",
   reviewer_reassignment: "Reviewer re-assignment",
   decision_notification: "Decision notification",
+  payment_verified: "Payment verified",
+  payment_rejected: "Payment rejected",
+  submission_withdrawn: "Submission withdrawn",
+  reviewer_conflict_needs_reassignment: "Reviewer conflict — needs reassignment",
 }
 
 function statusVariant(status: string): "gold" | "secondary" | "destructive" | "outline" {

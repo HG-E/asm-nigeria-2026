@@ -34,21 +34,51 @@ export default async function AdminDashboardPage() {
 
   const count = (statuses: SubmissionStatus[]) => rows.filter((r) => statuses.includes(r.status)).length
 
-  const summary: { label: string; value: number; icon: typeof Layers; accent: StatAccent }[] = [
-    { label: "Total", value: rows.length, icon: Layers, accent: "muted" },
-    { label: "Submitted", value: count(["submitted"]), icon: Inbox, accent: "blue" },
-    { label: "Screening", value: count(["screening"]), icon: Search, accent: "blue" },
-    { label: "Under review", value: count(["assigned", "under_review"]), icon: ClipboardList, accent: "blue" },
-    { label: "Reviews completed", value: count(["reviews_completed"]), icon: CheckCheck, accent: "blue" },
-    { label: "Decision pending", value: count(["decision_pending"]), icon: Clock, accent: "gold" },
+  // Each stat links straight into /admin/submissions pre-filtered to the
+  // statuses it counts, so the number is a shortcut to the work behind it
+  // instead of a dead-end count -- the same "click a stat, land on the
+  // filtered list" convention every real triage dashboard uses (Linear,
+  // Jira, EasyChair, HotCRP).
+  const summary: { label: string; value: number; icon: typeof Layers; accent: StatAccent; href: string }[] = [
+    { label: "Total", value: rows.length, icon: Layers, accent: "muted", href: "/admin/submissions" },
+    { label: "Submitted", value: count(["submitted"]), icon: Inbox, accent: "blue", href: "/admin/submissions?status=submitted" },
+    { label: "Screening", value: count(["screening"]), icon: Search, accent: "blue", href: "/admin/submissions?status=screening" },
+    {
+      label: "Under review",
+      value: count(["assigned", "under_review"]),
+      icon: ClipboardList,
+      accent: "blue",
+      href: "/admin/submissions?status=assigned,under_review",
+    },
+    {
+      label: "Reviews completed",
+      value: count(["reviews_completed"]),
+      icon: CheckCheck,
+      accent: "blue",
+      href: "/admin/submissions?status=reviews_completed",
+    },
+    {
+      label: "Decision pending",
+      value: count(["decision_pending"]),
+      icon: Clock,
+      accent: "gold",
+      href: "/admin/submissions?status=decision_pending",
+    },
     {
       label: "Accepted",
       value: count(["accepted", "accepted_oral", "accepted_poster"]),
       icon: CircleCheck,
       accent: "gold",
+      href: "/admin/submissions?status=accepted,accepted_oral,accepted_poster",
     },
-    { label: "Revision required", value: count(["revision_required"]), icon: RotateCcw, accent: "muted" },
-    { label: "Rejected", value: count(["rejected"]), icon: XCircle, accent: "red" },
+    {
+      label: "Revision required",
+      value: count(["revision_required"]),
+      icon: RotateCcw,
+      accent: "muted",
+      href: "/admin/submissions?status=revision_required",
+    },
+    { label: "Rejected", value: count(["rejected"]), icon: XCircle, accent: "red", href: "/admin/submissions?status=rejected" },
   ]
 
   const { count: reviewerCount } = await supabase
@@ -77,7 +107,7 @@ export default async function AdminDashboardPage() {
 
       <StatGrid>
         {summary.map((s) => (
-          <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} accent={s.accent} />
+          <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} accent={s.accent} href={s.href} />
         ))}
       </StatGrid>
 

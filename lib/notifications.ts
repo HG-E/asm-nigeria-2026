@@ -103,6 +103,14 @@ async function renderContent(
         <p><strong>Subtheme:</strong> ${subtheme}</p>
         <p>Please log in to your reviewer dashboard to review the updated abstract.</p>
       `
+    case "payment_verified":
+      return `
+        <h2>Payment confirmed</h2>
+        <p>We've verified your payment receipt for the following submission.</p>
+        <p><strong>Reference number:</strong> ${reference}</p>
+        <p><strong>Title:</strong> ${title}</p>
+        <p>No further action is needed on payment. You can track your submission's review status any time from your dashboard.</p>
+      `
     case "payment_rejected": {
       const { data: submissionRow } = await admin
         .from("submissions")

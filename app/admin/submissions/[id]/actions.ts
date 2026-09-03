@@ -163,6 +163,16 @@ export async function verifyPaymentAction(submissionId: string): Promise<ActionR
   const session = await requireRole("admin")
   const supabase = await createClient()
 
+  const { data: submission } = await supabase
+    .from("submissions")
+    .select("corresponding_author_id, reference_number")
+    .eq("id", submissionId)
+    .single()
+
+  if (!submission) {
+    return { error: "Submission not found." }
+  }
+
   const { error } = await supabase
     .from("submissions")
     .update({
@@ -184,6 +194,33 @@ export async function verifyPaymentAction(submissionId: string): Promise<ActionR
     entity_type: "submission",
     entity_id: submissionId,
   })
+
+  // Payment rejection already emails the author (below); verification is
+  // the other half of that same signal and was silently not sending one
+  // (found reviewing the flow end-to-end) -- the author had no way to know
+  // their payment cleared short of logging in and checking.
+  const { data: author } = await createAdminClient()
+    .from("user_profiles")
+    .select("email")
+    .eq("id", submission.corresponding_author_id)
+    .single()
+
+  const { data: notification } = await supabase
+    .from("notifications")
+    .insert({
+      recipient_id: submission.corresponding_author_id,
+      recipient_email: author?.email ?? "",
+      submission_id: submissionId,
+      notification_type: "payment_verified",
+      subject: `Payment confirmed: ${submission.reference_number ?? submissionId}`,
+      status: "pending",
+    })
+    .select("id")
+    .single()
+
+  if (notification) {
+    after(() => sendNotifications([notification.id]))
+  }
 
   revalidatePath(`/admin/submissions/${submissionId}`)
   return { success: true }
