@@ -103,13 +103,21 @@ export function DashboardShell({
             </form>
           </SidebarFooter>
         </Sidebar>
-        <SidebarInset>
+        {/* min-w-0 overrides flexbox's default min-width:auto, which
+            otherwise lets a wide child (a table with a horizontal scroll
+            container inside it) force this whole flex item -- and every
+            ancestor up to it -- wider than the viewport instead of
+            scrolling inside its own container. Without it, the entire
+            page scrolls horizontally and the fixed sidebar visually
+            overlaps the shifted content, since the sidebar itself never
+            moves. */}
+        <SidebarInset className="min-w-0">
           <BrandStripe />
           <header className="flex h-14 shrink-0 items-center gap-3 border-b px-4">
             <SidebarTrigger />
             <span className="text-muted-foreground text-sm font-medium">{portalLabel}</span>
           </header>
-          <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
+          <main className="min-w-0 flex-1 overflow-x-hidden px-4 py-8 sm:px-6 lg:px-8">
             <div className="mx-auto w-full max-w-6xl">{children}</div>
           </main>
         </SidebarInset>
