@@ -5,7 +5,8 @@ import { createAdminClient } from "@/lib/supabase/admin"
 
 async function renderContent(
   notificationType: string,
-  submissionId: string | null
+  submissionId: string | null,
+  recipientId: string | null
 ): Promise<string> {
   const admin = createAdminClient()
 
@@ -15,7 +16,7 @@ async function renderContent(
 
   const { data: submission } = await admin
     .from("submissions")
-    .select("title, reference_number, conference_subthemes(name)")
+    .select("title, reference_number, conference_subthemes(name), conferences(late_submission_deadline)")
     .eq("id", submissionId)
     .single()
 
@@ -137,6 +138,68 @@ async function renderContent(
         <p><strong>Title:</strong> ${title}</p>
         <p>This is a confirmation for your records. If this wasn't intentional, contact the Scientific Programme Committee and Admin as soon as possible.</p>
       `
+    case "review_due_soon":
+    case "review_overdue": {
+      const { data: assignment } = recipientId
+        ? await admin
+            .from("review_assignments")
+            .select("due_date")
+            .eq("submission_id", submissionId)
+            .eq("reviewer_id", recipientId)
+            .eq("is_active", true)
+            .maybeSingle()
+        : { data: null }
+      const dueDate = assignment?.due_date ? new Date(assignment.due_date).toLocaleDateString() : "soon"
+
+      if (notificationType === "review_overdue") {
+        return `
+          <h2>Review overdue</h2>
+          <p>Your review for the abstract below was due on <strong>${dueDate}</strong> and is now overdue.</p>
+          <p><strong>Reference number:</strong> ${reference}</p>
+          <p><strong>Subtheme:</strong> ${subtheme}</p>
+          <p>Please log in to your reviewer dashboard and complete it as soon as possible.</p>
+        `
+      }
+      return `
+        <h2>Review due soon</h2>
+        <p>Your review for the abstract below is due on <strong>${dueDate}</strong>.</p>
+        <p><strong>Reference number:</strong> ${reference}</p>
+        <p><strong>Subtheme:</strong> ${subtheme}</p>
+        <p>Please log in to your reviewer dashboard to complete it before the deadline.</p>
+      `
+    }
+    case "revision_deadline_reminder": {
+      const { data: decision } = await admin
+        .from("decisions")
+        .select("revision_deadline")
+        .eq("submission_id", submissionId)
+        .eq("is_final", true)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      const deadline = decision?.revision_deadline
+        ? new Date(decision.revision_deadline).toLocaleDateString()
+        : "soon"
+      return `
+        <h2>Revision deadline approaching</h2>
+        <p>Your revision deadline for the submission below is <strong>${deadline}</strong>.</p>
+        <p><strong>Reference number:</strong> ${reference}</p>
+        <p><strong>Title:</strong> ${title}</p>
+        <p>Please log in to your dashboard and submit your revised abstract before the deadline.</p>
+      `
+    }
+    case "submission_deadline_reminder": {
+      const submissionDeadline = submission?.conferences?.late_submission_deadline
+        ? new Date(submission.conferences.late_submission_deadline).toLocaleDateString()
+        : "soon"
+      return `
+        <h2>Submission deadline approaching</h2>
+        <p>You have a draft abstract that hasn't been submitted yet for ASM Nigeria 2026.</p>
+        <p><strong>Title:</strong> ${title}</p>
+        <p><strong>Submission deadline:</strong> ${submissionDeadline}</p>
+        <p>Please log in to your dashboard to complete and submit it before then.</p>
+      `
+    }
     case "reviewer_conflict_needs_reassignment":
       return `
         <h2>Action needed: no reviewer available</h2>
@@ -164,7 +227,11 @@ export async function sendNotification(notificationId: string) {
   }
 
   try {
-    const html = await renderContent(notification.notification_type, notification.submission_id)
+    const html = await renderContent(
+      notification.notification_type,
+      notification.submission_id,
+      notification.recipient_id
+    )
     await sendMail({
       to: notification.recipient_email,
       subject: notification.subject,
