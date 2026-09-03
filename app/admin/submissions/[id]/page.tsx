@@ -46,7 +46,7 @@ export default async function AdminSubmissionDetailPage(
       supabase.from("submission_documents").select("*").eq("submission_id", id).eq("is_current", true),
       supabase
         .from("review_assignments")
-        .select("*, user_profiles:reviewer_id(first_name, last_name)")
+        .select("*, user_profiles:reviewer_id(first_name, last_name), reviews(*)")
         .eq("submission_id", id)
         .eq("is_active", true),
     ])
@@ -234,6 +234,60 @@ export default async function AdminSubmissionDetailPage(
                 : "Unknown reviewer",
             }))}
           />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Reviews</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {!assignments || assignments.length === 0 ? (
+            <p className="text-muted-foreground text-sm">No reviewer assigned yet.</p>
+          ) : (
+            assignments.map((a) => {
+              const review = a.reviews
+              return (
+                <div key={a.id} className="rounded-lg border p-3 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">
+                      {a.user_profiles?.first_name} {a.user_profiles?.last_name}
+                    </span>
+                    <Badge variant="secondary">{a.status.replaceAll("_", " ")}</Badge>
+                  </div>
+                  {review?.is_submitted ? (
+                    <div className="mt-2 space-y-1">
+                      <p>
+                        Average score: <strong>{review.average_score}</strong> · Recommendation:{" "}
+                        <strong>{review.recommendation?.replaceAll("_", " ")}</strong>
+                      </p>
+                      <p className="text-muted-foreground">
+                        Originality {review.score_originality}, Relevance {review.score_relevance},
+                        Methodology {review.score_methodology}, Clarity {review.score_clarity},
+                        Significance {review.score_significance}
+                      </p>
+                      {review.comments_to_committee && (
+                        <p>
+                          <span className="text-muted-foreground">To committee: </span>
+                          {review.comments_to_committee}
+                        </p>
+                      )}
+                      {review.comments_to_author && (
+                        <p>
+                          <span className="text-muted-foreground">To author: </span>
+                          {review.comments_to_author}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground mt-2">
+                      {a.status === "conflict" ? "Declared a conflict of interest." : "Review not yet submitted."}
+                    </p>
+                  )}
+                </div>
+              )
+            })
+          )}
         </CardContent>
       </Card>
 
