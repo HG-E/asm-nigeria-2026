@@ -48,8 +48,7 @@ export default async function CommitteeSubmissionDetailPage(
         .from("decisions")
         .select("*")
         .eq("submission_id", id)
-        .order("created_at", { ascending: false })
-        .limit(1),
+        .order("created_at", { ascending: false }),
     ])
 
   const currentVersion = versions?.find((v) => v.version_number === submission.current_version)
@@ -165,7 +164,9 @@ export default async function CommitteeSubmissionDetailPage(
                     </div>
                   ) : (
                     <p className="text-muted-foreground mt-2">
-                      {a.status === "conflict" ? "Declared a conflict of interest." : "Review not yet submitted."}
+                      {a.status === "conflict"
+                        ? `Declared a conflict of interest${a.conflict_reason ? `: ${a.conflict_reason}` : "."}`
+                        : "Review not yet submitted."}
                     </p>
                   )}
                 </div>
@@ -174,6 +175,46 @@ export default async function CommitteeSubmissionDetailPage(
           )}
         </CardContent>
       </Card>
+
+      {decisions && decisions.length > 1 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Decision History</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {[...decisions].reverse().map((d, i) => (
+              <div key={d.id} className="rounded-lg border p-3 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">Round {i + 1}</span>
+                  <Badge variant={d.is_final ? "gold" : "secondary"}>
+                    {d.decision ? d.decision.replaceAll("_", " ") : "no decision"}
+                    {d.is_final ? " (final)" : " (draft)"}
+                  </Badge>
+                </div>
+                <p className="text-muted-foreground mt-1">{new Date(d.created_at).toLocaleString()}</p>
+                {d.decision_notes && (
+                  <p className="mt-1">
+                    <span className="text-muted-foreground">Internal notes: </span>
+                    {d.decision_notes}
+                  </p>
+                )}
+                {d.author_message && (
+                  <p className="mt-1">
+                    <span className="text-muted-foreground">Message to author: </span>
+                    {d.author_message}
+                  </p>
+                )}
+                {d.revision_deadline && (
+                  <p className="mt-1">
+                    <span className="text-muted-foreground">Revision deadline: </span>
+                    {new Date(d.revision_deadline).toLocaleDateString()}
+                  </p>
+                )}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       {versions && versions.length > 1 && (
         <Card>
