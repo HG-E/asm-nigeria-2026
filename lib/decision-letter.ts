@@ -234,17 +234,40 @@ export async function generateAcceptanceLetterPdf(data: DecisionLetterData): Pro
   })
 
   page.drawText("Sincerely,", { x: MARGIN_X, y: state.y, size: 11, font: regular, color: INK })
-  state.y -= 38
+  state.y -= 44
 
-  page.drawText("Sylvia Onyinyechi Anyadoh-Nwadike, Ph.D", {
-    x: MARGIN_X,
-    y: state.y,
-    size: 12,
-    font: bold,
-    color: INK,
+  // Three signatories side by side (per her confirmed instruction), same
+  // arrangement the ASM Microbe sample itself uses for its multiple chairs.
+  const signatories = [
+    { name: "Prof. Nura Muhammad Sani", title: "Chairman, Scientific Programme Committee" },
+    { name: "Dr. Stephen Dare Oloninefa", title: "Secretary, Scientific Programme Committee" },
+    { name: "Dr. Abumhere S. Aziegbemhin, Ph.D.", title: "Secretary, Main Organising Committee" },
+  ]
+  const colGap = 14
+  const colWidth = (CONTENT_WIDTH - colGap * 2) / 3
+  const sigSize = 9
+  const titleSize = 7.6
+
+  signatories.forEach((signatory, i) => {
+    const colX = MARGIN_X + i * (colWidth + colGap)
+    page.drawLine({
+      start: { x: colX, y: state.y },
+      end: { x: colX + colWidth - 10, y: state.y },
+      thickness: 0.75,
+      color: INK_SOFT,
+    })
+    let colY = state.y - 12
+    const nameLines = wrapText(signatory.name, bold, sigSize, colWidth)
+    for (const line of nameLines) {
+      page.drawText(line, { x: colX, y: colY, size: sigSize, font: bold, color: INK })
+      colY -= sigSize * 1.3
+    }
+    const titleLines = wrapText(signatory.title, regular, titleSize, colWidth)
+    for (const line of titleLines) {
+      page.drawText(line, { x: colX, y: colY, size: titleSize, font: regular, color: INK_SOFT })
+      colY -= titleSize * 1.3
+    }
   })
-  state.y -= 16
-  page.drawText("CA - ASM, FIPMD, MNSM", { x: MARGIN_X, y: state.y, size: 10, font: regular, color: INK_SOFT })
 
   return pdfDoc.save()
 }
