@@ -3,17 +3,20 @@ import "server-only"
 import { readFile } from "node:fs/promises"
 import path from "node:path"
 
-import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage, type PDFEmbeddedPage } from "pdf-lib"
+import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage, type PDFImage } from "pdf-lib"
 
 // Conference-only letterhead (supplied 2026-09-04, replacing the earlier
-// personal-office one): a real 2-page A4 PDF template, not an image. Page 1
-// carries the banner (top ~15%, measured against the supplied file) with
-// the rest blank for body text; page 2 is a blank continuation page with no
-// header at all, meant for whatever a letter doesn't fit on page 1. Both
-// pages are embedded as vector XObjects via pdf-lib's embedPdf rather than
-// rasterized to PNG, so they stay sharp regardless of viewer zoom -- a step
-// up from the PNG-background approach lib/certificate.ts uses, made
-// possible because the source is already a real PDF.
+// personal-office one): originally a real 2-page A4 PDF template (still
+// kept at public/letterhead/asm-nigeria-letterhead.pdf for reference), but
+// embedded here as two pre-rasterized PNGs instead of via pdf-lib's
+// embedPdf. embedPdf produced a visible seam through the banner's
+// overlapping circular photos (a known category of pdf-lib limitation with
+// complex image compositing/clipping in a source PDF) -- rasterizing once
+// with Chromium's own PDF renderer (the same technique already proven for
+// certificates in lib/certificate.ts) sidesteps that entirely. Page 1
+// carries the banner (top ~15%) with the rest blank for body text; page 2
+// is a blank continuation page with no header, for whatever a letter
+// doesn't fit on page 1.
 const PAGE_WIDTH = 595.5
 const PAGE_HEIGHT = 842.25
 const HEADER_HEIGHT = PAGE_HEIGHT * 0.15
@@ -28,11 +31,14 @@ const INK_SOFT = rgb(0.29, 0.33, 0.4)
 const ASM_RED = rgb(0.8, 0.1333, 0.1608)
 const ASM_BLUE = rgb(0, 0.1882, 0.5294)
 
-async function loadTemplatePages(pdfDoc: PDFDocument): Promise<[PDFEmbeddedPage, PDFEmbeddedPage]> {
-  const templatePath = path.join(process.cwd(), "public/letterhead/asm-nigeria-letterhead.pdf")
-  const templateBytes = await readFile(templatePath)
-  const [headerPage, blankPage] = await pdfDoc.embedPdf(templateBytes, [0, 1])
-  return [headerPage, blankPage]
+async function loadTemplateImages(pdfDoc: PDFDocument): Promise<[PDFImage, PDFImage]> {
+  const dir = path.join(process.cwd(), "public/letterhead")
+  const [page1Bytes, page2Bytes] = await Promise.all([
+    readFile(path.join(dir, "letterhead-page1.png")),
+    readFile(path.join(dir, "letterhead-page2.png")),
+  ])
+  const [headerImage, blankImage] = await Promise.all([pdfDoc.embedPng(page1Bytes), pdfDoc.embedPng(page2Bytes)])
+  return [headerImage, blankImage]
 }
 
 function wrapText(text: string, font: PDFFont, size: number, maxWidth: number): string[] {
@@ -60,8 +66,8 @@ function wrapText(text: string, font: PDFFont, size: number, maxWidth: number): 
 // page was actually used; a single-page letter stays unnumbered.
 class LetterBuilder {
   pdfDoc!: PDFDocument
-  private headerTemplate!: PDFEmbeddedPage
-  private blankTemplate!: PDFEmbeddedPage
+  private headerImage!: PDFImage
+  private blankImage!: PDFImage
   private pages: PDFPage[] = []
   page!: PDFPage
   y = 0
@@ -69,7 +75,7 @@ class LetterBuilder {
   static async create(): Promise<LetterBuilder> {
     const builder = new LetterBuilder()
     builder.pdfDoc = await PDFDocument.create()
-    ;[builder.headerTemplate, builder.blankTemplate] = await loadTemplatePages(builder.pdfDoc)
+    ;[builder.headerImage, builder.blankImage] = await loadTemplateImages(builder.pdfDoc)
     builder.addPage()
     return builder
   }
@@ -77,8 +83,8 @@ class LetterBuilder {
   private addPage() {
     const page = this.pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT])
     const isFirstPage = this.pages.length === 0
-    const template = isFirstPage ? this.headerTemplate : this.blankTemplate
-    page.drawPage(template, { x: 0, y: 0, width: PAGE_WIDTH, height: PAGE_HEIGHT })
+    const template = isFirstPage ? this.headerImage : this.blankImage
+    page.drawImage(template, { x: 0, y: 0, width: PAGE_WIDTH, height: PAGE_HEIGHT })
     this.pages.push(page)
     this.page = page
     this.y = isFirstPage ? CONTENT_TOP_Y_PAGE1 : CONTENT_TOP_Y_CONT
@@ -211,7 +217,7 @@ export async function generateAcceptanceNotificationPdf(data: DecisionLetterData
   b.page.drawText("ASM Nigeria 2026 Secretariat", { x: MARGIN_X, y: b.y, size: 12, font: bold, color: ASM_BLUE })
   b.y -= 30
 
-  const footerLines = ["ASM Nigeria 2026 - Abuja, Nigeria", "Secretariat: asmnigeriaonehealth@gmail.com"]
+  const footerLines = ["ASM Nigeria 2026 - Abuja, Nigeria", "Admin: asmnigeriaonehealth@gmail.com"]
   for (const line of footerLines) {
     b.ensureSpace(13)
     const w = regular.widthOfTextAtSize(line, 9)
@@ -261,7 +267,7 @@ export async function generateAcceptanceLetterPdf(data: DecisionLetterData): Pro
   const signatories = [
     { name: "Prof. Nura Muhammad Sani", title: "Chairman, Scientific Programme Committee" },
     { name: "Dr. Stephen Dare Oloninefa", title: "Secretary, Scientific Programme Committee" },
-    { name: "Dr. Abumhere S. Aziegbemhin, Ph.D.", title: "Secretary, Main Organising Committee" },
+    { name: "Abumhere S. Aziegbemhin, Ph.D.", title: "Secretary, Main Organising Committee" },
   ]
   b.ensureSpace(60)
   const colGap = 14

@@ -527,7 +527,7 @@ const COMMITTEE = [
 ]
 
 const SECRETARIAT = [
-  { initials: "AA", name: "Dr. Abumhere S. Aziegbemhin, Ph.D.", role: "Secretary, Main Organising Committee", tel: "+2348067544546", phone: "08067544546" },
+  { initials: "AA", name: "Abumhere S. Aziegbemhin, Ph.D.", role: "Secretary, Main Organising Committee", tel: "+2348067544546", phone: "08067544546" },
   { initials: "OS", name: "Omada Stephen", role: "Secretary, Local Organising Committee", tel: "+2348060777570", phone: "0806 077 7570" },
 ]
 
