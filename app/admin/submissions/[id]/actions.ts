@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { after } from "next/server"
 
 import { requireRole } from "@/lib/auth"
+import { createDecisionDocuments, isAcceptDecision } from "@/lib/decision-documents"
 import { sendNotifications } from "@/lib/notifications"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
@@ -94,7 +95,7 @@ export async function finalizeDecisionAction(
 
   const { data: submission } = await supabase
     .from("submissions")
-    .select("corresponding_author_id, reference_number, status")
+    .select("corresponding_author_id, reference_number, status, title, presentation_preference")
     .eq("id", submissionId)
     .single()
 
@@ -108,7 +109,7 @@ export async function finalizeDecisionAction(
   // recipient_email into the notification and made it fail SMTP-side.
   const { data: author } = await createAdminClient()
     .from("user_profiles")
-    .select("email")
+    .select("email, first_name, last_name")
     .eq("id", submission.corresponding_author_id)
     .single()
 
@@ -137,6 +138,36 @@ export async function finalizeDecisionAction(
     previous_status: submission.status,
     new_status: newStatus,
   })
+
+  // Accept-type decisions get an auto-generated notification + letter, each
+  // reachable via its own long-lived link in the acceptance email below --
+  // revision/reject decisions never get one (nothing to accept yet). A
+  // generation failure here is logged but not fatal: the decision is
+  // already finalized and the author still needs to hear about it, just
+  // without the document links this one time (findable/regeneratable by an
+  // admin later; there's no user-facing retry surface for this yet).
+  if (isAcceptDecision(decision.decision)) {
+    const presentationType =
+      decision.decision === "accepted_oral"
+        ? "Oral Presentation"
+        : decision.decision === "accepted_poster"
+          ? "Poster Presentation"
+          : submission.presentation_preference === "oral"
+            ? "Oral Presentation"
+            : submission.presentation_preference === "poster"
+              ? "Poster Presentation"
+              : "Oral or Poster Presentation"
+
+    const result = await createDecisionDocuments(decisionId, submissionId, {
+      authorFullName: `${author?.first_name ?? ""} ${author?.last_name ?? ""}`.trim(),
+      abstractTitle: submission.title ?? "Untitled",
+      referenceNumber: submission.reference_number ?? submissionId,
+      presentationType,
+    })
+    if ("error" in result) {
+      console.error(`[finalizeDecisionAction] document generation failed for ${submissionId}:`, result.error)
+    }
+  }
 
   const { data: notification } = await supabase
     .from("notifications")

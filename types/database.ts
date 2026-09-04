@@ -1080,6 +1080,51 @@ export type Database = {
         }
         Relationships: []
       }
+      decision_documents: {
+        Row: {
+          id: string
+          decision_id: string
+          submission_id: string
+          doc_type: string
+          access_token: string
+          storage_path: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          decision_id: string
+          submission_id: string
+          doc_type: string
+          access_token: string
+          storage_path: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          decision_id?: string
+          submission_id?: string
+          doc_type?: string
+          access_token?: string
+          storage_path?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_documents_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_documents_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: Record<string, never>
     Functions: {

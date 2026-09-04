@@ -46,12 +46,34 @@ async function renderContent(
             : decision.decision === "accepted_poster"
               ? "Poster presentation"
               : "To be confirmed"
+
+        const { data: documents } = await admin
+          .from("decision_documents")
+          .select("doc_type, access_token")
+          .eq("submission_id", submissionId)
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
+        const notificationToken = documents?.find((d) => d.doc_type === "notification")?.access_token
+        const letterToken = documents?.find((d) => d.doc_type === "letter")?.access_token
+
+        const documentLinks =
+          notificationToken && letterToken
+            ? `
+              <p>Two documents are ready for you below — please read both, and keep copies for your records.</p>
+              <p style="text-align:center; margin: 24px 0;">
+                <a href="${baseUrl}/letters/${notificationToken}" style="display:inline-block; background:#ffffff; color:#003087; border:1.5px solid #003087; font-weight:bold; text-decoration:none; padding:12px 24px; border-radius:8px; margin: 0 6px 10px;">View Your Acceptance Notification</a>
+                <a href="${baseUrl}/letters/${letterToken}" style="display:inline-block; background:#003087; color:#ffffff; font-weight:bold; text-decoration:none; padding:12px 24px; border-radius:8px; margin: 0 6px 10px;">View &amp; Download Your Official Letter</a>
+              </p>
+              <p style="font-size:0.85em; color:#666;">Both links are unique to you — please don't forward or share them.</p>
+            `
+            : ""
+
         return `
           <h2>Congratulations — your abstract has been accepted</h2>
           <p><strong>Reference number:</strong> ${reference}</p>
           <p><strong>Title:</strong> ${title}</p>
           <p><strong>Presentation type:</strong> ${presentationType}</p>
           ${authorNote}
+          ${documentLinks}
           <p>Further details on next steps will follow from the Scientific Programme Committee and Admin. Log in to your dashboard to view your full submission record.</p>
         `
       }
