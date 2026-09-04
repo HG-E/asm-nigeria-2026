@@ -28,7 +28,7 @@ async function renderContent(
     case "decision_notification": {
       const { data: decision } = await admin
         .from("decisions")
-        .select("decision, author_message, revision_deadline")
+        .select("id, decision, author_message, revision_deadline")
         .eq("submission_id", submissionId)
         .eq("is_final", true)
         .order("created_at", { ascending: false })
@@ -47,10 +47,16 @@ async function renderContent(
               ? "Poster presentation"
               : "To be confirmed"
 
+        // Scoped to THIS decision round specifically, not just the
+        // submission -- a submission can carry documents from an earlier
+        // round too (this exact bug: a second-round email picked up the
+        // first round's now-superseded tokens because the query had no
+        // decision_id filter and no ordering to prefer the current round).
         const { data: documents } = await admin
           .from("decision_documents")
           .select("doc_type, access_token")
           .eq("submission_id", submissionId)
+          .eq("decision_id", decision.id)
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
         const notificationToken = documents?.find((d) => d.doc_type === "notification")?.access_token
         const letterToken = documents?.find((d) => d.doc_type === "letter")?.access_token
