@@ -41,6 +41,16 @@ async function loadTemplateImages(pdfDoc: PDFDocument): Promise<[PDFImage, PDFIm
   return [headerImage, blankImage]
 }
 
+// Real signatures supplied 2026-09-05 (extracted from the two .docx files
+// and the WhatsApp photo, then auto-trimmed to their ink bounding box with
+// sharp -- no other retouching, so nothing about the mark itself is
+// altered). Files live at public/signatures/<key>.png, keyed to match the
+// `signatories` array below by array index.
+async function loadSignatureImage(pdfDoc: PDFDocument, filename: string): Promise<PDFImage> {
+  const bytes = await readFile(path.join(process.cwd(), "public/signatures", filename))
+  return pdfDoc.embedPng(bytes)
+}
+
 function wrapText(text: string, font: PDFFont, size: number, maxWidth: number): string[] {
   const words = text.split(/\s+/)
   const lines: string[] = []
@@ -263,13 +273,19 @@ export async function generateAcceptanceLetterPdf(data: DecisionLetterData): Pro
   b.y -= 44
 
   // Three signatories side by side. Kept together on one page rather than
-  // letting the page break land mid-block.
+  // letting the page break land mid-block. Each real signature image sits
+  // directly above its printed name -- no underline needed once there's an
+  // actual signature there (the line was only ever a placeholder for one).
   const signatories = [
-    { name: "Prof. Nura Muhammad Sani", title: "Chairman, Scientific Programme Committee" },
-    { name: "Dr. Stephen Dare Oloninefa", title: "Secretary, Scientific Programme Committee" },
-    { name: "Abumhere S. Aziegbemhin, Ph.D.", title: "Secretary, Main Organising Committee" },
+    { name: "Prof. Nura Muhammad Sani", title: "Chairman, Scientific Programme Committee", signatureFile: "sani.png" },
+    { name: "Dr. Stephen Dare Oloninefa", title: "Secretary, Scientific Programme Committee", signatureFile: "oloninefa.png" },
+    { name: "Abumhere S. Aziegbemhin, Ph.D.", title: "Secretary, Main Organising Committee", signatureFile: "aziegbemhin.png" },
   ]
-  b.ensureSpace(60)
+  const signatureImages = await Promise.all(signatories.map((s) => loadSignatureImage(b.pdfDoc, s.signatureFile)))
+
+  const SIG_HEIGHT = 34
+  const SIG_GAP = 8
+  b.ensureSpace(SIG_HEIGHT + SIG_GAP + 34)
   const colGap = 14
   const colWidth = (CONTENT_WIDTH - colGap * 2) / 3
   const sigSize = 9
@@ -277,13 +293,17 @@ export async function generateAcceptanceLetterPdf(data: DecisionLetterData): Pro
 
   signatories.forEach((signatory, i) => {
     const colX = MARGIN_X + i * (colWidth + colGap)
-    b.page.drawLine({
-      start: { x: colX, y: b.y },
-      end: { x: colX + colWidth - 10, y: b.y },
-      thickness: 0.75,
-      color: INK_SOFT,
-    })
-    let colY = b.y - 12
+    const image = signatureImages[i]
+    const availWidth = colWidth - 10
+    let drawWidth = availWidth
+    let drawHeight = drawWidth / image.width * image.height
+    if (drawHeight > SIG_HEIGHT) {
+      drawHeight = SIG_HEIGHT
+      drawWidth = (drawHeight / image.height) * image.width
+    }
+    b.page.drawImage(image, { x: colX, y: b.y - drawHeight, width: drawWidth, height: drawHeight })
+
+    let colY = b.y - SIG_HEIGHT - SIG_GAP
     const nameLines = wrapText(signatory.name, bold, sigSize, colWidth)
     for (const line of nameLines) {
       b.page.drawText(line, { x: colX, y: colY, size: sigSize, font: bold, color: INK })
