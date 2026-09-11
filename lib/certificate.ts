@@ -5,13 +5,14 @@ import path from "node:path"
 
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib"
 
-// Both templates are ~1.4142:1 (Canva exports at 5250x3712 and 4500x3182
-// respectively), which is almost exactly the A4 ratio -- rendered onto a
-// real A4-landscape PDF page so they print at correct physical size. Box
-// coordinates below were calibrated directly against each template image
-// (drew a debug rectangle, compared against the actual gold-bordered boxes
-// and blank lines, adjusted until they matched) rather than eyeballed from
-// the pixel grid alone.
+// Both templates supplied 2026-09-11 (replacing the earlier ones, which
+// had the presentation certificate's Braide Wesley/Makolo signature lines
+// blank) are now the same 4500x3182 -- ~1.4142:1, almost exactly the A4
+// ratio -- rendered onto a real A4-landscape PDF page so they print at
+// correct physical size. Box coordinates below were calibrated by flood-
+// filling each template's actual fillable-box fill color (~rgb(247,248,250))
+// and the red "Presentation Type" label's pixel bounds programmatically,
+// then converting px -> pt at this page's scale, rather than eyeballed.
 const PAGE_WIDTH = 841.89
 const PAGE_HEIGHT = 595.28
 
@@ -22,13 +23,16 @@ const ASM_RED = rgb(0.8, 0.13, 0.16)
 // { left, top, width, height } in PDF points, `top` measured from the top
 // of the page (converted to PDF's bottom-origin coordinate system at draw
 // time).
-const PARTICIPATION_NAME_BOX = { left: 80.8, top: 216.8, width: 681.2, height: 54.7 }
-const PARTICIPATION_NUMBER_LINE = { left: 581.0, top: 82.1, width: 181.0, height: 16.8 }
+const PARTICIPATION_NAME_BOX = { left: 80.1, top: 217.2, width: 682.9, height: 53.3 }
+const PARTICIPATION_NUMBER_LINE = { left: 581.6, top: 73.4, width: 176.6, height: 16.8 }
 
-const PRESENTATION_NAME_BOX = { left: 159.1, top: 181.9, width: 525.0, height: 40.0 }
-const PRESENTATION_TITLE_BOX = { left: 134.7, top: 254.7, width: 557.7, height: 46.3 }
-const PRESENTATION_TYPE_VALUE = { left: 327.5, top: 333.8, width: 325.0, height: 14.7 }
-const PRESENTATION_NUMBER_LINE = { left: 572.5, top: 70.7, width: 176.8, height: 14.7 }
+const PRESENTATION_NAME_BOX = { left: 160.7, top: 182.2, width: 522.4, height: 40.4 }
+const PRESENTATION_TITLE_BOX = { left: 88.5, top: 254.6, width: 641.0, height: 47.1 }
+// Bounds of the baked-in "Presentation Type" label itself (no colon, no
+// placeholder value baked in this template) -- the real value is drawn
+// starting just past its right edge, same baseline.
+const PRESENTATION_TYPE_LABEL = { left: 340.7, top: 334.1, width: 137.0, height: 14.2 }
+const PRESENTATION_NUMBER_LINE = { left: 574.1, top: 58.6, width: 176.6, height: 14.7 }
 
 async function loadTemplate(pdfDoc: PDFDocument, filename: string) {
   const templatePath = path.join(process.cwd(), "public/certificates", filename)
@@ -153,23 +157,14 @@ export async function generatePresentationCertificate(params: {
     color: INK_BLUE,
   })
 
-  // The template's placeholder text ("[Oral Presentation / Poster
-  // Presentation]") is baked into the background image -- cover it (and
-  // the static colon right before it, since the two can't be cleanly
-  // separated at this resolution) with a white rectangle, then draw the
-  // real single value with our own leading colon, in the same red/bold
-  // style the static "Presentation Type" label uses.
-  page.drawRectangle({
-    x: PRESENTATION_TYPE_VALUE.left - 2,
-    y: PAGE_HEIGHT - PRESENTATION_TYPE_VALUE.top - PRESENTATION_TYPE_VALUE.height - 4,
-    width: PRESENTATION_TYPE_VALUE.width + 6,
-    height: PRESENTATION_TYPE_VALUE.height + 10,
-    color: rgb(1, 1, 1),
-  })
+  // This template bakes in only the bare "Presentation Type" label (no
+  // colon, no placeholder value) -- draw the real value right after it,
+  // same baseline, in the same red/bold style the label itself uses. No
+  // white-rectangle cover needed this time; there's nothing there to hide.
   const typeSize = 15
-  const typeBaselineY = PAGE_HEIGHT - PRESENTATION_TYPE_VALUE.top - PRESENTATION_TYPE_VALUE.height + 3
+  const typeBaselineY = PAGE_HEIGHT - PRESENTATION_TYPE_LABEL.top - PRESENTATION_TYPE_LABEL.height + 3
   page.drawText(`: ${params.presentationType}`, {
-    x: PRESENTATION_TYPE_VALUE.left - 2,
+    x: PRESENTATION_TYPE_LABEL.left + PRESENTATION_TYPE_LABEL.width,
     y: typeBaselineY,
     size: typeSize,
     font: typeFont,
