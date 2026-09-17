@@ -3,6 +3,16 @@ import Link from "next/link"
 import { RegistrationForm } from "@/components/registration/registration-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
+// This page has no per-request data, so Next prerenders it fully static by
+// default -- which on Vercel means the CDN can serve a cached copy of it
+// for ANY request to this path, POST included. The registration form's
+// Server Action posts to this same URL, so a cached static response was
+// being served back for that POST instead of the action ever running:
+// the client never gets a real action result and sits on "Submitting..."
+// forever. force-dynamic keeps this route off the static/CDN cache path
+// entirely so the action POST always reaches the real server.
+export const dynamic = "force-dynamic"
+
 export const metadata = {
   title: "Register for ASM Nigeria 2026",
   description: "Register to attend the Maiden American Society for Microbiology Nigeria Conference — 22-25 November 2026, Abuja, Nigeria. Hybrid conference.",

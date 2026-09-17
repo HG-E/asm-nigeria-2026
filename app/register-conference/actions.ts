@@ -14,7 +14,12 @@ export type RegistrationActionResult = { error: string } | { success: true; refe
 
 const DOCUMENT_TYPES = ["pdf", "jpg", "jpeg", "png"]
 const PHOTO_TYPES = ["jpg", "jpeg", "png"]
-const MAX_FILE_BYTES = 1 * 1024 * 1024
+// Must match the registration-receipts Storage bucket's file_size_limit
+// (currently 1MB) -- raising this without also raising the bucket limit
+// just trades "rejected before upload with a clear message" for "rejected
+// during upload with a generic one," which is worse.
+const MAX_FILE_MB = 1
+const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024
 const IP_WINDOW_MS = 60 * 60 * 1000 // 1 hour
 const IP_MAX_REGISTRATIONS = 5
 
@@ -38,7 +43,10 @@ function validateFile(
     return { error: `${label[0].toUpperCase()}${label.slice(1)} must be ${allowedTypes.join(", ").toUpperCase()}.` }
   }
   if (file.size > MAX_FILE_BYTES) {
-    return { error: `Your ${label} exceeds the 1MB limit.` }
+    const sizeMb = (file.size / (1024 * 1024)).toFixed(1)
+    return {
+      error: `Your ${label} is ${sizeMb}MB, which is over the ${MAX_FILE_MB}MB limit. Most phone photo/gallery apps can compress or resize an image before sharing -- try that, or take a lower-resolution screenshot instead.`,
+    }
   }
   return { file }
 }
