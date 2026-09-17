@@ -3,6 +3,7 @@ import { CheckCheck, Clock, Layers, UserCheck, XCircle } from "lucide-react"
 
 import { AttendedToggle } from "@/components/admin/attended-toggle"
 import { RegistrationVerificationPanel } from "@/components/admin/registration-verification-panel"
+import { RetryRegistrationConfirmationButton } from "@/components/admin/retry-registration-confirmation-button"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { StatCard, StatGrid, type StatAccent } from "@/components/dashboard/stat-card"
 import { Badge } from "@/components/ui/badge"
@@ -19,6 +20,12 @@ const STATUSES = ["pending", "verified", "rejected"] as const
 function statusVariant(status: string): "gold" | "secondary" | "destructive" {
   if (status === "verified") return "gold"
   if (status === "rejected") return "destructive"
+  return "secondary"
+}
+
+function emailStatusVariant(status: string): "gold" | "secondary" | "destructive" {
+  if (status === "sent") return "gold"
+  if (status === "failed") return "destructive"
   return "secondary"
 }
 
@@ -116,6 +123,7 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
                 <TableHead>Amount</TableHead>
                 <TableHead>Files</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Confirmation email</TableHead>
                 <TableHead>Attendance</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>
@@ -164,6 +172,17 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
                     )}
                   </TableCell>
                   <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={emailStatusVariant(r.confirmation_email_status)}>{r.confirmation_email_status}</Badge>
+                      {r.confirmation_email_status !== "sent" && (
+                        <RetryRegistrationConfirmationButton registrationId={r.id} />
+                      )}
+                    </div>
+                    {r.confirmation_email_status === "failed" && r.confirmation_email_error && (
+                      <p className="text-muted-foreground mt-1 text-xs">{r.confirmation_email_error}</p>
+                    )}
+                  </TableCell>
+                  <TableCell>
                     <AttendedToggle registrationId={r.id} attended={r.attended} />
                   </TableCell>
                   <TableCell>
@@ -176,7 +195,7 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
               ))}
               {(registrations?.length ?? 0) === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-muted-foreground text-center">
+                  <TableCell colSpan={8} className="text-muted-foreground text-center">
                     No registrations yet.
                   </TableCell>
                 </TableRow>

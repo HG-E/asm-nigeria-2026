@@ -177,23 +177,27 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
     return { error: "Could not complete registration. Please try again." }
   }
 
-  const { error: insertError } = await admin.from("conference_registrations").insert({
-    conference_id: conference.id,
-    reference_number: referenceNumber,
-    full_name: parsed.data.fullName,
-    email: parsed.data.email,
-    phone: parsed.data.phone || null,
-    institution: parsed.data.institution || null,
-    participant_category: category,
-    attendance_mode: parsed.data.attendanceMode,
-    registration_period: period,
-    amount_expected: amountExpected,
-    payment_currency: currency,
-    payment_receipt_path: receiptPath,
-    passport_photo_path: photoPath,
-    asm_certificate_path: certificatePath,
-    ip_address: ip,
-  })
+  const { data: insertedRegistration, error: insertError } = await admin
+    .from("conference_registrations")
+    .insert({
+      conference_id: conference.id,
+      reference_number: referenceNumber,
+      full_name: parsed.data.fullName,
+      email: parsed.data.email,
+      phone: parsed.data.phone || null,
+      institution: parsed.data.institution || null,
+      participant_category: category,
+      attendance_mode: parsed.data.attendanceMode,
+      registration_period: period,
+      amount_expected: amountExpected,
+      payment_currency: currency,
+      payment_receipt_path: receiptPath,
+      passport_photo_path: photoPath,
+      asm_certificate_path: certificatePath,
+      ip_address: ip,
+    })
+    .select("id")
+    .single()
 
   if (insertError) {
     await admin.storage.from("registration-receipts").remove(uploadedPaths)
@@ -230,6 +234,13 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
         // registration row + files are already durable; admin can still find it
       }
     }
+    // Unlike every other email in the app, this one had no record of
+    // whether it actually sent -- a bare try/catch with the failure
+    // silently swallowed, so a real delivery failure was completely
+    // invisible to admins and there was no way to retry it. Recorded on the
+    // registration row itself (see migration 0034) rather than the shared
+    // `notifications` table, since that table's recipient_id has a hard
+    // NOT NULL FK to user_profiles and registrants never get an account.
     try {
       await sendMail({
         to: parsed.data.email,
@@ -241,8 +252,22 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
           amountExpected,
         }),
       })
-    } catch {
-      // best-effort
+      if (insertedRegistration) {
+        await admin
+          .from("conference_registrations")
+          .update({ confirmation_email_status: "sent", confirmation_email_sent_at: new Date().toISOString(), confirmation_email_error: null })
+          .eq("id", insertedRegistration.id)
+      }
+    } catch (error) {
+      if (insertedRegistration) {
+        await admin
+          .from("conference_registrations")
+          .update({
+            confirmation_email_status: "failed",
+            confirmation_email_error: error instanceof Error ? error.message : "Unknown error",
+          })
+          .eq("id", insertedRegistration.id)
+      }
     }
   })
 

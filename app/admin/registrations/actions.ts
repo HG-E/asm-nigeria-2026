@@ -5,7 +5,7 @@ import { after } from "next/server"
 
 import { requireRole } from "@/lib/auth"
 import { sendMail } from "@/lib/email"
-import { registrationRejectedHtml, registrationVerifiedHtml } from "@/lib/registration-email"
+import { registrationConfirmationHtml, registrationRejectedHtml, registrationVerifiedHtml } from "@/lib/registration-email"
 import { createClient } from "@/lib/supabase/server"
 
 export type RegistrationActionResult = { error: string } | { success: true }
@@ -88,6 +88,50 @@ export async function toggleAttendedAction(registrationId: string, attended: boo
     entity_type: "conference_registration",
     entity_id: registrationId,
   })
+
+  revalidatePath("/admin/registrations")
+  return { success: true }
+}
+
+export async function retryRegistrationConfirmationAction(registrationId: string): Promise<RegistrationActionResult> {
+  await requireRole("admin")
+  const supabase = await createClient()
+
+  const { data: registration } = await supabase
+    .from("conference_registrations")
+    .select("id, full_name, email, reference_number, participant_category, registration_period, amount_expected")
+    .eq("id", registrationId)
+    .single()
+
+  if (!registration) {
+    return { error: "Registration not found." }
+  }
+
+  try {
+    await sendMail({
+      to: registration.email,
+      subject: `Registration received — ${registration.reference_number}`,
+      html: registrationConfirmationHtml({
+        fullName: registration.full_name,
+        referenceNumber: registration.reference_number ?? "",
+        category: registration.participant_category,
+        amountExpected: registration.amount_expected,
+      }),
+    })
+    await supabase
+      .from("conference_registrations")
+      .update({ confirmation_email_status: "sent", confirmation_email_sent_at: new Date().toISOString(), confirmation_email_error: null })
+      .eq("id", registrationId)
+  } catch (error) {
+    await supabase
+      .from("conference_registrations")
+      .update({
+        confirmation_email_status: "failed",
+        confirmation_email_error: error instanceof Error ? error.message : "Unknown error",
+      })
+      .eq("id", registrationId)
+    return { error: "Could not send the confirmation email. Please try again." }
+  }
 
   revalidatePath("/admin/registrations")
   return { success: true }

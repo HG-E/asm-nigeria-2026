@@ -237,6 +237,9 @@ export type Database = {
           payment_rejection_reason: string | null
           ip_address: string | null
           attended: boolean
+          confirmation_email_status: Database["public"]["Enums"]["notification_status"]
+          confirmation_email_error: string | null
+          confirmation_email_sent_at: string | null
           created_at: string
           updated_at: string
         }
@@ -262,6 +265,9 @@ export type Database = {
           payment_rejection_reason?: string | null
           ip_address?: string | null
           attended?: boolean
+          confirmation_email_status?: Database["public"]["Enums"]["notification_status"]
+          confirmation_email_error?: string | null
+          confirmation_email_sent_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -287,6 +293,9 @@ export type Database = {
           payment_rejection_reason?: string | null
           ip_address?: string | null
           attended?: boolean
+          confirmation_email_status?: Database["public"]["Enums"]["notification_status"]
+          confirmation_email_error?: string | null
+          confirmation_email_sent_at?: string | null
           created_at?: string
           updated_at?: string
         }
