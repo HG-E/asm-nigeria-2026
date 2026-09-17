@@ -169,7 +169,7 @@ const THEMES = [
 
 const PROGRAMME_DAYS = [
   { header: "pd-h-blue", label: "Day 1", date: "Nov 22", items: [
-    { time: "Morning", text: "Pre-Conference Hands-On Workshop (₦4,000)" },
+    { time: "Morning", text: "Pre-Conference Hands-On Workshop (₦8,000)" },
     { time: "Afternoon", text: "Conference Registration & Welcome" },
   ], note: "Sunday — no plenary or scientific sessions. Only the pre-conference workshop and early registration desk are open; other attendees should plan to arrive from Nov 23." },
   { header: "pd-h-red", label: "Day 2", date: "Nov 23", items: [
@@ -208,7 +208,7 @@ const EARLY_FEES = [
   { cat: "Online Participants — Foreign", amt: "$25 USD" },
   { cat: "Foreign Corporate Bodies", amt: "$150 USD" },
   { cat: "Abstract Submission Fee", amt: "₦3,000", accent: true },
-  { cat: "Pre-Conference Hands-On Workshop", amt: "₦4,000" },
+  { cat: "Pre-Conference Hands-On Workshop", amt: "₦8,000" },
 ]
 
 const LATE_FEES = [
@@ -263,7 +263,7 @@ const FAQS = [
   { q: "Can I attend online?", a: "Yes! The conference is hybrid. Local online participants pay ₦25,000 (early rate) and foreign online participants pay $25 USD. You'll receive a link to the virtual platform after registration is confirmed." },
   { q: "What is the abstract submission fee and what does it cover?", a: <>The abstract processing fee is ₦3,000 (or $5 USD). This is separate from your conference registration fee. Payment should be made to the ASM Nigeria account at First Bank (2047664724) before or alongside your abstract submission via the <Link href="/register">official portal</Link>.</> },
   { q: "What is the difference between Early and Late registration?", a: "Early/Regular registration is available until October 22, 2026, and offers significantly lower rates (e.g., ASM Members ₦25,000 vs ₦30,000 late). Registering early saves you money and helps the organizers plan effectively. We strongly recommend registering before October 22." },
-  { q: "What is the Pre-Conference Hands-On Workshop?", a: "The pre-conference workshop on November 22 is an additional paid session (₦4,000 early / ₦8,000 late) offering practical, skills-based training. It is particularly valuable for students and early-career researchers and requires separate registration." },
+  { q: "What is the Pre-Conference Hands-On Workshop?", a: "The pre-conference workshop on November 22 is an additional paid session (₦8,000) offering practical, skills-based training. It is particularly valuable for students and early-career researchers and requires separate registration." },
   { q: "How do I confirm my payment was received?", a: <>After making your bank transfer to First Bank (Acc: 2047664724, ASM Nigeria), attach your receipt when you register or submit your abstract — no separate email needed. The admin confirms it from your account within 2–3 working days.</> },
   { q: "Can I submit more than one abstract?", a: "Yes, you may submit multiple abstracts. Each abstract requires a separate processing fee of ₦3,000. Each submission must meet all guidelines and address one or two of the five stated sub-themes." },
 ]

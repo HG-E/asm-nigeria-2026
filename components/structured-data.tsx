@@ -137,7 +137,7 @@ export function FaqJsonLd() {
       },
       {
         q: "What is the Pre-Conference Hands-On Workshop?",
-        a: "The pre-conference workshop on November 22 is an additional paid session (₦4,000 early / ₦8,000 late) offering practical, skills-based training. It is particularly valuable for students and early-career researchers and requires separate registration.",
+        a: "The pre-conference workshop on November 22 is an additional paid session (₦8,000) offering practical, skills-based training. It is particularly valuable for students and early-career researchers and requires separate registration.",
       },
       {
         q: "How do I confirm my payment was received?",

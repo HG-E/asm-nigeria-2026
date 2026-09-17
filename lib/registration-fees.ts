@@ -34,7 +34,9 @@ export const REGISTRATION_FEES: Record<ParticipantCategory, FeeRow> = {
   "Foreign Corporate Bodies": { early: "$150 USD", late: "$155 USD", currency: "USD" },
 }
 
-export const WORKSHOP_FEE = { early: "₦4,000", late: "₦8,000" }
+// Flat rate -- no early/late split for the workshop (unlike the main
+// attendance fees above).
+export const WORKSHOP_FEE = { early: "₦8,000", late: "₦8,000" }
 
 export function currentRegistrationPeriod(): "early" | "late" {
   return Date.now() <= new Date(REGISTRATION_PERIOD_CUTOFF).getTime() ? "early" : "late"
