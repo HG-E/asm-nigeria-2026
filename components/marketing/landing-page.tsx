@@ -75,9 +75,9 @@ const SPEAKERS = [
     chip: "chip-red",
     chipLabel: "Keynote Speaker",
     name: "Prof. Kehinde I.T. Eniola",
-    title: "Vice Chancellor",
+    title: "Pioneer Vice Chancellor",
     sub: "Kogi State University, Kabba",
-    bio: "",
+    bio: "Professor Kehinde I. T. Eniola, fNSM, is the Pioneer Vice Chancellor of Kogi State University, Kabba, and a Professor of Environmental and Public Health Microbiology. He holds a Ph.D. in Microbiology from the University of Ilorin, with doctoral research in Environmental Microbiology, and his scholarship spans water quality, sanitation and hygiene (WASH), microbial pollution, and the application of microbiology to public health and sustainable development. He served as President of the Nigerian Society for Microbiology (2014–2018) and as ASM Nigeria Country Ambassador (2018–2023). Popularly known as the “Digital VC,” he is widely recognised as a visionary leader in education and microbiology.",
   },
   {
     accent: "var(--gold)",
@@ -122,6 +122,17 @@ const SPEAKERS = [
     title: "Senior Research Scientist",
     sub: "The Ohio State University Wexner Medical Center",
     bio: "Dr. Najmus Mahfooz is a Senior Research Scientist in molecular biology, immunology, and infectious disease at The Ohio State University Wexner Medical Center, where she directs research in the Department of Microbial Infection and Immunity. Her work spans host-pathogen interactions, CRISPR-based functional genomics, and immunoregulatory mechanisms, including landmark studies on IL-35 signalling and UV-C disinfection of SARS-CoV-2. She holds a PhD in Molecular and Developmental Biology from Wayne State University and a BSc in Microbiology from Bayero University, Kano, and has authored 12+ peer-reviewed publications.",
+  },
+  {
+    accent: "var(--red)",
+    initials: "MC",
+    image: "/speakers/mark-chee.jpg",
+    chip: "chip-blue",
+    chipLabel: "Guest Speaker",
+    name: "Dr. Mark Kuan Leng Chee, PhD",
+    title: "Assistant Professor of Biology",
+    sub: "Hood College, Maryland, USA",
+    bio: "Dr. Mark Kuan Leng Chee is a microbiologist, infectious disease biologist, and educator, and Assistant Professor of Biology at Hood College, Maryland, where he teaches microbiology, infectious disease biology, genetics, and general biology. He holds a PhD and BS from Duke University and a graduate certificate in Epidemiology and Clinical Research from Stanford University. His research examines interactions between bacterial pathogens, commensal microorganisms, and animal hosts using Drosophila as a model system, providing insight into microbial ecology and antimicrobial resistance across interconnected biological systems. In 2022, he launched the Microbiology, Public Health & History (MPH) film festival, now in its fifth season.",
   },
 ]
 
