@@ -932,7 +932,7 @@
   background: #fff;
   border-radius: var(--r-lg);
   box-shadow: var(--shadow);
-  transition: box-shadow 0.3s;
+  transition: box-shadow 0.3s, transform 0.3s;
   border: 1px solid var(--line);
   position: relative;
   overflow: hidden;
@@ -948,6 +948,7 @@
 }
 .asm-landing .speaker-card:hover {
   box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 .asm-landing .sp-header {
   padding: 40px 36px;
@@ -956,6 +957,10 @@
   gap: 28px;
   cursor: pointer;
   user-select: none;
+}
+.asm-landing .sp-header:focus-visible {
+  outline: 2px solid var(--accent, var(--blue));
+  outline-offset: -2px;
 }
 .asm-landing .sp-info {
   flex: 1;
@@ -1020,22 +1025,71 @@
   transform: rotate(180deg);
   color: var(--accent, var(--red));
 }
+/* Animating to the bio's real height (rather than a fixed max-height that
+   clips longer bios) needs the 0fr->1fr grid-track trick: a plain height
+   transition can't target "auto", and a max-height large enough to never
+   clip the longest bio would make the shorter ones animate at very
+   different, mismatched speeds. */
 .asm-landing .sp-body {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease, padding 0.3s ease;
-  padding: 0 36px;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .asm-landing .speaker-card.open .sp-body {
-  max-height: 400px;
-  padding: 0 36px 36px;
+  grid-template-rows: 1fr;
+}
+.asm-landing .sp-body-inner {
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.asm-landing .speaker-card.open .sp-body-inner {
+  opacity: 1;
+  transition: opacity 0.35s ease 0.1s;
 }
 .asm-landing .sp-bio {
   font-size: 14px;
   color: var(--muted);
   line-height: 1.7;
   border-top: 1px solid var(--line);
-  padding-top: 20px;
+  margin: 0 36px;
+  padding: 20px 0 36px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .asm-landing .speaker-card,
+  .asm-landing .sp-body,
+  .asm-landing .sp-body-inner,
+  .asm-landing .sp-arrow {
+    transition: none;
+  }
+}
+/* Mobile-first tightening for the speaker cards: the desktop avatar/padding
+   sizing eats too much width on a phone, so the name/title/subtheme column
+   ends up cramped and wrapping awkwardly against the arrow. */
+@media (max-width: 640px) {
+  .asm-landing .sp-header {
+    padding: 24px 20px;
+    gap: 16px;
+  }
+  .asm-landing .sp-avatar {
+    width: 64px;
+    height: 64px;
+    font-size: 18px;
+  }
+  .asm-landing .sp-name {
+    font-size: 15px;
+  }
+  .asm-landing .sp-title {
+    font-size: 12px;
+  }
+  .asm-landing .sp-subtheme {
+    font-size: 11px;
+  }
+  .asm-landing .sp-bio {
+    margin: 0 20px;
+    padding: 16px 0 24px;
+    font-size: 13.5px;
+  }
 }
 
 /* ════ THEMES ════ */
