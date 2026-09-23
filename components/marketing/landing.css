@@ -928,6 +928,11 @@
   gap: 32px;
   margin-top: 52px;
 }
+.asm-landing .speakers-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
 .asm-landing .speaker-card {
   background: #fff;
   border-radius: var(--r-lg);
@@ -1089,6 +1094,65 @@
     margin: 0 20px;
     padding: 16px 0 24px;
     font-size: 13.5px;
+  }
+}
+
+/* ════ DEDICATED /speakers PAGE ════ */
+.asm-landing.speakers-page .sp-hero {
+  padding-top: 140px;
+  padding-bottom: 64px;
+}
+.asm-landing.speakers-page .sp-hero .headline {
+  margin-top: 10px;
+}
+.asm-landing.speakers-page .sp-hero .rule {
+  margin: 20px 0 22px;
+}
+/* Every card is permanently in its "open" state here (full bios are the
+   whole point of this page), so the click affordance and hover-driven
+   pointer from the homepage teaser would be misleading -- nothing toggles. */
+.asm-landing.speakers-page .sp-header {
+  cursor: default;
+}
+.asm-landing.speakers-page .sp-arrow {
+  display: none;
+}
+.asm-landing.speakers-page .speakers-row-full {
+  grid-template-columns: repeat(2, 1fr);
+}
+.asm-landing.speakers-page .sp-avatar {
+  width: 108px;
+  height: 108px;
+  font-size: 28px;
+}
+.asm-landing.speakers-page .sp-name {
+  font-size: 19px;
+}
+.asm-landing.speakers-page .sp-closing {
+  padding: 80px 0;
+}
+.asm-landing.speakers-page .sp-closing-inner {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.asm-landing.speakers-page .sp-closing-inner .hero-actions {
+  margin-top: 28px;
+}
+@media (max-width: 900px) {
+  .asm-landing.speakers-page .speakers-row-full {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .asm-landing.speakers-page .sp-hero {
+    padding-top: 108px;
+    padding-bottom: 48px;
+  }
+  .asm-landing.speakers-page .sp-avatar {
+    width: 84px;
+    height: 84px;
+    font-size: 22px;
   }
 }
 
