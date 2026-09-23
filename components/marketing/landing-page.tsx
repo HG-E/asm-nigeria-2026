@@ -77,6 +77,7 @@ const SPEAKERS = [
     name: "Prof. Kehinde I.T. Eniola",
     title: "Pioneer Vice Chancellor",
     sub: "Kogi State University, Kabba",
+    subthemeIndex: null,
     bio: "Professor Kehinde I. T. Eniola, fNSM, is the Pioneer Vice Chancellor of Kogi State University, Kabba, and a Professor of Environmental and Public Health Microbiology. He holds a Ph.D. in Microbiology from the University of Ilorin, with doctoral research in Environmental Microbiology, and his scholarship spans water quality, sanitation and hygiene (WASH), microbial pollution, and the application of microbiology to public health and sustainable development. He served as President of the Nigerian Society for Microbiology (2014–2018) and as ASM Nigeria Country Ambassador (2018–2023). Popularly known as the “Digital VC,” he is widely recognised as a visionary leader in education and microbiology.",
   },
   {
@@ -88,6 +89,7 @@ const SPEAKERS = [
     name: "Sylvia O. Anyadoh-Nwadike, PhD",
     title: "ASM Country Ambassador to Nigeria",
     sub: null,
+    subthemeIndex: null,
     bio: "",
   },
   {
@@ -99,6 +101,7 @@ const SPEAKERS = [
     name: "Prof. MD Mukhtar",
     title: "Professor of Pharmaceutical & Medical Microbiology",
     sub: "Bayero University, Kano",
+    subthemeIndex: 3,
     bio: "Professor MD Mukhtar (Mukhtar Muhammad Dauda) is a Professor of Pharmaceutical and Medical Microbiology at Bayero University, Kano, and Head of the Department of Pharmaceutical Microbiology and Biotechnology. He is President and co-founder of the Centre for Environmental and Public Health Research and Development (CEPHARD), and a Fellow of the Nigerian Society for Microbiology. With over 100 peer-reviewed publications and four authored books, his research spans drug discovery, public health, and microbial biotechnology. He has supervised more than 150 postgraduate students and served on the editorial boards of several international journals.",
   },
   {
@@ -110,6 +113,7 @@ const SPEAKERS = [
     name: "Engr. Umar Buba Bindir, PhD",
     title: "Founder & COO, Bindir Knowledge Development Centre",
     sub: "Former Director-General, NOTAP",
+    subthemeIndex: 4,
     bio: "Engr. Umar Buba Bindir, PhD, is a Chartered Engineer and Fellow of the Nigerian Academy of Engineering, holding postgraduate qualifications from Cranfield University in the UK. He is Founder and Chief Operating Officer of the Bindir Knowledge Development Centre International (BKC) in Yola, supporting technical and entrepreneurial skills development for in- and out-of-school children and youth. He previously served as Director-General of the National Office for Technology Acquisition and Promotion (NOTAP), Secretary to the Government of Adamawa State (2015–2019), and National Coordinator of the National Social Investment Programme (2020–2023).",
   },
   {
@@ -121,6 +125,7 @@ const SPEAKERS = [
     name: "Dr. Najmus Mahfooz",
     title: "Senior Research Scientist",
     sub: "The Ohio State University Wexner Medical Center",
+    subthemeIndex: 5,
     bio: "Dr. Najmus Mahfooz is a Senior Research Scientist in molecular biology, immunology, and infectious disease at The Ohio State University Wexner Medical Center, where she directs research in the Department of Microbial Infection and Immunity. Her work spans host-pathogen interactions, CRISPR-based functional genomics, and immunoregulatory mechanisms, including landmark studies on IL-35 signalling and UV-C disinfection of SARS-CoV-2. She holds a PhD in Molecular and Developmental Biology from Wayne State University and a BSc in Microbiology from Bayero University, Kano, and has authored 12+ peer-reviewed publications.",
   },
   {
@@ -132,6 +137,7 @@ const SPEAKERS = [
     name: "Dr. Mark Kuan Leng Chee, PhD",
     title: "Assistant Professor of Biology",
     sub: "Hood College, Maryland, USA",
+    subthemeIndex: 2,
     bio: "Dr. Mark Kuan Leng Chee is a microbiologist, infectious disease biologist, and educator, and Assistant Professor of Biology at Hood College, Maryland, where he teaches microbiology, infectious disease biology, genetics, and general biology. He holds a PhD and BS from Duke University and a graduate certificate in Epidemiology and Clinical Research from Stanford University. His research examines interactions between bacterial pathogens, commensal microorganisms, and animal hosts using Drosophila as a model system, providing insight into microbial ecology and antimicrobial resistance across interconnected biological systems. In 2022, he launched the Microbiology, Public Health & History (MPH) film festival, now in its fifth season.",
   },
 ]
@@ -1046,6 +1052,20 @@ export function LandingPage() {
                       <div className="sp-chip"><span className={`chip ${sp.chip}`}>{sp.chipLabel}</span></div>
                       <div className="sp-name">{sp.name}</div>
                       <div className="sp-title">{sp.title}{sp.sub && <><br />{sp.sub}</>}</div>
+                      {sp.subthemeIndex && (
+                        <div className="sp-subtheme">
+                          <span
+                            className="sp-subtheme-num"
+                            style={{
+                              background: ELIGIBLE_SUBTHEMES[sp.subthemeIndex - 1].bg,
+                              color: ELIGIBLE_SUBTHEMES[sp.subthemeIndex - 1].color,
+                            }}
+                          >
+                            {sp.subthemeIndex}
+                          </span>
+                          Speaking on: {ELIGIBLE_SUBTHEMES[sp.subthemeIndex - 1].label}
+                        </div>
+                      )}
                     </div>
                     <span className="faq-arrow sp-arrow" aria-hidden="true">⌄</span>
                   </div>
