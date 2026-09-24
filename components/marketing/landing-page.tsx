@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react"
 import { submitContactMessageAction } from "@/app/contact-actions"
 import { Reveal } from "@/components/marketing/reveal"
 import { SiteHeader } from "@/components/marketing/site-header"
+import { SpeakerBio } from "@/components/marketing/speaker-bio"
 import { ELIGIBLE_SUBTHEMES, SPEAKERS } from "@/components/marketing/speakers-data"
 
 import "./landing.css"
@@ -919,7 +920,7 @@ export function LandingPage() {
                   </div>
                   <div className="sp-body">
                     <div className="sp-body-inner">
-                      <p className="sp-bio">{sp.bio || "Full biography coming soon."}</p>
+                      <p className="sp-bio">{sp.bio ? <SpeakerBio text={sp.bio} /> : "Full biography coming soon."}</p>
                     </div>
                   </div>
                 </Reveal>
