@@ -24,7 +24,11 @@ export const ELIGIBLE_SUBTHEMES = [
   { bg: "var(--gold)", color: "var(--blue-d)", label: "Next-Gen Scientists" },
 ]
 
-export const SPEAKERS: Speaker[] = [
+// Listed in whatever order is convenient to edit; SPEAKERS below is what the
+// site actually renders, always ordered keynote/convener first and then by
+// sub-theme 1 through 5 -- so a newly added speaker lands in the right place
+// just by setting subthemeIndex.
+const SPEAKER_LIST: Speaker[] = [
   {
     accent: "var(--red)",
     initials: "KE",
@@ -86,6 +90,18 @@ export const SPEAKERS: Speaker[] = [
     bio: "Dr. Najmus Mahfooz is a Senior Research Scientist with over 15 years of expertise in molecular biology, immunology and infectious disease research, currently directing research and laboratory operations in the Department of Microbial Infection and Immunity at The Ohio State University Wexner Medical Center. Her landmark study on IL-35 as a competitive inhibitor of the IL-12 receptor complex, published in Immunohorizons (2023), opened new avenues for therapeutic intervention in inflammatory disease, and she co-investigated the efficacy of 222nm UV-C light for SARS-CoV-2 disinfection, published in Scientific Reports (2022). A skilled functional genomicist, she has engineered CRISPR/Cas9 knockout strains of Staphylococcus spp. to study biofilm formation and virulence, and earlier in her career pioneered RNAi-based loss-of-function assays in non-model insects to elucidate the role of Hox genes in limb development, work published in PNAS and PLoS ONE. She has managed daily operations for a team of 10+ scientists, authored more than 25 Standard Operating Procedures, served as primary safety officer for a BSL-3 facility, and maintained strict compliance with IACUC, IBC and IRB regulations, alongside serving on graduate admissions committees for Ohio State's M.S. and Ph.D. programmes. A committed mentor to junior scientists, postdoctoral fellows and undergraduates, she previously held a faculty position at Princess Nora University in Saudi Arabia, teaching biochemistry, nutritional epidemiology and inherited metabolic diseases. She earned her Ph.D. in Molecular and Developmental Biology from Wayne State University (2006), where she received the Outstanding Graduate Teaching Assistant Award and the Best Poster Presentation Award, and holds a BSc in Microbiology from Bayero University, Kano (1994). With 12+ peer-reviewed publications and a strong record of grant-funded research, she is dedicated to translating basic science discoveries into clinically relevant solutions.",
   },
   {
+    accent: "var(--gold)",
+    initials: "AP",
+    image: "/speakers/andrew-pekosz.jpg",
+    chip: "chip-blue",
+    chipLabel: "Guest Speaker",
+    name: "Prof. Andrew Pekosz",
+    title: "Professor and Vice Chair, Molecular Microbiology & Immunology",
+    sub: "Johns Hopkins Bloomberg School of Public Health, USA",
+    subthemeIndex: 2,
+    bio: "Professor Andrew Pekosz is Professor and Vice Chair of the W. Harry Feinstone Department of Molecular Microbiology and Immunology at the Johns Hopkins Bloomberg School of Public Health in Baltimore, Maryland. He directs the Johns Hopkins Center for Excellence in Influenza Research and Response (JH-CEIRR) and the Center for Emerging Viral Infectious Diseases (CEVID). His laboratory studies the basic biology of influenza, coronaviruses and other emerging and zoonotic virus infections. He has authored more than 250 publications, serves on the editorial boards of several scientific journals, and has served on National Institutes of Health scientific and policy review boards focused on biosafety and biocontainment. A frequent expert voice in the public conversation on COVID-19, influenza, vaccines, biosafety, emerging infectious diseases and pandemic preparedness, he has been interviewed by national and international news organisations including National Public Radio, the Associated Press, the New York Times, the Washington Post, CNN, C-SPAN, the BBC and Bloomberg Television, as well as numerous local radio and television stations.",
+  },
+  {
     accent: "var(--red)",
     initials: "MC",
     image: "/speakers/mark-chee.jpg",
@@ -97,4 +113,11 @@ export const SPEAKERS: Speaker[] = [
     subthemeIndex: 1,
     bio: "Dr. Mark Kuan Leng Chee is a microbiologist, infectious disease biologist and educator, and Assistant Professor of Biology at Hood College, Maryland, where he teaches microbiology, infectious disease biology, genetics and general biology. He holds a PhD and BS from Duke University and a graduate certificate in Epidemiology and Clinical Research from Stanford University. Appointed an ASM Science Teaching Fellow for 2014–2015, he joined Martin Methodist College (later the University of Tennessee Southern) as Assistant Professor of Biology in 2015, where he developed his research interest in infectious diseases, before moving to Hood College in 2024. His research examines interactions between bacterial pathogens, commensal microorganisms and animal hosts using Drosophila (vinegar flies) as a model system, providing insight into microbial ecology, host–microbe interactions and pathogen biology that underpin the study of antimicrobial resistance across interconnected biological systems — supported by his expertise in bacterial culture, molecular biology, gene expression, PCR and synthetic biology. In 2022, he launched the Microbiology, Public Health & History (MPH) film festival with an ASM Community Science Grant, and in 2024, with Marina Wylie of the Uniformed Services University, won a Civic Engagement Microgrant from Research!America to support the festival's first year at Hood College; now in its fifth season, past features have included The Silent Pandemic — the Global Fight Against Antibiotic Resistance. His academic interests extend beyond laboratory microbiology to infectious-disease epidemiology, pandemic history, vaccination and public-health communication.",
   },
+]
+
+export const SPEAKERS: Speaker[] = [
+  ...SPEAKER_LIST.filter((s) => s.subthemeIndex === null),
+  ...SPEAKER_LIST.filter((s) => s.subthemeIndex !== null).sort(
+    (a, b) => (a.subthemeIndex as number) - (b.subthemeIndex as number)
+  ),
 ]
