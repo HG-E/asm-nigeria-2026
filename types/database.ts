@@ -546,6 +546,10 @@ export type Database = {
           version_number: number
           abstract_text: string
           word_count: number
+          abstract_background: string | null
+          abstract_methods: string | null
+          abstract_results: string | null
+          abstract_conclusion: string | null
           change_summary: string | null
           submitted_at: string | null
           created_at: string
@@ -556,6 +560,10 @@ export type Database = {
           version_number: number
           abstract_text?: string
           word_count?: number
+          abstract_background?: string | null
+          abstract_methods?: string | null
+          abstract_results?: string | null
+          abstract_conclusion?: string | null
           change_summary?: string | null
           submitted_at?: string | null
           created_at?: string
@@ -566,6 +574,10 @@ export type Database = {
           version_number?: number
           abstract_text?: string
           word_count?: number
+          abstract_background?: string | null
+          abstract_methods?: string | null
+          abstract_results?: string | null
+          abstract_conclusion?: string | null
           change_summary?: string | null
           submitted_at?: string | null
           created_at?: string

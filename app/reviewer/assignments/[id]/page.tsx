@@ -6,6 +6,7 @@ import { ConflictDeclaration } from "@/components/reviewer/conflict-declaration"
 import { ReviewForm } from "@/components/reviewer/review-form"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { AbstractBody } from "@/components/submission/abstract-body"
 import { requireRole } from "@/lib/auth"
 import { createClient } from "@/lib/supabase/server"
 
@@ -32,7 +33,9 @@ export default async function ReviewAssignmentPage(
   const [{ data: version }, { data: documents }, { data: existingReview }] = await Promise.all([
     supabase
       .from("submission_versions")
-      .select("abstract_text, word_count")
+      .select(
+        "abstract_text, word_count, abstract_background, abstract_methods, abstract_results, abstract_conclusion"
+      )
       .eq("submission_id", submission.id)
       .eq("version_number", submission.current_version)
       .maybeSingle(),
@@ -78,7 +81,7 @@ export default async function ReviewAssignmentPage(
               ))}
             </div>
           )}
-          <p className="whitespace-pre-wrap">{version?.abstract_text}</p>
+          <AbstractBody version={version} fallback="" />
           {documentUrl && (
             <a
               href={documentUrl}

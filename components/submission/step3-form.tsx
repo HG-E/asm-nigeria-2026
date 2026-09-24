@@ -3,30 +3,25 @@
 import { useState } from "react"
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, useWatch } from "react-hook-form"
+import { useForm } from "react-hook-form"
 
 import { Button, buttonVariants } from "@/components/ui/button"
+import { Form } from "@/components/ui/form"
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Textarea } from "@/components/ui/textarea"
-import { cn } from "@/lib/utils"
-import { countWords, step3Schema, type Step3Input } from "@/lib/validations/submission"
+  StructuredAbstractFields,
+  useAbstractOverLimit,
+} from "@/components/submission/structured-abstract-fields"
+import { step3Schema, type Step3Input } from "@/lib/validations/submission"
 import type { ActionResult } from "@/app/author/submissions/[id]/actions"
 
 export function Step3Form({
-  wordLimit,
   defaultValues,
+  legacyText,
   onSubmit,
   backHref,
 }: {
-  wordLimit: number
   defaultValues: Step3Input
+  legacyText?: string
   onSubmit: (data: Step3Input) => Promise<ActionResult>
   backHref: string
 }) {
@@ -37,16 +32,10 @@ export function Step3Form({
     defaultValues,
   })
 
-  const abstractText = useWatch({ control: form.control, name: "abstractText" })
-  const wordCount = countWords(abstractText)
-  const overLimit = wordCount > wordLimit
+  const overLimit = useAbstractOverLimit(form.control)
 
   async function handleSubmit(values: Step3Input) {
     setSubmitError(null)
-    if (countWords(values.abstractText) > wordLimit) {
-      setSubmitError(`Your abstract exceeds the ${wordLimit}-word limit.`)
-      return
-    }
     const result = await onSubmit(values)
     if ("error" in result) {
       setSubmitError(result.error)
@@ -56,27 +45,7 @@ export function Step3Form({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="abstractText"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Abstract</FormLabel>
-              <FormControl>
-                <Textarea rows={14} {...field} />
-              </FormControl>
-              <p
-                className={cn(
-                  "text-sm",
-                  overLimit ? "text-destructive font-medium" : "text-muted-foreground"
-                )}
-              >
-                Word count: {wordCount} / {wordLimit}
-              </p>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <StructuredAbstractFields control={form.control} legacyText={legacyText} />
 
         {submitError && (
           <p className="text-destructive text-sm" role="alert">

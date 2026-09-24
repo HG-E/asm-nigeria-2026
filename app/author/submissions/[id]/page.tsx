@@ -14,6 +14,7 @@ import { WizardShell } from "@/components/submission/wizard-shell"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { isStructured, sectionsFromVersion } from "@/lib/abstract-structure"
 import { requireAuth } from "@/lib/auth"
 import { getActiveConference } from "@/lib/conference"
 import { STATUS_HINTS } from "@/lib/submission-status"
@@ -28,6 +29,9 @@ import {
   updateDeclarationsAction,
   updateStep1Action,
 } from "./actions"
+
+const VERSION_TEXT_COLUMNS =
+  "abstract_text, abstract_background, abstract_methods, abstract_results, abstract_conclusion"
 
 export default async function SubmissionDetailPage(props: PageProps<"/author/submissions/[id]">) {
   const { id } = await props.params
@@ -54,13 +58,13 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
       await Promise.all([
         supabase
           .from("submission_versions")
-          .select("abstract_text")
+          .select(VERSION_TEXT_COLUMNS)
           .eq("submission_id", id)
           .eq("version_number", nextVersion)
           .maybeSingle(),
         supabase
           .from("submission_versions")
-          .select("abstract_text")
+          .select(VERSION_TEXT_COLUMNS)
           .eq("submission_id", id)
           .eq("version_number", submission.current_version)
           .maybeSingle(),
@@ -79,7 +83,13 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
           .maybeSingle(),
       ])
 
-    const defaultAbstractText = draftVersion?.abstract_text ?? currentVersionRow?.abstract_text ?? ""
+    const draftIsStructured = draftVersion ? isStructured(draftVersion) : false
+    const defaultSections = sectionsFromVersion(draftIsStructured ? draftVersion : null)
+    // Older abstracts are free text; show the current one for reference while
+    // the author rewrites it into the four parts.
+    const legacyText = draftIsStructured
+      ? undefined
+      : draftVersion?.abstract_text || currentVersionRow?.abstract_text || undefined
 
     let decisionAttachmentUrl: string | null = null
     if (decision?.attachment_path) {
@@ -134,8 +144,8 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
           <RevisionForm
             submissionId={id}
             userId={session.authUserId}
-            wordLimit={conference?.abstract_word_limit ?? 300}
-            defaultAbstractText={defaultAbstractText}
+            defaultSections={defaultSections}
+            legacyText={legacyText}
             currentDocument={document ?? null}
             allowedFileTypes={conference?.allowed_file_types ?? []}
             maxFileSizeMb={conference?.max_file_size_mb ?? 10}
@@ -339,16 +349,18 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
   if (step === 3) {
     const { data: version } = await supabase
       .from("submission_versions")
-      .select("abstract_text")
+      .select(VERSION_TEXT_COLUMNS)
       .eq("submission_id", id)
       .eq("version_number", submission.current_version)
       .single()
 
+    const structured = version ? isStructured(version) : false
+
     return (
       <WizardShell currentStep={3}>
         <Step3Form
-          wordLimit={conference.abstract_word_limit}
-          defaultValues={{ abstractText: version?.abstract_text ?? "" }}
+          defaultValues={sectionsFromVersion(structured ? version : null)}
+          legacyText={structured ? undefined : version?.abstract_text?.trim() || undefined}
           onSubmit={updateContentAction.bind(null, id)}
           backHref={`${base}?step=2`}
         />
@@ -430,7 +442,7 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
       .order("author_order", { ascending: true }),
     supabase
       .from("submission_versions")
-      .select("abstract_text, word_count")
+      .select(`${VERSION_TEXT_COLUMNS}, word_count`)
       .eq("submission_id", id)
       .eq("version_number", submission.current_version)
       .single(),
@@ -450,8 +462,9 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
         keywords={submission.keywords ?? []}
         presentationPreference={submission.presentation_preference}
         authors={authors ?? []}
-        abstractText={version?.abstract_text ?? ""}
+        abstractVersion={version}
         wordCount={version?.word_count ?? 0}
+        abstractEditHref={`${base}?step=3`}
         declarations={{
           noConflictOfInterest: submission.no_conflict_of_interest,
           ethicalApprovalObtained: submission.ethical_approval_obtained,

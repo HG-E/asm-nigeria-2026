@@ -6,6 +6,7 @@ import { DecisionForm } from "@/components/committee/decision-form"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { AbstractBody } from "@/components/submission/abstract-body"
 import { requireRole } from "@/lib/auth"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
@@ -99,7 +100,7 @@ export default async function CommitteeSubmissionDetailPage(
           <p className="text-muted-foreground">
             {submission.conference_subthemes?.name} · {submission.presentation_preference}
           </p>
-          <p className="whitespace-pre-wrap">{currentVersion?.abstract_text}</p>
+          <AbstractBody version={currentVersion} fallback="" />
         </CardContent>
       </Card>
 

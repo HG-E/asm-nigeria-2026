@@ -4,13 +4,19 @@ import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import { after } from "next/server"
 
+import {
+  checkSections,
+  composeAbstract,
+  isStructured,
+  normalizeSections,
+  totalWords,
+} from "@/lib/abstract-structure"
 import { requireAuth } from "@/lib/auth"
 import { getActiveConference } from "@/lib/conference"
 import { sendNotifications } from "@/lib/notifications"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 import {
-  countWords,
   step1Schema,
   step2Schema,
   step3Schema,
@@ -23,6 +29,47 @@ import {
 } from "@/lib/validations/submission"
 
 export type ActionResult = { error: string } | { success: true }
+
+// Turns a validated Step3Input into what gets stored: normalized sections, the
+// composed single-string abstract_text every existing reader relies on, and a
+// word count over the four sections only (the auto-added headings don't count
+// against an author). Returns an error string instead if the conference-wide
+// cap or any section limit is exceeded -- this is the authoritative check; the
+// browser-side counters are convenience only.
+type VersionFields = {
+  abstract_text: string
+  word_count: number
+  abstract_background: string
+  abstract_methods: string
+  abstract_results: string
+  abstract_conclusion: string
+}
+
+async function buildVersionFields(input: Step3Input): Promise<{ error: string } | { fields: VersionFields }> {
+  const sections = normalizeSections(input)
+  const problem = checkSections(sections)
+  if (problem) return { error: problem }
+  const wordCount = totalWords(sections)
+  const conference = await getActiveConference()
+  if (conference && wordCount > conference.abstract_word_limit) {
+    return {
+      error: `Your abstract is ${wordCount} words, over the ${conference.abstract_word_limit}-word limit.`,
+    }
+  }
+  return {
+    fields: {
+      abstract_text: composeAbstract(sections),
+      word_count: wordCount,
+      abstract_background: sections.background,
+      abstract_methods: sections.methods,
+      abstract_results: sections.results,
+      abstract_conclusion: sections.conclusion,
+    },
+  }
+}
+
+const STRUCTURE_REQUIRED_MESSAGE =
+  "Your abstract needs all four parts (Background, Methods, Results, Conclusion). Complete the abstract step before submitting."
 
 async function loadOwnDraft(supabase: Awaited<ReturnType<typeof createClient>>, id: string, authUserId: string) {
   const { data } = await supabase
@@ -152,17 +199,12 @@ export async function updateContentAction(id: string, input: Step3Input): Promis
     return { error: "This draft is no longer editable." }
   }
 
-  const conference = await getActiveConference()
-  const wordCount = countWords(parsed.data.abstractText)
-  if (conference && wordCount > conference.abstract_word_limit) {
-    return {
-      error: `Your abstract is ${wordCount} words, over the ${conference.abstract_word_limit}-word limit.`,
-    }
-  }
+  const built = await buildVersionFields(parsed.data)
+  if ("error" in built) return { error: built.error }
 
   const { error } = await supabase
     .from("submission_versions")
-    .update({ abstract_text: parsed.data.abstractText, word_count: wordCount })
+    .update(built.fields)
     .eq("submission_id", id)
     .eq("version_number", draft.current_version)
 
@@ -331,6 +373,21 @@ export async function submitAbstractAction(id: string): Promise<ActionResult> {
   if (!version?.abstract_text?.trim()) {
     return { error: "Add your abstract content before submitting." }
   }
+  // Drafts started before the four-part structure existed still hold plain
+  // free text. They must be restructured before they can be submitted, or the
+  // Book of Abstracts would receive an unstructured entry from new intake.
+  if (!isStructured(version)) {
+    return { error: STRUCTURE_REQUIRED_MESSAGE }
+  }
+  const sectionProblem = checkSections({
+    background: version.abstract_background ?? "",
+    methods: version.abstract_methods ?? "",
+    results: version.abstract_results ?? "",
+    conclusion: version.abstract_conclusion ?? "",
+  })
+  if (sectionProblem) {
+    return { error: sectionProblem }
+  }
   const conference = await getActiveConference()
   if (conference && version.word_count > conference.abstract_word_limit) {
     return { error: `Your abstract exceeds the ${conference.abstract_word_limit}-word limit.` }
@@ -402,20 +459,14 @@ export async function saveRevisionAction(id: string, input: Step3Input): Promise
     return { error: "This submission is not open for revision." }
   }
 
-  const conference = await getActiveConference()
-  const wordCount = countWords(parsed.data.abstractText)
-  if (conference && wordCount > conference.abstract_word_limit) {
-    return {
-      error: `Your abstract is ${wordCount} words, over the ${conference.abstract_word_limit}-word limit.`,
-    }
-  }
+  const built = await buildVersionFields(parsed.data)
+  if ("error" in built) return { error: built.error }
 
   const { error } = await supabase.from("submission_versions").upsert(
     {
       submission_id: id,
       version_number: submission.current_version + 1,
-      abstract_text: parsed.data.abstractText,
-      word_count: wordCount,
+      ...built.fields,
     },
     { onConflict: "submission_id,version_number" }
   )
@@ -440,7 +491,9 @@ export async function submitRevisionAction(id: string): Promise<ActionResult> {
   const [{ data: version }, { data: documents }] = await Promise.all([
     supabase
       .from("submission_versions")
-      .select("abstract_text, word_count")
+      .select(
+        "abstract_text, word_count, abstract_background, abstract_methods, abstract_results, abstract_conclusion"
+      )
       .eq("submission_id", id)
       .eq("version_number", nextVersion)
       .maybeSingle(),
@@ -449,6 +502,9 @@ export async function submitRevisionAction(id: string): Promise<ActionResult> {
 
   if (!version?.abstract_text?.trim()) {
     return { error: "Add your revised abstract content before submitting." }
+  }
+  if (!isStructured(version)) {
+    return { error: STRUCTURE_REQUIRED_MESSAGE }
   }
   const conference = await getActiveConference()
   if (conference && version.word_count > conference.abstract_word_limit) {

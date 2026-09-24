@@ -1,5 +1,13 @@
 import { z } from "zod"
 
+import {
+  ABSTRACT_SECTIONS,
+  countWords,
+  normalizeSection,
+} from "@/lib/abstract-structure"
+
+export { countWords }
+
 export const step1Schema = z.object({
   title: z.string().trim().min(1, "Abstract title is required"),
   subthemeId: z.string().min(1, "Select a scientific subtheme"),
@@ -24,9 +32,31 @@ export const step2Schema = z.object({
 })
 export type Step2Input = z.infer<typeof step2Schema>
 
-export const step3Schema = z.object({
-  abstractText: z.string().trim().min(1, "Abstract content is required"),
-})
+// Per-section limits live in lib/abstract-structure.ts. Text is checked after
+// the same normalization the server applies when saving (label stripping,
+// whitespace collapse), so what the author sees counted is what is enforced.
+// Per-section limits live in lib/abstract-structure.ts. Text is checked after
+// the same normalization the server applies when saving (label stripping,
+// whitespace collapse), so what the author sees counted is what is enforced.
+export const step3Schema = z
+  .object({
+    background: z.string(),
+    methods: z.string(),
+    results: z.string(),
+    conclusion: z.string(),
+  })
+  .superRefine((value, ctx) => {
+    for (const section of ABSTRACT_SECTIONS) {
+      const words = countWords(normalizeSection(section.key, value[section.key]))
+      let message: string | null = null
+      if (words === 0) message = `${section.label} is required.`
+      else if (words < section.min)
+        message = `Write at least ${section.min} words for ${section.label} (you have ${words}).`
+      else if (words > section.max)
+        message = `${section.label} is ${words} words, over the ${section.max}-word limit.`
+      if (message) ctx.addIssue({ code: "custom", message, path: [section.key] })
+    }
+  })
 export type Step3Input = z.infer<typeof step3Schema>
 
 export const step4Schema = z.object({
@@ -59,8 +89,3 @@ export const WITHDRAWABLE_STATUSES = [
   "revision_required",
 ] as const
 
-export function countWords(text: string) {
-  const trimmed = text.trim()
-  if (!trimmed) return 0
-  return trimmed.split(/\s+/).length
-}

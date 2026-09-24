@@ -3,10 +3,12 @@
 import { useState, useTransition } from "react"
 import Link from "next/link"
 
+import { AbstractBody } from "@/components/submission/abstract-body"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { isStructured } from "@/lib/abstract-structure"
 import type { ActionResult } from "@/app/author/submissions/[id]/actions"
 
 type Author = {
@@ -23,8 +25,9 @@ export function Step6Review({
   keywords,
   presentationPreference,
   authors,
-  abstractText,
+  abstractVersion,
   wordCount,
+  abstractEditHref,
   declarations,
   documentFileName,
   paymentSummary,
@@ -36,8 +39,15 @@ export function Step6Review({
   keywords: string[]
   presentationPreference: string
   authors: Author[]
-  abstractText: string
+  abstractVersion: {
+    abstract_text: string
+    abstract_background: string | null
+    abstract_methods: string | null
+    abstract_results: string | null
+    abstract_conclusion: string | null
+  } | null
   wordCount: number
+  abstractEditHref: string
   declarations: {
     noConflictOfInterest: boolean
     ethicalApprovalObtained: boolean
@@ -51,6 +61,7 @@ export function Step6Review({
 }) {
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const abstractStructured = abstractVersion ? isStructured(abstractVersion) : false
 
   function handleSubmit() {
     setError(null)
@@ -108,7 +119,21 @@ export function Step6Review({
 
       <div className="space-y-1 text-sm">
         <h3 className="font-medium">Abstract ({wordCount} words)</h3>
-        <p className="text-muted-foreground whitespace-pre-wrap">{abstractText}</p>
+        <AbstractBody
+          version={abstractVersion}
+          className="text-muted-foreground space-y-2 whitespace-pre-wrap"
+        />
+        {!abstractStructured && (
+          <Alert variant="destructive" className="mt-2">
+            <AlertDescription>
+              This abstract was written before the four-part structure was introduced. Please{" "}
+              <Link href={abstractEditHref} className="underline underline-offset-4">
+                rewrite it as Background, Methods, Results and Conclusion
+              </Link>{" "}
+              before submitting.
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
 
       <Separator />
@@ -145,7 +170,7 @@ export function Step6Review({
         <Link href={backHref} className={buttonVariants({ variant: "outline" })}>
           Back
         </Link>
-        <Button type="button" onClick={handleSubmit} disabled={isPending}>
+        <Button type="button" onClick={handleSubmit} disabled={isPending || !abstractStructured}>
           {isPending ? "Submitting..." : "Submit Abstract"}
         </Button>
       </div>

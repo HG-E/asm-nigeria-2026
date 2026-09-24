@@ -3,23 +3,18 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, useWatch } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
 import { saveRevisionAction, submitRevisionAction } from "@/app/author/submissions/[id]/actions"
 import { Step5Upload } from "@/components/submission/step5-upload"
 import { Button } from "@/components/ui/button"
+import { Form } from "@/components/ui/form"
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Textarea } from "@/components/ui/textarea"
-import { cn } from "@/lib/utils"
-import { countWords, step3Schema, type Step3Input } from "@/lib/validations/submission"
+  StructuredAbstractFields,
+  useAbstractOverLimit,
+} from "@/components/submission/structured-abstract-fields"
+import { step3Schema, type Step3Input } from "@/lib/validations/submission"
 
 type CurrentDocument = {
   id: string
@@ -32,16 +27,16 @@ type CurrentDocument = {
 export function RevisionForm({
   submissionId,
   userId,
-  wordLimit,
-  defaultAbstractText,
+  defaultSections,
+  legacyText,
   currentDocument,
   allowedFileTypes,
   maxFileSizeMb,
 }: {
   submissionId: string
   userId: string
-  wordLimit: number
-  defaultAbstractText: string
+  defaultSections: Step3Input
+  legacyText?: string
   currentDocument: CurrentDocument
   allowedFileTypes: string[]
   maxFileSizeMb: number
@@ -53,12 +48,10 @@ export function RevisionForm({
 
   const form = useForm<Step3Input>({
     resolver: zodResolver(step3Schema),
-    defaultValues: { abstractText: defaultAbstractText },
+    defaultValues: defaultSections,
   })
 
-  const abstractText = useWatch({ control: form.control, name: "abstractText" })
-  const wordCount = countWords(abstractText)
-  const overLimit = wordCount > wordLimit
+  const overLimit = useAbstractOverLimit(form.control)
 
   async function handleSaveDraft(values: Step3Input) {
     setSubmitError(null)
@@ -78,10 +71,6 @@ export function RevisionForm({
 
   async function handleSubmitRevision(values: Step3Input) {
     setSubmitError(null)
-    if (countWords(values.abstractText) > wordLimit) {
-      setSubmitError(`Your abstract exceeds the ${wordLimit}-word limit.`)
-      return
-    }
     setSubmitting(true)
     try {
       const saveResult = await saveRevisionAction(submissionId, values)
@@ -102,27 +91,7 @@ export function RevisionForm({
     <div className="space-y-6">
       <Form {...form}>
         <form className="space-y-4">
-          <FormField
-            control={form.control}
-            name="abstractText"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Revised abstract</FormLabel>
-                <FormControl>
-                  <Textarea rows={14} {...field} />
-                </FormControl>
-                <p
-                  className={cn(
-                    "text-sm",
-                    overLimit ? "text-destructive font-medium" : "text-muted-foreground"
-                  )}
-                >
-                  Word count: {wordCount} / {wordLimit}
-                </p>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <StructuredAbstractFields control={form.control} legacyText={legacyText} />
           <Button
             type="button"
             variant="outline"

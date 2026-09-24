@@ -9,6 +9,7 @@ import { DecisionForm } from "@/components/committee/decision-form"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { AbstractBody } from "@/components/submission/abstract-body"
 import { requireRole } from "@/lib/auth"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
@@ -164,9 +165,10 @@ export default async function AdminSubmissionDetailPage(
           <CardTitle className="text-base">Abstract ({version?.word_count ?? 0} words)</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm whitespace-pre-wrap">
-            {version?.abstract_text || "No content yet."}
-          </p>
+          <AbstractBody
+            version={version}
+            className="text-muted-foreground space-y-3 text-sm whitespace-pre-wrap"
+          />
         </CardContent>
       </Card>
 
