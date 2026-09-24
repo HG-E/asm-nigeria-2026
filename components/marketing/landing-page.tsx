@@ -885,11 +885,17 @@ export function LandingPage() {
                 >
                   <div
                     className="sp-header"
-                    onClick={() => toggleSpeaker(i)}
-                    role="button"
-                    tabIndex={0}
-                    aria-expanded={openSpeaker === i}
-                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleSpeaker(i) } }}
+                    // A speaker with no bio on file (by their own choice) has
+                    // nothing to expand, so the card isn't interactive at all.
+                    {...(sp.bio
+                      ? {
+                          onClick: () => toggleSpeaker(i),
+                          role: "button",
+                          tabIndex: 0,
+                          "aria-expanded": openSpeaker === i,
+                          onKeyDown: (e: React.KeyboardEvent) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleSpeaker(i) } },
+                        }
+                      : { style: { cursor: "default" } })}
                   >
                     {sp.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -916,13 +922,15 @@ export function LandingPage() {
                         </div>
                       )}
                     </div>
-                    <span className="faq-arrow sp-arrow" aria-hidden="true">⌄</span>
+                    {sp.bio && <span className="faq-arrow sp-arrow" aria-hidden="true">⌄</span>}
                   </div>
-                  <div className="sp-body">
-                    <div className="sp-body-inner">
-                      <p className="sp-bio">{sp.bio ? <SpeakerBio text={sp.bio} /> : "Full biography coming soon."}</p>
+                  {sp.bio && (
+                    <div className="sp-body">
+                      <div className="sp-body-inner">
+                        <p className="sp-bio"><SpeakerBio text={sp.bio} /></p>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </Reveal>
               ))}
             </div>

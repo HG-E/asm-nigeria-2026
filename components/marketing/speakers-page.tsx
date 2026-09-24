@@ -64,11 +64,13 @@ export function SpeakersPage() {
                     )}
                   </div>
                 </div>
-                <div className="sp-body">
-                  <div className="sp-body-inner">
-                    <p className="sp-bio">{sp.bio ? <SpeakerBio text={sp.bio} /> : "Full biography coming soon."}</p>
+                {sp.bio && (
+                  <div className="sp-body">
+                    <div className="sp-body-inner">
+                      <p className="sp-bio"><SpeakerBio text={sp.bio} /></p>
+                    </div>
                   </div>
-                </div>
+                )}
               </Reveal>
             ))}
           </div>
