@@ -1,6 +1,7 @@
 import "server-only"
 
 import { sendMail } from "@/lib/email"
+import { escapeHtml } from "@/lib/html"
 import { createAdminClient } from "@/lib/supabase/admin"
 
 // Wraps every notification's body in a consistent, branded shell (tricolor
@@ -63,7 +64,7 @@ async function renderContent(
       .maybeSingle()
     authorFirstName = recipientProfile?.first_name ?? null
   }
-  const greeting = authorFirstName ? `<p style="margin-top:0;">Dear ${authorFirstName},</p>` : ""
+  const greeting = authorFirstName ? `<p style="margin-top:0;">Dear ${escapeHtml(authorFirstName)},</p>` : ""
   const finish = (body: string) => wrapEmailHtml(greeting + body)
 
   if (!submissionId) {
@@ -76,9 +77,11 @@ async function renderContent(
     .eq("id", submissionId)
     .single()
 
-  const title = submission?.title ?? "your abstract"
-  const reference = submission?.reference_number ?? ""
-  const subtheme = submission?.conference_subthemes?.name ?? ""
+  // Titles and notes are typed by authors/committee members, so they're
+  // escaped once here rather than at each of the many places they're used.
+  const title = escapeHtml(submission?.title ?? "your abstract")
+  const reference = escapeHtml(submission?.reference_number ?? "")
+  const subtheme = escapeHtml(submission?.conference_subthemes?.name ?? "")
 
   switch (notificationType) {
     case "decision_notification": {
@@ -92,7 +95,7 @@ async function renderContent(
         .maybeSingle()
 
       const authorNote = decision?.author_message
-        ? `<p><strong>A note from the Scientific Programme Committee:</strong> ${decision.author_message}</p>`
+        ? `<p><strong>A note from the Scientific Programme Committee:</strong> ${escapeHtml(decision.author_message).replace(/\n/g, "<br>")}</p>`
         : ""
 
       if (decision?.decision === "accepted" || decision?.decision === "accepted_oral" || decision?.decision === "accepted_poster") {
@@ -218,7 +221,7 @@ async function renderContent(
         .eq("id", submissionId)
         .single()
       const rejectionReason = submissionRow?.payment_rejection_reason
-        ? `<p><strong>Reason:</strong> ${submissionRow.payment_rejection_reason}</p>`
+        ? `<p><strong>Reason:</strong> ${escapeHtml(submissionRow.payment_rejection_reason)}</p>`
         : ""
       return finish(`
         <h2 style="${HEADING_STYLE}">Your payment receipt needs attention</h2>

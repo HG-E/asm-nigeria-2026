@@ -5,6 +5,7 @@ import { after } from "next/server"
 
 import { getActiveConference } from "@/lib/conference"
 import { sendMail } from "@/lib/email"
+import { escapeHtml } from "@/lib/html"
 import { currentRegistrationPeriod, feeFor, WORKSHOP_FEE, type ParticipantCategory } from "@/lib/registration-fees"
 import { registrationConfirmationHtml } from "@/lib/registration-email"
 import { createAdminClient } from "@/lib/supabase/admin"
@@ -149,7 +150,12 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
 
   const uploadedPaths: string[] = []
   async function uploadOne(file: File, kind: string) {
-    const path = `${conference!.id}/${kind}/${Date.now()}-${file.name}`
+    // Phone galleries produce names like "Screenshot (2) é.png"; storage keys
+    // reject some of those characters, which surfaced to the registrant as a
+    // generic upload failure. The original name isn't needed -- the row keeps
+    // only the storage path.
+    const safeName = file.name.replace(/[^A-Za-z0-9._-]+/g, "_").slice(-80) || "file"
+    const path = `${conference!.id}/${kind}/${Date.now()}-${safeName}`
     const { error } = await admin.storage
       .from("registration-receipts")
       .upload(path, await file.arrayBuffer(), { contentType: file.type || undefined })
@@ -158,9 +164,15 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
     return path
   }
 
-  const receiptPath = await uploadOne(receiptFile, "receipts")
-  const photoPath = await uploadOne(photoFile, "photos")
-  const certificatePath = certificateFile ? await uploadOne(certificateFile, "certificates") : null
+  // Independent uploads, so run them together instead of one after another --
+  // on a slow connection to storage this was the bulk of the wait people saw
+  // after pressing Submit. (uploadedPaths is still collected for cleanup if
+  // any one of them fails.)
+  const [receiptPath, photoPath, certificatePath] = await Promise.all([
+    uploadOne(receiptFile, "receipts"),
+    uploadOne(photoFile, "photos"),
+    certificateFile ? uploadOne(certificateFile, "certificates") : Promise.resolve(null),
+  ])
 
   if (!receiptPath || !photoPath || (certificateFile && !certificatePath)) {
     if (uploadedPaths.length > 0) {
@@ -222,11 +234,11 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
           to: conference.secretariat_email,
           subject: `New conference registration — ${referenceNumber}`,
           html: `
-            <p><strong>Reference:</strong> ${referenceNumber}</p>
-            <p><strong>Name:</strong> ${parsed.data.fullName}</p>
-            <p><strong>Email:</strong> ${parsed.data.email}</p>
-            <p><strong>Category:</strong> ${category} (${period})</p>
-            <p><strong>Amount expected:</strong> ${amountExpected}</p>
+            <p><strong>Reference:</strong> ${escapeHtml(referenceNumber)}</p>
+            <p><strong>Name:</strong> ${escapeHtml(parsed.data.fullName)}</p>
+            <p><strong>Email:</strong> ${escapeHtml(parsed.data.email)}</p>
+            <p><strong>Category:</strong> ${escapeHtml(category)} (${period})</p>
+            <p><strong>Amount expected:</strong> ${escapeHtml(amountExpected)}</p>
             <p>Review and verify the receipt (and certificate, if a member rate was claimed) from the admin registrations page.</p>
           `,
         })
