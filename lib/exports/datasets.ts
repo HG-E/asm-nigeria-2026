@@ -1,6 +1,6 @@
 import "server-only"
 
-import { isStructured } from "@/lib/abstract-structure"
+import { fetchBookEntries } from "@/lib/exports/book-of-abstracts"
 import { createClient } from "@/lib/supabase/server"
 import type { ExportCell } from "@/lib/exports/format"
 import type { Database } from "@/types/database"
@@ -324,18 +324,7 @@ export const EXPORT_DATASETS: ExportDataset[] = [
     description:
       "Accepted abstracts in Book-of-Abstracts order (by sub-theme, then reference), with numbered author affiliations and Background / Methods / Results / Conclusion in separate columns. Abstracts submitted before the four-part structure appear as one block in 'Full Abstract (unstructured)'.",
     async fetch(supabase) {
-      const { data } = await supabase
-        .from("submissions")
-        .select(
-          "reference_number, title, keywords, status, presentation_preference, current_version, conference_subthemes(name, sort_order), submission_authors(author_order, is_corresponding, first_name, last_name, institution, country, email), submission_versions(version_number, abstract_text, abstract_text_original, abstract_background, abstract_methods, abstract_results, abstract_conclusion)"
-        )
-        .in("status", ACCEPTED_STATUSES)
-
-      const sorted = [...(data ?? [])].sort(
-        (a, b) =>
-          (a.conference_subthemes?.sort_order ?? 99) - (b.conference_subthemes?.sort_order ?? 99) ||
-          (a.reference_number ?? "").localeCompare(b.reference_number ?? "", undefined, { numeric: true })
-      )
+      const entries = await fetchBookEntries(supabase)
 
       const headers = [
         "Sub-theme No.",
@@ -356,56 +345,28 @@ export const EXPORT_DATASETS: ExportDataset[] = [
         "Format",
       ]
 
-      const rows = sorted.map((s): ExportCell[] => {
-        const authors = [...s.submission_authors].sort((a, b) => a.author_order - b.author_order)
-        // Affiliations numbered in order of first appearance, shared between
-        // authors from the same institution -- the standard Book of Abstracts
-        // author line.
-        const affiliations: string[] = []
-        const authorLine = authors
-          .map((a) => {
-            const affiliation = [a.institution, a.country].filter(Boolean).join(", ")
-            let idx = affiliations.indexOf(affiliation)
-            if (idx === -1) {
-              affiliations.push(affiliation)
-              idx = affiliations.length - 1
-            }
-            return `${a.first_name} ${a.last_name}${toSuperscript(idx + 1)}${a.is_corresponding ? "*" : ""}`
-          })
-          .join(", ")
-        const corresponding = authors.find((a) => a.is_corresponding)
-        const version = s.submission_versions.find((v) => v.version_number === s.current_version)
-        const structured = version ? isStructured(version) : false
-        const presentation =
-          s.status === "accepted_oral"
-            ? "Oral"
-            : s.status === "accepted_poster"
-              ? "Poster"
-              : s.presentation_preference
-
-        return [
-          s.conference_subthemes?.sort_order ?? "",
-          s.conference_subthemes?.name ?? "",
-          s.reference_number,
-          presentation,
-          s.title,
-          authorLine,
-          affiliations.map((a, i) => `${toSuperscript(i + 1)}${a}`).join("; "),
-          corresponding ? `${corresponding.first_name} ${corresponding.last_name}` : "",
-          corresponding?.email ?? "",
-          (s.keywords ?? []).join("; "),
-          structured ? version!.abstract_background : "",
-          structured ? version!.abstract_methods : "",
-          structured ? version!.abstract_results : "",
-          structured ? version!.abstract_conclusion : "",
-          structured ? "" : (version?.abstract_text ?? ""),
-          structured
-            ? version?.abstract_text_original
-              ? "Structured (restructured after acceptance)"
-              : "Structured"
-            : "Legacy (free text)",
-        ]
-      })
+      const rows = entries.map((e): ExportCell[] => [
+        e.subthemeNo ?? "",
+        e.subtheme,
+        e.reference,
+        e.presentation,
+        e.title,
+        e.authors.map((a) => `${a.name}${toSuperscript(a.affiliation)}${a.corresponding ? "*" : ""}`).join(", "),
+        e.affiliations.map((a, i) => `${toSuperscript(i + 1)}${a}`).join("; "),
+        e.correspondingName,
+        e.correspondingEmail,
+        e.keywords.join("; "),
+        e.sections?.background ?? "",
+        e.sections?.methods ?? "",
+        e.sections?.results ?? "",
+        e.sections?.conclusion ?? "",
+        e.sections ? "" : e.legacyText,
+        e.sections
+          ? e.restructured
+            ? "Structured (restructured after acceptance)"
+            : "Structured"
+          : "Legacy (free text)",
+      ])
       return { headers, rows }
     },
   },
