@@ -55,6 +55,18 @@ const SPEAKER_LIST: Speaker[] = [
   },
   {
     accent: "var(--blue)",
+    initials: "UU",
+    image: "/speakers/uduma-oji-uduma.jpg",
+    chip: "chip-blue",
+    chipLabel: "Chief Host",
+    name: "Prof. Uduma Oji Uduma",
+    title: "Vice-Chancellor",
+    sub: "National Open University of Nigeria (NOUN)",
+    subthemeIndex: null,
+    bio: "Professor Uduma Oji Uduma is a Professor of Philosophy and Logic and a Barrister-at-Law. He is the 6th Substantive Vice-Chancellor of the National Open University of Nigeria (NOUN).",
+  },
+  {
+    accent: "var(--blue)",
     initials: "MM",
     image: "/speakers/md-mukhtar.jpg",
     chip: "chip-blue",
