@@ -30,7 +30,7 @@ function getTransporter() {
 // welcome emails, ...) genuinely attempt delivery through the real SMTP
 // account and come back as real "Address not found" bounces into the real
 // inbox, exactly as happened repeatedly before this guard existed.
-const TEST_RECIPIENT_PATTERN = /smoke|@example\.com$|test-fixture/i
+export const TEST_RECIPIENT_PATTERN =/smoke|@example\.com$|test-fixture/i
 
 export async function sendMail(options: { to: string; subject: string; html: string }) {
   if (TEST_RECIPIENT_PATTERN.test(options.to)) {

@@ -1,5 +1,6 @@
 import { CheckCheck, Clock, Layers, XCircle } from "lucide-react"
 
+import { FormatNoticePanel } from "@/components/admin/format-notice-panel"
 import { RetryNotificationButton } from "@/components/admin/retry-notification-button"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { StatCard, StatGrid, type StatAccent } from "@/components/dashboard/stat-card"
@@ -14,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { requireRole } from "@/lib/auth"
+import { getFormatNoticeOverview } from "@/lib/format-notice-send"
 import { createClient } from "@/lib/supabase/server"
 
 const TYPE_LABELS: Record<string, string> = {
@@ -29,6 +31,7 @@ const TYPE_LABELS: Record<string, string> = {
   review_overdue: "Review overdue (reminder)",
   revision_deadline_reminder: "Revision deadline (reminder)",
   submission_deadline_reminder: "Submission deadline (reminder)",
+  abstract_format_notice: "Abstract-format notice",
 }
 
 function statusVariant(status: string): "gold" | "secondary" | "destructive" | "outline" {
@@ -46,6 +49,8 @@ export default async function AdminNotificationsPage() {
     .select("*, submissions(reference_number)")
     .order("created_at", { ascending: false })
     .limit(200)
+
+  const formatNotice = await getFormatNoticeOverview()
 
   const rows = notifications ?? []
   const summary = {
@@ -74,6 +79,12 @@ export default async function AdminNotificationsPage() {
           <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} accent={s.accent} />
         ))}
       </StatGrid>
+
+      <FormatNoticePanel
+        targets={formatNotice.targets}
+        pending={formatNotice.pending}
+        notifiedCount={formatNotice.notifiedCount}
+      />
 
       <Card>
         <CardHeader>

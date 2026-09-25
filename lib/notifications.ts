@@ -1,6 +1,7 @@
 import "server-only"
 
-import { sendMail } from "@/lib/email"
+import { sendMail, TEST_RECIPIENT_PATTERN } from "@/lib/email"
+import { FORMAT_NOTICE_TYPE, renderFormatNoticeBody } from "@/lib/format-notice"
 import { escapeHtml } from "@/lib/html"
 import { createAdminClient } from "@/lib/supabase/admin"
 
@@ -51,7 +52,8 @@ const HEADING_STYLE =
 async function renderContent(
   notificationType: string,
   submissionId: string | null,
-  recipientId: string | null
+  recipientId: string | null,
+  recipientEmail = ""
 ): Promise<string> {
   const admin = createAdminClient()
 
@@ -66,6 +68,21 @@ async function renderContent(
   }
   const greeting = authorFirstName ? `<p style="margin-top:0;">Dear ${escapeHtml(authorFirstName)},</p>` : ""
   const finish = (body: string) => wrapEmailHtml(greeting + body)
+
+  // Not tied to one submission: lists everything outstanding for this author,
+  // computed at send time (see lib/format-notice.ts).
+  if (notificationType === FORMAT_NOTICE_TYPE) {
+    if (!recipientId) throw new Error("Format notice needs a recipient")
+    const body = await renderFormatNoticeBody(
+      recipientId,
+      process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+      // Test-pattern addresses are never actually delivered (sendMail skips
+      // them), so this only lets test runs with disposable authors render.
+      TEST_RECIPIENT_PATTERN.test(recipientEmail)
+    )
+    if (!body) throw new Error("Nothing outstanding for this author any more")
+    return finish(body)
+  }
 
   if (!submissionId) {
     return finish("<p>You have a new notification from ASM Nigeria 2026.</p>")
@@ -332,7 +349,8 @@ export async function sendNotification(notificationId: string) {
     const html = await renderContent(
       notification.notification_type,
       notification.submission_id,
-      notification.recipient_id
+      notification.recipient_id,
+      notification.recipient_email
     )
     await sendMail({
       to: notification.recipient_email,
