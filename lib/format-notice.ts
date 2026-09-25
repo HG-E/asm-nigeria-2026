@@ -28,6 +28,9 @@ export type NoticeItem = {
   title: string
   kind: NoticeKind
   deadlineLabel: string
+  // Revision deadline already behind us -- the email must not present a past
+  // date as if it were still upcoming.
+  overdue?: boolean
 }
 
 export type NoticeTarget = {
@@ -71,7 +74,7 @@ export async function getFormatNoticeTargets(
   const { data: submissions } = await query
 
   const revisionIds = (submissions ?? []).filter((s) => s.status === "revision_required").map((s) => s.id)
-  const revisionDeadlines = new Map<string, string>()
+  const revisionDeadlines = new Map<string, { label: string; overdue: boolean }>()
   if (revisionIds.length > 0) {
     const { data: decisions } = await admin
       .from("decisions")
@@ -80,7 +83,10 @@ export async function getFormatNoticeTargets(
       .order("created_at", { ascending: false })
     for (const d of decisions ?? []) {
       if (d.revision_deadline && !revisionDeadlines.has(d.submission_id)) {
-        revisionDeadlines.set(d.submission_id, formatDate(d.revision_deadline))
+        revisionDeadlines.set(d.submission_id, {
+          label: formatDate(d.revision_deadline),
+          overdue: new Date(d.revision_deadline).getTime() < Date.now(),
+        })
       }
     }
   }
@@ -103,9 +109,11 @@ export async function getFormatNoticeTargets(
     } else if (s.status === "revision_required") {
       const revised = versions.find((v) => v.version_number === s.current_version + 1)
       if (!(revised && isStructured(revised))) {
+        const rd = revisionDeadlines.get(s.id)
         item = {
           kind: "revision",
-          deadlineLabel: revisionDeadlines.get(s.id) ?? "the deadline the committee set for your revision",
+          deadlineLabel: rd?.label ?? "the deadline the committee set for your revision",
+          overdue: rd?.overdue ?? false,
         } as NoticeItem
       }
     }
@@ -139,13 +147,15 @@ export async function getFormatNoticeTargets(
   return targets.sort((a, b) => a.email.localeCompare(b.email))
 }
 
-const KIND_TEXT: Record<NoticeKind, (deadline: string) => string> = {
+const KIND_TEXT: Record<NoticeKind, (deadline: string, overdue?: boolean) => string> = {
   accepted: (d) =>
     `Accepted &mdash; please rewrite it into the four parts by <strong>${escapeHtml(d)}</strong>, for the Book of Abstracts.`,
   draft: (d) =>
     `Draft &mdash; please rewrite it into the four parts before you submit. Final abstract submission closes <strong>${escapeHtml(d)}</strong>.`,
-  revision: (d) =>
-    `Revision requested &mdash; the revision form now uses the four parts. Revision deadline: <strong>${escapeHtml(d)}</strong>.`,
+  revision: (d, overdue) =>
+    overdue
+      ? `Revision requested &mdash; the revision form now uses the four parts. Your revision deadline (${escapeHtml(d)}) has passed, so please submit it <strong>as soon as possible</strong>, or reply to this email if you need more time.`
+      : `Revision requested &mdash; the revision form now uses the four parts. Revision deadline: <strong>${escapeHtml(d)}</strong>.`,
 }
 
 // The email body (the branded shell and greeting are added by notifications.ts).
@@ -170,7 +180,7 @@ export async function renderFormatNoticeBody(
         <div style="margin:0 0 14px; padding:14px 16px; background:#eef2fa; border-radius:6px;">
           <div style="font-size:13px; color:#003087; font-weight:bold;">${item.reference ? escapeHtml(item.reference) : "Draft (no reference number yet)"}</div>
           <div style="margin:2px 0 8px;">${escapeHtml(item.title)}</div>
-          <div style="font-size:14px; margin-bottom:10px;">${KIND_TEXT[item.kind](item.deadlineLabel)}</div>
+          <div style="font-size:14px; margin-bottom:10px;">${KIND_TEXT[item.kind](item.deadlineLabel, item.overdue)}</div>
           <a href="${baseUrl}/author/submissions/${item.submissionId}" style="display:inline-block; background:#003087; color:#ffffff; font-weight:bold; text-decoration:none; padding:10px 22px; border-radius:6px; font-size:14px;">Open this abstract</a>
         </div>`
     )
