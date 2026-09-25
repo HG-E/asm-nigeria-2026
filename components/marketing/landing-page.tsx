@@ -834,34 +834,17 @@ export function LandingPage() {
                 </p>
               </Reveal>
 
-              <Reveal delay={40} className="hosts-side">
-                <div className="convener-side">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/speakers/sylvia-anyadoh-nwadike.jpg"
-                    alt="Sylvia O. Anyadoh-Nwadike, PhD"
-                    className="convener-photo-full"
-                  />
-                  <div className="convener-side-details">
-                    <span className="caption eyebrow" style={{ color: "var(--gold-d)" }}>Conference Convener</span>
-                    <h3 className="convener-name">Sylvia O. Anyadoh-Nwadike, PhD</h3>
-                    <p className="convener-title">ASM Country Ambassador to Nigeria</p>
-                  </div>
-                </div>
-                <div className="convener-side">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/speakers/uduma-oji-uduma.jpg"
-                    alt="Prof. Uduma Oji Uduma"
-                    className="convener-photo-full"
-                  />
-                  <div className="convener-side-details">
-                    <span className="caption eyebrow" style={{ color: "var(--blue)" }}>Chief Host</span>
-                    <h3 className="convener-name">Prof. Uduma Oji Uduma</h3>
-                    <p className="convener-title">
-                      Vice-Chancellor, National Open University of Nigeria (NOUN)
-                    </p>
-                  </div>
+              <Reveal delay={40} className="convener-side">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/speakers/sylvia-anyadoh-nwadike.jpg"
+                  alt="Sylvia O. Anyadoh-Nwadike, PhD"
+                  className="convener-photo-full"
+                />
+                <div className="convener-side-details">
+                  <span className="caption eyebrow" style={{ color: "var(--gold-d)" }}>Conference Convener</span>
+                  <h3 className="convener-name">Sylvia O. Anyadoh-Nwadike, PhD</h3>
+                  <p className="convener-title">ASM Country Ambassador to Nigeria</p>
                 </div>
               </Reveal>
             </div>

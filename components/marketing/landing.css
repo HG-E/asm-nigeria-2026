@@ -815,20 +815,6 @@
 .asm-landing .about-conference p + p {
   margin-top: 14px;
 }
-/* Convener and chief host sit side by side as equals; the convener comes
-   first. Collapses to one column on phones (see below). */
-.asm-landing .hosts-side {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  align-self: start;
-}
-.asm-landing .hosts-side .convener-name {
-  font-size: 17px;
-}
-.asm-landing .hosts-side .convener-title {
-  font-size: 13px;
-}
 .asm-landing .convener-side {
   display: flex;
   flex-direction: column;
@@ -864,12 +850,6 @@
   .asm-landing .convener-photo-full {
     max-width: 320px;
     margin: 0 auto;
-  }
-}
-@media (max-width: 560px) {
-  .asm-landing .hosts-side {
-    grid-template-columns: 1fr;
-    gap: 36px;
   }
 }
 .asm-landing .why-grid {
