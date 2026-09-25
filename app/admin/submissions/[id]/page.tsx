@@ -169,6 +169,16 @@ export default async function AdminSubmissionDetailPage(
             version={version}
             className="text-muted-foreground space-y-3 text-sm whitespace-pre-wrap"
           />
+          {version?.abstract_text_original && (
+            <details className="mt-4 rounded-md border p-3 text-sm">
+              <summary className="cursor-pointer font-medium">
+                Restructured after acceptance -- view the originally reviewed text
+              </summary>
+              <p className="text-muted-foreground mt-2 whitespace-pre-wrap">
+                {version.abstract_text_original}
+              </p>
+            </details>
+          )}
         </CardContent>
       </Card>
 

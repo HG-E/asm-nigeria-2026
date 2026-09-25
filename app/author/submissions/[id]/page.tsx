@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 
 import { WithdrawSubmissionPanel } from "@/components/author/withdraw-submission-panel"
 import { PaymentStep } from "@/components/submission/payment-step"
+import { RestructureAbstractForm } from "@/components/submission/restructure-abstract-form"
 import { RevisionForm } from "@/components/submission/revision-form"
 import { Step1Form } from "@/components/submission/step1-form"
 import { Step2Form } from "@/components/submission/step2-form"
@@ -14,7 +15,11 @@ import { WizardShell } from "@/components/submission/wizard-shell"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { isStructured, sectionsFromVersion } from "@/lib/abstract-structure"
+import {
+  BOOK_RESTRUCTURE_DEADLINE_LABEL,
+  isStructured,
+  sectionsFromVersion,
+} from "@/lib/abstract-structure"
 import { requireAuth } from "@/lib/auth"
 import { getActiveConference } from "@/lib/conference"
 import { STATUS_HINTS } from "@/lib/submission-status"
@@ -179,6 +184,17 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
           .maybeSingle()
       : { data: null }
 
+    const isAccepted = ["accepted", "accepted_oral", "accepted_poster"].includes(submission.status)
+    const { data: acceptedVersion } = isAccepted
+      ? await supabase
+          .from("submission_versions")
+          .select(VERSION_TEXT_COLUMNS)
+          .eq("submission_id", id)
+          .eq("version_number", submission.current_version)
+          .maybeSingle()
+      : { data: null }
+    const acceptedStructured = acceptedVersion ? isStructured(acceptedVersion) : false
+
     let finalAttachmentUrl: string | null = null
     if (finalDecision?.attachment_path) {
       const { data: signed } = await createAdminClient()
@@ -241,6 +257,26 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
                 )}
               </AlertDescription>
             </Alert>
+          )}
+
+          {isAccepted && acceptedVersion && (
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="font-medium">Your abstract for the Book of Abstracts</h3>
+              <Alert variant={acceptedStructured ? "default" : "destructive"}>
+                <AlertDescription>
+                  {acceptedStructured
+                    ? "Your abstract is in the four-part format and ready for the Book of Abstracts. You can still refine the wording until "
+                    : "The Book of Abstracts prints every abstract in four labelled parts (Background, Methods, Results, Conclusion). Please rewrite yours into that format by "}
+                  <strong>{BOOK_RESTRUCTURE_DEADLINE_LABEL}</strong>.
+                </AlertDescription>
+              </Alert>
+              <RestructureAbstractForm
+                submissionId={id}
+                alreadyStructured={acceptedStructured}
+                defaultSections={sectionsFromVersion(acceptedStructured ? acceptedVersion : null)}
+                legacyText={acceptedStructured ? undefined : acceptedVersion.abstract_text?.trim() || undefined}
+              />
+            </div>
           )}
 
           {paymentRejected && (

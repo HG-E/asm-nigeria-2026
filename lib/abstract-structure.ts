@@ -49,6 +49,13 @@ export const ABSTRACT_SECTIONS = [
 export type AbstractSectionKey = (typeof ABSTRACT_SECTIONS)[number]["key"]
 export type AbstractSections = Record<AbstractSectionKey, string>
 
+// Date by which authors of already-accepted abstracts are asked to have their
+// abstract restructured for the Book of Abstracts. Kept here so the author
+// page and the notice emails can never quote different dates. Chosen to fall
+// just before final abstract submissions close (2 Nov) and leave over three
+// weeks before the conference for layout and print/PDF production.
+export const BOOK_RESTRUCTURE_DEADLINE_LABEL = "Friday, 30 October 2026"
+
 export const ABSTRACT_TOTAL_MAX = ABSTRACT_SECTIONS.reduce((sum, s) => sum + s.max, 0)
 
 export function countWords(text: string) {

@@ -327,7 +327,7 @@ export const EXPORT_DATASETS: ExportDataset[] = [
       const { data } = await supabase
         .from("submissions")
         .select(
-          "reference_number, title, keywords, status, presentation_preference, current_version, conference_subthemes(name, sort_order), submission_authors(author_order, is_corresponding, first_name, last_name, institution, country, email), submission_versions(version_number, abstract_text, abstract_background, abstract_methods, abstract_results, abstract_conclusion)"
+          "reference_number, title, keywords, status, presentation_preference, current_version, conference_subthemes(name, sort_order), submission_authors(author_order, is_corresponding, first_name, last_name, institution, country, email), submission_versions(version_number, abstract_text, abstract_text_original, abstract_background, abstract_methods, abstract_results, abstract_conclusion)"
         )
         .in("status", ACCEPTED_STATUSES)
 
@@ -399,7 +399,11 @@ export const EXPORT_DATASETS: ExportDataset[] = [
           structured ? version!.abstract_results : "",
           structured ? version!.abstract_conclusion : "",
           structured ? "" : (version?.abstract_text ?? ""),
-          structured ? "Structured" : "Legacy (free text)",
+          structured
+            ? version?.abstract_text_original
+              ? "Structured (restructured after acceptance)"
+              : "Structured"
+            : "Legacy (free text)",
         ]
       })
       return { headers, rows }

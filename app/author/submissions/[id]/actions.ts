@@ -478,6 +478,38 @@ export async function saveRevisionAction(id: string, input: Step3Input): Promise
   return { success: true }
 }
 
+// Accepted abstracts are locked, but the Book of Abstracts needs every entry
+// in the four-part form. This is the one sanctioned edit: same validation as
+// any new abstract, applied through a database function that only lets the
+// corresponding author touch an accepted abstract and keeps the originally
+// reviewed text and an audit entry.
+export async function restructureAcceptedAbstractAction(id: string, input: Step3Input): Promise<ActionResult> {
+  await requireAuth()
+  const parsed = step3Schema.safeParse(input)
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" }
+  }
+  const built = await buildVersionFields(parsed.data)
+  if ("error" in built) return { error: built.error }
+
+  const supabase = await createClient()
+  const { error } = await supabase.rpc("restructure_accepted_abstract", {
+    p_submission_id: id,
+    p_background: built.fields.abstract_background,
+    p_methods: built.fields.abstract_methods,
+    p_results: built.fields.abstract_results,
+    p_conclusion: built.fields.abstract_conclusion,
+    p_abstract_text: built.fields.abstract_text,
+    p_word_count: built.fields.word_count,
+  })
+  if (error) {
+    return { error: "Could not save your abstract. Please try again." }
+  }
+
+  revalidatePath(`/author/submissions/${id}`)
+  return { success: true }
+}
+
 export async function submitRevisionAction(id: string): Promise<ActionResult> {
   const session = await requireAuth()
   const supabase = await createClient()

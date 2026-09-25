@@ -550,6 +550,7 @@ export type Database = {
           abstract_methods: string | null
           abstract_results: string | null
           abstract_conclusion: string | null
+          abstract_text_original: string | null
           change_summary: string | null
           submitted_at: string | null
           created_at: string
@@ -564,6 +565,7 @@ export type Database = {
           abstract_methods?: string | null
           abstract_results?: string | null
           abstract_conclusion?: string | null
+          abstract_text_original?: string | null
           change_summary?: string | null
           submitted_at?: string | null
           created_at?: string
@@ -578,6 +580,7 @@ export type Database = {
           abstract_methods?: string | null
           abstract_results?: string | null
           abstract_conclusion?: string | null
+          abstract_text_original?: string | null
           change_summary?: string | null
           submitted_at?: string | null
           created_at?: string
@@ -1167,6 +1170,18 @@ export type Database = {
       }
       resubmit_abstract: {
         Args: { p_submission_id: string }
+        Returns: undefined
+      }
+      restructure_accepted_abstract: {
+        Args: {
+          p_submission_id: string
+          p_background: string
+          p_methods: string
+          p_results: string
+          p_conclusion: string
+          p_abstract_text: string
+          p_word_count: number
+        }
         Returns: undefined
       }
       withdraw_submission: {

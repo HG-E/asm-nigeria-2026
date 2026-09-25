@@ -251,6 +251,46 @@ try {
   console.log("Step 3 offers the earlier text for reference: true")
   await shot("wizard-09-legacy-step3")
 
+  console.log("--- Accepted legacy abstract: restructure for the Book of Abstracts ---")
+  const LEGACY_TEXT = "An older free-text abstract written before the four-part structure existed."
+  {
+    const acc = new Client({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } })
+    await acc.connect()
+    // Status set directly (no decision row, so no notification is generated).
+    await acc.query("update submissions set status = 'accepted_oral' where id = $1", [submissionId])
+    await acc.end()
+  }
+  await page.goto(`${BASE}/author/submissions/${submissionId}`)
+  await page.waitForSelector("text=Your abstract for the Book of Abstracts")
+  await page.waitForSelector("text=Your earlier abstract text (for reference)")
+  await page.fill('textarea[name="background"]', "Antimicrobial resistance threatens public health across Nigeria.")
+  await page.fill('textarea[name="methods"]', "Wastewater from five Abuja sites was sequenced over six months to profile resistance genes.")
+  await page.fill('textarea[name="results"]', "Beta-lactam, fluoroquinolone and aminoglycoside resistance genes were abundant and varied by site.")
+  await page.fill('textarea[name="conclusion"]', "Resistance burden follows proximity to healthcare facilities.")
+  await page.getByRole("button", { name: "Save for the Book of Abstracts" }).click()
+  await page.waitForSelector("text=ready for the Book of Abstracts", { timeout: 30000 })
+  await shot("wizard-10-restructured")
+  let restructureOk = false
+  {
+    const c = new Client({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } })
+    await c.connect()
+    const { rows } = await c.query(
+      "select abstract_text, abstract_text_original, abstract_background, abstract_results from submission_versions where submission_id = $1",
+      [submissionId]
+    )
+    const { rows: audit } = await c.query(
+      "select action from audit_logs where entity_id = $1 and action = 'abstract_restructured'",
+      [submissionId]
+    )
+    await c.end()
+    restructureOk =
+      rows[0]?.abstract_text_original === LEGACY_TEXT && // originally reviewed text preserved
+      rows[0]?.abstract_text.startsWith("Background: Antimicrobial") &&
+      !!rows[0]?.abstract_results &&
+      audit.length === 1
+    console.log("restructure stored original + audit entry:", restructureOk)
+  }
+
   await browser.close()
 
   console.log("\n--- Verifying DB state ---")
@@ -271,9 +311,10 @@ try {
 
   const pass =
     structuredOk &&
+    restructureOk &&
     submitEnabledStructured &&
     !submitEnabledLegacy &&
-    subs[0]?.status === "draft" &&
+    subs[0]?.status === "accepted_oral" &&
     notif.length === 0 &&
     errors.length === 0
   console.log(pass ? "\nPASS" : "\nFAIL")
