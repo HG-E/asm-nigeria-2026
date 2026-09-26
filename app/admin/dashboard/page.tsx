@@ -15,6 +15,7 @@ import { PageHeader } from "@/components/dashboard/page-header"
 import { StatCard, StatGrid, type StatAccent } from "@/components/dashboard/stat-card"
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -24,6 +25,40 @@ import { createClient } from "@/lib/supabase/server"
 import type { Database } from "@/types/database"
 
 type SubmissionStatus = Database["public"]["Enums"]["submission_status"]
+
+type SupabaseClient = Awaited<ReturnType<typeof createClient>>
+
+// Revisions the committee has to act on: past their deadline, or requested with
+// no deadline at all (so nothing would ever flag them as late).
+async function getRevisionsNeedingAttention(supabase: SupabaseClient) {
+  const { data: subs } = await supabase
+    .from("submissions")
+    .select("id, reference_number, title")
+    .eq("status", "revision_required")
+  if (!subs || subs.length === 0) return []
+
+  const { data: decisions } = await supabase
+    .from("decisions")
+    .select("submission_id, revision_deadline, created_at")
+    .in("submission_id", subs.map((s) => s.id))
+    .order("created_at", { ascending: false })
+
+  const latest = new Map<string, string | null>()
+  for (const d of decisions ?? []) {
+    if (!latest.has(d.submission_id)) latest.set(d.submission_id, d.revision_deadline)
+  }
+
+  const now = Date.now()
+  const day = 24 * 60 * 60 * 1000
+  return subs
+    .map((s) => {
+      const deadline = latest.get(s.id) ?? null
+      const daysLate = deadline ? Math.floor((now - new Date(deadline).getTime()) / day) : null
+      return { ...s, deadline, daysLate }
+    })
+    .filter((s) => !s.deadline || (s.daysLate ?? 0) >= 0)
+    .sort((a, b) => (b.daysLate ?? 9999) - (a.daysLate ?? 9999))
+}
 
 export default async function AdminDashboardPage() {
   await requireRole("admin")
@@ -86,6 +121,8 @@ export default async function AdminDashboardPage() {
     .select("id", { count: "exact", head: true })
     .eq("is_active", true)
 
+  const attention = await getRevisionsNeedingAttention(supabase)
+
   return (
     <div className="space-y-8">
       <PageHeader title="Admin Dashboard" description="ASM Nigeria 2026 conference overview." />
@@ -110,6 +147,29 @@ export default async function AdminDashboardPage() {
           <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} accent={s.accent} href={s.href} />
         ))}
       </StatGrid>
+
+      {attention.length > 0 && (
+        <Card className="border-destructive/30 bg-destructive/5">
+          <CardHeader>
+            <CardTitle className="text-base">
+              {attention.length} revision{attention.length === 1 ? "" : "s"} need{attention.length === 1 ? "s" : ""} attention
+            </CardTitle>
+            <CardDescription>Overdue, or requested without a deadline. Extend, set a date, or close them.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-1 text-sm">
+              {attention.map((s) => (
+                <li key={s.id}>
+                  <Link href={`/admin/submissions/${s.id}`} className="font-medium underline underline-offset-4">
+                    {s.reference_number ?? "Draft"}
+                  </Link>{" "}
+                  — {s.deadline ? `${s.daysLate} day${s.daysLate === 1 ? "" : "s"} overdue` : "no deadline set"}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
