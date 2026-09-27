@@ -3,12 +3,15 @@
 import { revalidatePath } from "next/cache"
 import { after } from "next/server"
 
+import { applyFormattingOnly } from "@/lib/abstract-formatting"
 import { requireRole } from "@/lib/auth"
 import { createDecisionDocuments, isAcceptDecision } from "@/lib/decision-documents"
 import { sendNotifications } from "@/lib/notifications"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
+import { formattingSchema, type FormattingFormInput } from "@/lib/validations/submission"
 import type { Database } from "@/types/database"
+import { toPlain } from "@/lib/rich-text"
 
 export type ActionResult = { error: string } | { success: true }
 
@@ -160,7 +163,7 @@ export async function finalizeDecisionAction(
 
     const result = await createDecisionDocuments(decisionId, submissionId, {
       authorFullName: `${author?.first_name ?? ""} ${author?.last_name ?? ""}`.trim(),
-      abstractTitle: submission.title ?? "Untitled",
+      abstractTitle: toPlain(submission.title) || "Untitled",
       referenceNumber: submission.reference_number ?? submissionId,
       presentationType,
     })
@@ -353,5 +356,27 @@ export async function removeAssignmentAction(
   })
 
   revalidatePath(`/admin/submissions/${submissionId}`)
+  return { success: true }
+}
+
+// Admin fixing italics etc. on an author's behalf. Same rule as the author's
+// own edit: formatting only -- the words must not change.
+export async function adminUpdateFormattingAction(
+  submissionId: string,
+  input: FormattingFormInput
+): Promise<ActionResult> {
+  const session = await requireRole("admin")
+  const parsed = formattingSchema.safeParse(input)
+  if (!parsed.success) return { error: "Invalid input" }
+
+  const result = await applyFormattingOnly(submissionId, parsed.data, {
+    id: session.authUserId,
+    email: session.email,
+    role: "admin",
+  })
+  if ("error" in result) return result
+
+  revalidatePath(`/admin/submissions/${submissionId}`)
+  revalidatePath(`/author/submissions/${submissionId}`)
   return { success: true }
 }

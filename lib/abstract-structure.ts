@@ -7,6 +7,8 @@
 // The four limits add up to 250, matching conferences.abstract_word_limit, so
 // the existing whole-abstract cap and the per-section caps can never disagree.
 
+import { collapseRichWhitespace, plainKey, stripLeadingLabel, toPlain } from "@/lib/rich-text"
+
 export const ABSTRACT_SECTIONS = [
   {
     key: "background",
@@ -58,8 +60,10 @@ export const BOOK_RESTRUCTURE_DEADLINE_LABEL = "Friday, 30 October 2026"
 
 export const ABSTRACT_TOTAL_MAX = ABSTRACT_SECTIONS.reduce((sum, s) => sum + s.max, 0)
 
+// Word counts read the words only: formatting tags (<i>, <sup>, ...) never
+// count, and never make an abstract "longer".
 export function countWords(text: string) {
-  const trimmed = text.trim()
+  const trimmed = toPlain(text).trim()
   if (!trimmed) return 0
   return trimmed.split(/\s+/).length
 }
@@ -71,10 +75,28 @@ export function countWords(text: string) {
 // counted as words and printed twice under the generated heading.
 export function normalizeSection(key: AbstractSectionKey, raw: string) {
   const section = ABSTRACT_SECTIONS.find((s) => s.key === key)!
-  let text = raw.replace(/\s+/g, " ").trim()
   const labelPattern = new RegExp(`^(?:${section.aliases.join("|")})\\s*[:\\-\\u2013\\u2014]\\s*`, "i")
-  text = text.replace(labelPattern, "")
-  return text.trim()
+  // Formatting-aware: italics etc. survive the label strip and the whitespace
+  // collapse, and the result is always well-formed.
+  return collapseRichWhitespace(stripLeadingLabel(collapseRichWhitespace(raw), labelPattern))
+}
+
+// Titles and keywords may carry formatting too (italic genus names, etc.).
+export function normalizeTitle(raw: string) {
+  return collapseRichWhitespace(raw)
+}
+
+export function normalizeKeywords(list: string[]) {
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const raw of list) {
+    const keyword = collapseRichWhitespace(raw)
+    const key = plainKey(keyword).toLowerCase()
+    if (!key || seen.has(key)) continue
+    seen.add(key)
+    out.push(keyword)
+  }
+  return out
 }
 
 export function normalizeSections(raw: AbstractSections): AbstractSections {

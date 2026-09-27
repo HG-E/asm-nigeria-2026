@@ -10,6 +10,7 @@ import { getActiveConference } from "@/lib/conference"
 import { TEST_RECIPIENT_PATTERN } from "@/lib/email"
 import { escapeHtml } from "@/lib/html"
 import { createAdminClient } from "@/lib/supabase/admin"
+import { toHtml } from "@/lib/rich-text"
 
 // The one-off (and re-runnable, as a reminder) notice telling authors whose
 // abstract predates the four-part structure what to do and by when. Who is
@@ -179,7 +180,7 @@ export async function renderFormatNoticeBody(
       (item) => `
         <div style="margin:0 0 14px; padding:14px 16px; background:#eef2fa; border-radius:6px;">
           <div style="font-size:13px; color:#003087; font-weight:bold;">${item.reference ? escapeHtml(item.reference) : "Draft (no reference number yet)"}</div>
-          <div style="margin:2px 0 8px;">${escapeHtml(item.title)}</div>
+          <div style="margin:2px 0 8px;">${toHtml(item.title)}</div>
           <div style="font-size:14px; margin-bottom:10px;">${KIND_TEXT[item.kind](item.deadlineLabel, item.overdue)}</div>
           <a href="${baseUrl}/author/submissions/${item.submissionId}" style="display:inline-block; background:#003087; color:#ffffff; font-weight:bold; text-decoration:none; padding:10px 22px; border-radius:6px; font-size:14px;">Open this abstract</a>
         </div>`
@@ -192,6 +193,7 @@ export async function renderFormatNoticeBody(
     <p>So that every abstract is read fairly &mdash; and prints consistently in the ASM Nigeria 2026 Book of Abstracts &mdash; abstracts are now written in four parts, ${ABSTRACT_TOTAL_MAX} words in total:</p>
     <table role="presentation" cellpadding="0" cellspacing="0" style="margin:14px 0 18px; font-size:14px; border:1px solid #e2e5ea; border-radius:6px;">${limits}</table>
     <p>${many ? "These abstracts were" : "This abstract was"} written before the change, so ${many ? "they need" : "it needs"} to be rewritten into the four parts. Your original wording is shown next to the boxes so you can copy from it &mdash; this is a restructure, not a new submission.</p>
+    <p><strong>New: formatting.</strong> The boxes now work like Word. Select words and use the toolbar (or Ctrl+I) to <em>italicise</em> organism and gene names, and add superscript or subscript &mdash; for example <em>Escherichia coli</em>, 10<sup>6</sup> CFU/ml, CO<sub>2</sub>. A &ldquo;Suggest italics&rdquo; button finds organism names for you to confirm. Your formatting is kept exactly as you enter it, for reviewers and in the Book of Abstracts.</p>
     ${items}
     <p style="margin-top:22px; margin-bottom:0;">Thank you for your cooperation.</p>
     <p style="margin-top:14px; margin-bottom:0;">Best regards,<br><strong>ASM Nigeria 2026 &mdash; Scientific Programme Committee</strong></p>

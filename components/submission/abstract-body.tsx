@@ -1,3 +1,4 @@
+import { RichText } from "@/components/submission/rich-text"
 import { ABSTRACT_SECTIONS, isStructured } from "@/lib/abstract-structure"
 
 type VersionText = {
@@ -33,11 +34,13 @@ export function AbstractBody({
         {ABSTRACT_SECTIONS.map((section) => (
           <p key={section.key}>
             <span className="font-semibold">{section.label}: </span>
-            {version[COLUMN_FOR[section.key]]}
+            <RichText value={version[COLUMN_FOR[section.key]]} />
           </p>
         ))}
       </div>
     )
   }
-  return <p className={className ?? "whitespace-pre-wrap"}>{version?.abstract_text || fallback}</p>
+  return <p className={className ?? "whitespace-pre-wrap"}>
+      <RichText value={version?.abstract_text} fallback={fallback} />
+    </p>
 }

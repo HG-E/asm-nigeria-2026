@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AbstractBody } from "@/components/submission/abstract-body"
 import { requireRole } from "@/lib/auth"
 import { createClient } from "@/lib/supabase/server"
+import { RichText } from "@/components/submission/rich-text"
 
 export default async function ReviewAssignmentPage(
   props: PageProps<"/reviewer/assignments/[id]">
@@ -58,7 +59,7 @@ export default async function ReviewAssignmentPage(
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <PageHeader
-        title={submission.title}
+        title={<RichText value={submission.title} />}
         description={<span className="font-mono">{submission.reference_number}</span>}
         actions={<Badge variant="secondary">{assignment.status.replaceAll("_", " ")}</Badge>}
       />
@@ -76,7 +77,7 @@ export default async function ReviewAssignmentPage(
             <div className="flex flex-wrap gap-1">
               {submission.keywords.map((k) => (
                 <Badge key={k} variant="outline">
-                  {k}
+                  <RichText value={k} />
                 </Badge>
               ))}
             </div>

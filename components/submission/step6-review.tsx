@@ -10,6 +10,7 @@ import { Button, buttonVariants } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { isStructured } from "@/lib/abstract-structure"
 import type { ActionResult } from "@/app/author/submissions/[id]/actions"
+import { RichText } from "@/components/submission/rich-text"
 
 type Author = {
   first_name: string
@@ -83,7 +84,9 @@ export function Step6Review({
       </Alert>
 
       <div className="space-y-1 text-sm">
-        <h3 className="font-medium">{title}</h3>
+        <h3 className="font-medium">
+          <RichText value={title} />
+        </h3>
         <p className="text-muted-foreground">
           {subthemeName} &middot; {presentationPreference}
         </p>
@@ -91,7 +94,7 @@ export function Step6Review({
           <div className="flex flex-wrap gap-1 pt-1">
             {keywords.map((k) => (
               <Badge key={k} variant="secondary">
-                {k}
+                <RichText value={k} />
               </Badge>
             ))}
           </div>

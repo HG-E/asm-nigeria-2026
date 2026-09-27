@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+import { plainKey } from "@/lib/rich-text"
+
 import {
   ABSTRACT_SECTIONS,
   countWords,
@@ -9,9 +11,10 @@ import {
 export { countWords }
 
 export const step1Schema = z.object({
-  title: z.string().trim().min(1, "Abstract title is required"),
+  // May carry formatting (italic genus names etc.); only the words count.
+  title: z.string().refine((v) => plainKey(v).length > 0, "Abstract title is required"),
   subthemeId: z.string().min(1, "Select a scientific subtheme"),
-  keywords: z.array(z.string().trim().min(1)),
+  keywords: z.array(z.string().refine((v) => plainKey(v).length > 0)),
   presentationPreference: z.enum(["oral", "poster", "either"]),
 })
 export type Step1Input = z.infer<typeof step1Schema>
@@ -89,3 +92,20 @@ export const WITHDRAWABLE_STATUSES = [
   "revision_required",
 ] as const
 
+
+// Input for the formatting-only edit (lib/abstract-formatting.ts). Generous
+// length caps only to bound what a client can send; the words themselves are
+// compared against what is stored, not against these limits.
+export const formattingSchema = z.object({
+  title: z.string().max(2000),
+  keywords: z.array(z.string().max(500)).max(50),
+  sections: z
+    .object({
+      background: z.string().max(6000),
+      methods: z.string().max(6000),
+      results: z.string().max(6000),
+      conclusion: z.string().max(6000),
+    })
+    .nullable(),
+})
+export type FormattingFormInput = z.infer<typeof formattingSchema>

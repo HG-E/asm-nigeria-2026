@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 
 import { WithdrawSubmissionPanel } from "@/components/author/withdraw-submission-panel"
 import { PaymentStep } from "@/components/submission/payment-step"
+import { FormattingEditor } from "@/components/submission/formatting-editor"
 import { RestructureAbstractForm } from "@/components/submission/restructure-abstract-form"
 import { RevisionForm } from "@/components/submission/revision-form"
 import { Step1Form } from "@/components/submission/step1-form"
@@ -20,6 +21,7 @@ import {
   isStructured,
   sectionsFromVersion,
 } from "@/lib/abstract-structure"
+import { canFormatStatus } from "@/lib/abstract-formatting"
 import { requireAuth } from "@/lib/auth"
 import { getActiveConference } from "@/lib/conference"
 import { STATUS_HINTS } from "@/lib/submission-status"
@@ -32,8 +34,10 @@ import {
   updateAuthorsAction,
   updateContentAction,
   updateDeclarationsAction,
+  updateFormattingAction,
   updateStep1Action,
 } from "./actions"
+import { RichText } from "@/components/submission/rich-text"
 
 const VERSION_TEXT_COLUMNS =
   "abstract_text, abstract_background, abstract_methods, abstract_results, abstract_conclusion"
@@ -107,7 +111,9 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
     return (
       <Card className="mx-auto max-w-2xl">
         <CardHeader>
-          <CardTitle>{submission.title || "Untitled abstract"}</CardTitle>
+          <CardTitle>
+            <RichText value={submission.title} fallback="Untitled abstract" />
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <dl className="grid grid-cols-2 gap-y-2 text-sm">
@@ -145,6 +151,12 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
               </AlertDescription>
             </Alert>
           )}
+
+          <FormattingEditor
+            initial={{ title: submission.title, keywords: submission.keywords ?? [], sections: null }}
+            save={updateFormattingAction.bind(null, id)}
+            sectionsEditable={false}
+          />
 
           <RevisionForm
             submissionId={id}
@@ -195,6 +207,22 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
       : { data: null }
     const acceptedStructured = acceptedVersion ? isStructured(acceptedVersion) : false
 
+    // Formatting (italics etc.) can be fixed after submission. While under
+    // review the whole abstract is shown for that; once accepted, the abstract
+    // itself is edited in the restructure form below, so only the title and
+    // keywords are handled here.
+    const canFormat = canFormatStatus(submission.status)
+    const { data: formatVersion } =
+      canFormat && !isAccepted
+        ? await supabase
+            .from("submission_versions")
+            .select(VERSION_TEXT_COLUMNS)
+            .eq("submission_id", id)
+            .eq("version_number", submission.current_version)
+            .maybeSingle()
+        : { data: null }
+    const formatSections = formatVersion && isStructured(formatVersion) ? sectionsFromVersion(formatVersion) : null
+
     let finalAttachmentUrl: string | null = null
     if (finalDecision?.attachment_path) {
       const { data: signed } = await createAdminClient()
@@ -206,7 +234,9 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
     return (
       <Card className="mx-auto max-w-2xl">
         <CardHeader>
-          <CardTitle>{submission.title || "Untitled abstract"}</CardTitle>
+          <CardTitle>
+            <RichText value={submission.title} fallback="Untitled abstract" />
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {submitted && (
@@ -259,13 +289,21 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
             </Alert>
           )}
 
+          {canFormat && (
+            <FormattingEditor
+              initial={{ title: submission.title, keywords: submission.keywords ?? [], sections: formatSections }}
+              save={updateFormattingAction.bind(null, id)}
+              sectionsEditable={!isAccepted}
+            />
+          )}
+
           {isAccepted && acceptedVersion && (
             <div className="space-y-3 border-t pt-4">
               <h3 className="font-medium">Your abstract for the Book of Abstracts</h3>
               <Alert variant={acceptedStructured ? "default" : "destructive"}>
                 <AlertDescription>
                   {acceptedStructured
-                    ? "Your abstract is in the four-part format and ready for the Book of Abstracts. You can still refine the wording until "
+                    ? "Your abstract is in the four-part format and ready for the Book of Abstracts. You can still refine the wording, and add italics, until "
                     : "The Book of Abstracts prints every abstract in four labelled parts (Background, Methods, Results, Conclusion). Please rewrite yours into that format by "}
                   <strong>{BOOK_RESTRUCTURE_DEADLINE_LABEL}</strong>.
                 </AlertDescription>

@@ -2,8 +2,9 @@
 
 import { type Control, useWatch } from "react-hook-form"
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Textarea } from "@/components/ui/textarea"
+import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { RichText } from "@/components/submission/rich-text"
+import { RichTextEditor } from "@/components/submission/rich-text-editor"
 import {
   ABSTRACT_SECTIONS,
   ABSTRACT_TOTAL_MAX,
@@ -46,14 +47,18 @@ export function StructuredAbstractFields({
           Each part has its own word limit ({ABSTRACT_SECTIONS.map((s) => `${s.label} ${s.max}`).join(" · ")},{" "}
           {ABSTRACT_TOTAL_MAX} words in total). Abstracts missing results or methods are the most common reason
           for a poor review, so all four parts are required. Don&apos;t type the headings yourself &mdash; they
-          are added automatically.
+          are added automatically. Format the text as you would in Word: <em>italic</em> for organism and
+          gene names, plus bold, underline, superscript (10<sup>6</sup>) and subscript (CO<sub>2</sub>). The
+          &ldquo;Suggest italics&rdquo; button finds names for you to confirm.
         </p>
       </div>
 
       {legacyText && (
         <details className="rounded-lg border p-4 text-sm">
           <summary className="cursor-pointer font-medium">Your earlier abstract text (for reference)</summary>
-          <p className="text-muted-foreground mt-2 whitespace-pre-wrap">{legacyText}</p>
+          <p className="text-muted-foreground mt-2 whitespace-pre-wrap">
+            <RichText value={legacyText} />
+          </p>
           <p className="text-muted-foreground mt-2">
             Abstracts now follow the four-part structure, so please rewrite it into the boxes below.
           </p>
@@ -73,9 +78,12 @@ export function StructuredAbstractFields({
               <FormItem>
                 <FormLabel>{section.label}</FormLabel>
                 <p className="text-muted-foreground text-xs">{section.hint}</p>
-                <FormControl>
-                  <Textarea rows={section.rows} {...field} />
-                </FormControl>
+                <RichTextEditor
+                  value={field.value}
+                  onChange={field.onChange}
+                  label={section.label}
+                  minRows={section.rows}
+                />
                 <p
                   className={cn(
                     "text-sm",

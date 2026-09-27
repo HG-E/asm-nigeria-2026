@@ -162,3 +162,13 @@
     @apply font-heading;
   }
 }
+/* Rich-text boxes (abstract title, sections, keywords). */
+.rich-editor .ProseMirror {
+  outline: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5rem;
+}
+.rich-editor .ProseMirror p {
+  margin: 0;
+}

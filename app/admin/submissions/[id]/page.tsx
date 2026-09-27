@@ -10,9 +10,14 @@ import { PageHeader } from "@/components/dashboard/page-header"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AbstractBody } from "@/components/submission/abstract-body"
+import { FormattingEditor } from "@/components/submission/formatting-editor"
+import { canFormatStatus } from "@/lib/abstract-formatting"
+import { isStructured, sectionsFromVersion } from "@/lib/abstract-structure"
+import { adminUpdateFormattingAction } from "./actions"
 import { requireRole } from "@/lib/auth"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
+import { RichText } from "@/components/submission/rich-text"
 
 export default async function AdminSubmissionDetailPage(
   props: PageProps<"/admin/submissions/[id]">
@@ -107,7 +112,7 @@ export default async function AdminSubmissionDetailPage(
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <PageHeader
-        title={submission.title || "Untitled"}
+        title={<RichText value={submission.title} fallback="Untitled" />}
         description={<span className="font-mono">{submission.reference_number ?? "No reference (draft)"}</span>}
         actions={<Badge variant="secondary">{submission.status.replaceAll("_", " ")}</Badge>}
       />
@@ -131,7 +136,7 @@ export default async function AdminSubmissionDetailPage(
             <div className="flex flex-wrap gap-1">
               {submission.keywords.map((k) => (
                 <Badge key={k} variant="outline">
-                  {k}
+                  <RichText value={k} />
                 </Badge>
               ))}
             </div>
@@ -175,12 +180,31 @@ export default async function AdminSubmissionDetailPage(
                 Restructured after acceptance -- view the originally reviewed text
               </summary>
               <p className="text-muted-foreground mt-2 whitespace-pre-wrap">
-                {version.abstract_text_original}
+                <RichText value={version.abstract_text_original} />
               </p>
             </details>
           )}
         </CardContent>
       </Card>
+
+      {canFormatStatus(submission.status) && (
+        <details className="rounded-lg border p-3">
+          <summary className="cursor-pointer text-sm font-medium">
+            Fix italics and other formatting on the author&apos;s behalf
+          </summary>
+          <div className="mt-3">
+            <FormattingEditor
+              initial={{
+                title: submission.title,
+                keywords: submission.keywords ?? [],
+                sections: version && isStructured(version) ? sectionsFromVersion(version) : null,
+              }}
+              save={adminUpdateFormattingAction.bind(null, id)}
+              sectionsEditable={submission.status !== "revision_required"}
+            />
+          </div>
+        </details>
+      )}
 
       <Card>
         <CardHeader>

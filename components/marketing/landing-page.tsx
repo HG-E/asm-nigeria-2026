@@ -1110,6 +1110,7 @@ export function LandingPage() {
                   <div className="gl-item"><div className="gl-dot" /><span>Must address <strong>one or two</strong> stated sub-themes</span></div>
                   <div className="gl-item"><div className="gl-dot" /><span>Maximum <strong>250 words</strong>, in four required parts</span></div>
                   <div className="gl-item"><div className="gl-dot" /><span><strong>Background</strong> (max 35) · <strong>Methods</strong> (max 80) · <strong>Results</strong> (max 100) · <strong>Conclusion</strong> (max 35 words)</span></div>
+                  <div className="gl-item"><div className="gl-dot" /><span>Italicise <strong>organism and gene names</strong> (e.g. <em>Escherichia coli</em>) with the editor&apos;s formatting toolbar</span></div>
                   <div className="gl-item"><div className="gl-dot" /><span>Font: <strong>Times New Roman, Size 12</strong></span></div>
                   <div className="gl-item"><div className="gl-dot" /><span>Include <strong>all authors&apos; names and affiliations</strong></span></div>
                   <div className="gl-item"><div className="gl-dot" /><span>Corresponding author&apos;s <strong>email address required</strong></span></div>

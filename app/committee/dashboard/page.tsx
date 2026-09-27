@@ -40,6 +40,8 @@ import { requireRole } from "@/lib/auth"
 import { createClient } from "@/lib/supabase/server"
 import { cn } from "@/lib/utils"
 import type { Database } from "@/types/database"
+import { RichText } from "@/components/submission/rich-text"
+import { toPlain } from "@/lib/rich-text"
 
 type SubmissionStatus = Database["public"]["Enums"]["submission_status"]
 
@@ -129,7 +131,7 @@ export default async function CommitteeDashboardPage(props: PageProps<"/committe
     if (statusList.length > 0 && !statusList.includes(r.status)) return false
     if (q) {
       const needle = q.toLowerCase()
-      const haystack = `${r.title ?? ""} ${r.reference_number ?? ""}`.toLowerCase()
+      const haystack = `${toPlain(r.title)} ${r.reference_number ?? ""}`.toLowerCase()
       if (!haystack.includes(needle)) return false
     }
     return true
@@ -213,7 +215,7 @@ export default async function CommitteeDashboardPage(props: PageProps<"/committe
                     <TableCell className="font-mono text-xs">{s.reference_number}</TableCell>
                     <TableCell className="max-w-xs truncate">
                       <Link href={`/committee/submissions/${s.id}`} className="hover:underline">
-                        {s.title || "Untitled"}
+                        <RichText value={s.title} fallback="Untitled" />
                       </Link>
                     </TableCell>
                     <TableCell>{s.conference_subthemes?.name ?? "—"}</TableCell>

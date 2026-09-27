@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation"
 
+import { normalizeKeywords, normalizeTitle } from "@/lib/abstract-structure"
 import { getActiveConference } from "@/lib/conference"
 import { requireAuth } from "@/lib/auth"
 import { createClient } from "@/lib/supabase/server"
@@ -16,7 +17,13 @@ export async function createDraftAction(input: Step1Input): Promise<CreateDraftR
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" }
   }
-  const data = parsed.data
+  const data = {
+    ...parsed.data,
+    // Re-derived on the server: formatting is limited to the allowed tags and
+    // whatever the browser sent is never stored as-is.
+    title: normalizeTitle(parsed.data.title),
+    keywords: normalizeKeywords(parsed.data.keywords),
+  }
 
   const conference = await getActiveConference()
   if (!conference) {

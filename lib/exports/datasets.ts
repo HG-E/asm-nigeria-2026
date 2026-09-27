@@ -4,6 +4,7 @@ import { fetchBookEntries } from "@/lib/exports/book-of-abstracts"
 import { createClient } from "@/lib/supabase/server"
 import type { ExportCell } from "@/lib/exports/format"
 import type { Database } from "@/types/database"
+import { toPlain } from "@/lib/rich-text"
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>
 
@@ -30,7 +31,7 @@ function submissionRow(s: {
 }): ExportCell[] {
   return [
     s.reference_number,
-    s.title,
+    toPlain(s.title),
     s.conference_subthemes?.name ?? "",
     s.status,
     s.payment_status,
@@ -150,7 +151,7 @@ export const EXPORT_DATASETS: ExportDataset[] = [
       ]
       const rows = (data ?? []).map((a): ExportCell[] => [
         a.submissions?.reference_number ?? "",
-        a.submissions?.title ?? "",
+        toPlain(a.submissions?.title),
         a.submissions?.conference_subthemes?.name ?? "",
         a.user_profiles ? `${a.user_profiles.first_name} ${a.user_profiles.last_name}` : "",
         a.user_profiles?.email ?? "",
@@ -190,7 +191,7 @@ export const EXPORT_DATASETS: ExportDataset[] = [
       ]
       const rows = (data ?? []).map((r): ExportCell[] => [
         r.submissions?.reference_number ?? "",
-        r.submissions?.title ?? "",
+        toPlain(r.submissions?.title),
         r.user_profiles ? `${r.user_profiles.first_name} ${r.user_profiles.last_name}` : "",
         r.score_originality,
         r.score_relevance,
@@ -229,7 +230,7 @@ export const EXPORT_DATASETS: ExportDataset[] = [
       ]
       const rows = (data ?? []).map((d): ExportCell[] => [
         d.submissions?.reference_number ?? "",
-        d.submissions?.title ?? "",
+        toPlain(d.submissions?.title),
         d.decision,
         d.decision_notes,
         d.author_message,
@@ -266,7 +267,7 @@ export const EXPORT_DATASETS: ExportDataset[] = [
       ]
       const rows = (data ?? []).map((a): ExportCell[] => [
         a.submissions?.reference_number ?? "",
-        a.submissions?.title ?? "",
+        toPlain(a.submissions?.title),
         a.author_order,
         a.is_corresponding ? "Yes" : "No",
         a.first_name,
@@ -350,17 +351,17 @@ export const EXPORT_DATASETS: ExportDataset[] = [
         e.subtheme,
         e.reference,
         e.presentation,
-        e.title,
+        toPlain(e.title),
         e.authors.map((a) => `${a.name}${toSuperscript(a.affiliation)}${a.corresponding ? "*" : ""}`).join(", "),
         e.affiliations.map((a, i) => `${toSuperscript(i + 1)}${a}`).join("; "),
         e.correspondingName,
         e.correspondingEmail,
-        e.keywords.join("; "),
-        e.sections?.background ?? "",
-        e.sections?.methods ?? "",
-        e.sections?.results ?? "",
-        e.sections?.conclusion ?? "",
-        e.sections ? "" : e.legacyText,
+        e.keywords.map((k) => toPlain(k)).join("; "),
+        toPlain(e.sections?.background),
+        toPlain(e.sections?.methods),
+        toPlain(e.sections?.results),
+        toPlain(e.sections?.conclusion),
+        e.sections ? "" : toPlain(e.legacyText),
         e.sections
           ? e.restructured
             ? "Structured (restructured after acceptance)"

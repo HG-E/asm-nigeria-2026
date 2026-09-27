@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/table"
 import { requireRole } from "@/lib/auth"
 import { createClient } from "@/lib/supabase/server"
+import { RichText } from "@/components/submission/rich-text"
 
 export default async function ReviewerDashboardPage(props: PageProps<"/reviewer/dashboard">) {
   const session = await requireRole("reviewer")
@@ -108,7 +109,7 @@ export default async function ReviewerDashboardPage(props: PageProps<"/reviewer/
                     </TableCell>
                     <TableCell className="max-w-xs truncate">
                       <Link href={`/reviewer/assignments/${a.id}`} className="hover:underline">
-                        {a.submissions?.title || "Untitled"}
+                        <RichText value={a.submissions?.title} fallback="Untitled" />
                       </Link>
                     </TableCell>
                     <TableCell>{a.submissions?.conference_subthemes?.name ?? "—"}</TableCell>

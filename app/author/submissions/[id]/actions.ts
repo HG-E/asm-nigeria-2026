@@ -8,9 +8,12 @@ import {
   checkSections,
   composeAbstract,
   isStructured,
+  normalizeKeywords,
   normalizeSections,
+  normalizeTitle,
   totalWords,
 } from "@/lib/abstract-structure"
+import { applyFormattingOnly } from "@/lib/abstract-formatting"
 import { requireAuth } from "@/lib/auth"
 import { getActiveConference } from "@/lib/conference"
 import { sendNotifications } from "@/lib/notifications"
@@ -20,8 +23,10 @@ import {
   step1Schema,
   step2Schema,
   step3Schema,
+  formattingSchema,
   step4Schema,
   WITHDRAWABLE_STATUSES,
+  type FormattingFormInput,
   type Step1Input,
   type Step2Input,
   type Step3Input,
@@ -126,9 +131,9 @@ export async function updateStep1Action(id: string, input: Step1Input): Promise<
   const { error } = await supabase
     .from("submissions")
     .update({
-      title: parsed.data.title,
+      title: normalizeTitle(parsed.data.title),
       subtheme_id: parsed.data.subthemeId,
-      keywords: parsed.data.keywords,
+      keywords: normalizeKeywords(parsed.data.keywords),
       presentation_preference: parsed.data.presentationPreference,
     })
     .eq("id", id)
@@ -601,6 +606,25 @@ export async function withdrawSubmissionAction(id: string, reason: string): Prom
     const ids = pendingNotifications.map((n) => n.id)
     after(() => sendNotifications(ids))
   }
+
+  revalidatePath(`/author/submissions/${id}`)
+  return { success: true }
+}
+
+// Fix italics, bold, superscript etc. on a submission that is already in --
+// under review or accepted -- without being able to change a single word. The
+// words are compared against what is stored, on the server.
+export async function updateFormattingAction(id: string, input: FormattingFormInput): Promise<ActionResult> {
+  const session = await requireAuth()
+  const parsed = formattingSchema.safeParse(input)
+  if (!parsed.success) return { error: "Invalid input" }
+
+  const result = await applyFormattingOnly(id, parsed.data, {
+    id: session.authUserId,
+    email: session.email,
+    role: "author",
+  })
+  if ("error" in result) return result
 
   revalidatePath(`/author/submissions/${id}`)
   return { success: true }

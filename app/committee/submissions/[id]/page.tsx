@@ -10,6 +10,7 @@ import { AbstractBody } from "@/components/submission/abstract-body"
 import { requireRole } from "@/lib/auth"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
+import { RichText } from "@/components/submission/rich-text"
 
 export default async function CommitteeSubmissionDetailPage(
   props: PageProps<"/committee/submissions/[id]">
@@ -87,7 +88,7 @@ export default async function CommitteeSubmissionDetailPage(
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <PageHeader
-        title={submission.title || "Untitled"}
+        title={<RichText value={submission.title} fallback="Untitled" />}
         description={<span className="font-mono">{submission.reference_number}</span>}
         actions={<Badge variant="secondary">{submission.status.replaceAll("_", " ")}</Badge>}
       />

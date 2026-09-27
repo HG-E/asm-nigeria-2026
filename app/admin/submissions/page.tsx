@@ -25,6 +25,7 @@ import { requireRole } from "@/lib/auth"
 import { createClient } from "@/lib/supabase/server"
 import { cn } from "@/lib/utils"
 import type { Database } from "@/types/database"
+import { RichText } from "@/components/submission/rich-text"
 
 type SubmissionStatus = Database["public"]["Enums"]["submission_status"]
 
@@ -78,7 +79,9 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
     .limit(100)
 
   if (q) {
-    query = query.or(`title.ilike.%${q}%,reference_number.ilike.%${q}%`)
+    // title_plain is the title without formatting tags, so a search for
+    // "aureus infection" still finds "<i>Staphylococcus aureus</i> infection".
+    query = query.or(`title_plain.ilike.%${q}%,reference_number.ilike.%${q}%`)
   }
   if (statusList.length === 1) {
     query = query.eq("status", statusList[0] as SubmissionStatus)
@@ -176,7 +179,7 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
                   <TableRow key={s.id}>
                     <TableCell className="bg-card sticky left-0 z-10 max-w-64 border-r">
                       <Link href={`/admin/submissions/${s.id}`} className="block truncate font-medium hover:underline">
-                        {s.title || "Untitled"}
+                        <RichText value={s.title} fallback="Untitled" />
                       </Link>
                       <div className="text-muted-foreground font-mono text-xs">{s.reference_number ?? "—"}</div>
                     </TableCell>

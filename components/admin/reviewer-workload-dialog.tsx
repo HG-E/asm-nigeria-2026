@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { RichText } from "@/components/submission/rich-text"
 
 export type WorkloadAssignment = {
   id: string
@@ -49,7 +50,7 @@ export function ReviewerWorkloadDialog({
                     href={`/admin/submissions/${a.submissionId}`}
                     className="min-w-0 truncate font-medium hover:underline"
                   >
-                    {a.title || "Untitled"}
+                    <RichText value={a.title} fallback="Untitled" />
                   </Link>
                   <Badge
                     variant={

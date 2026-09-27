@@ -4,6 +4,7 @@ import { sendMail, TEST_RECIPIENT_PATTERN } from "@/lib/email"
 import { FORMAT_NOTICE_TYPE, renderFormatNoticeBody } from "@/lib/format-notice"
 import { escapeHtml } from "@/lib/html"
 import { createAdminClient } from "@/lib/supabase/admin"
+import { toHtml } from "@/lib/rich-text"
 
 // Wraps every notification's body in a consistent, branded shell (tricolor
 // band, wordmark, tagline, footer with the correct "Admin" contact label)
@@ -96,7 +97,9 @@ async function renderContent(
 
   // Titles and notes are typed by authors/committee members, so they're
   // escaped once here rather than at each of the many places they're used.
-  const title = escapeHtml(submission?.title ?? "your abstract")
+  // A title keeps its italics etc.: toHtml escapes the text and emits only the
+  // five allowed formatting tags.
+  const title = submission?.title ? toHtml(submission.title) : "your abstract"
   const reference = escapeHtml(submission?.reference_number ?? "")
   const subtheme = escapeHtml(submission?.conference_subthemes?.name ?? "")
 

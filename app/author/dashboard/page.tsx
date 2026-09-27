@@ -31,6 +31,7 @@ import { requireAuth } from "@/lib/auth"
 import { STATUS_HINTS } from "@/lib/submission-status"
 import { createClient } from "@/lib/supabase/server"
 import type { Database } from "@/types/database"
+import { RichText } from "@/components/submission/rich-text"
 
 type SubmissionStatus = Database["public"]["Enums"]["submission_status"]
 
@@ -163,7 +164,7 @@ export default async function AuthorDashboardPage() {
                           }
                           className="hover:underline"
                         >
-                          {submission.title || "Untitled draft"}
+                          <RichText value={submission.title} fallback="Untitled draft" />
                         </Link>
                       </TableCell>
                       <TableCell className="max-w-40 truncate" title={submission.conference_subthemes?.name ?? undefined}>

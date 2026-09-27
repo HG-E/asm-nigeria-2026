@@ -13,7 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -21,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { RichTextEditor } from "@/components/submission/rich-text-editor"
 import { KeywordInput } from "@/components/submission/keyword-input"
 import { step1Schema, type Step1Input } from "@/lib/validations/submission"
 
@@ -61,9 +61,11 @@ export function Step1Form({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Abstract Title</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
+              <p className="text-muted-foreground text-xs">
+                Italicise organism names (e.g. <em>Escherichia coli</em>) as you would in Word: select the
+                words and press the Italic button or Ctrl+I.
+              </p>
+              <RichTextEditor value={field.value} onChange={field.onChange} label="Abstract title" minRows={2} />
               <FormMessage />
             </FormItem>
           )}

@@ -10,9 +10,11 @@ import {
   Packer,
   Paragraph,
   TextRun,
+  UnderlineType,
 } from "docx"
 
 import { ABSTRACT_SECTIONS, isStructured, type AbstractSections } from "@/lib/abstract-structure"
+import { parseRich } from "@/lib/rich-text"
 import type { createClient } from "@/lib/supabase/server"
 import type { Database } from "@/types/database"
 
@@ -136,6 +138,29 @@ function run(text: string, opts: { bold?: boolean; italics?: boolean; size?: num
   return new TextRun({ text, font: FONT, size: opts.size ?? 22, ...opts })
 }
 
+// Text as the author formatted it: italic, bold, underline, superscript and
+// subscript become real Word formatting, so the book shows exactly what the
+// author wrote. `base` styles apply to every run (a bold title stays bold; an
+// italic organism name inside it is italic too).
+function rich(text: string, base: { bold?: boolean; italics?: boolean; size?: number; color?: string } = {}) {
+  return parseRich(text).map(
+    (r) =>
+      new TextRun({
+        text: r.text,
+        font: FONT,
+        size: base.size ?? 22,
+        color: base.color,
+        bold: base.bold || r.marks.includes("b"),
+        // Inside an already-italic line (affiliations), an italic mark would
+        // cancel the italics out visually, so italics stay on there.
+        italics: base.italics || r.marks.includes("i"),
+        underline: r.marks.includes("u") ? { type: UnderlineType.SINGLE } : undefined,
+        superScript: r.marks.includes("sup"),
+        subScript: r.marks.includes("sub"),
+      })
+  )
+}
+
 function entryParagraphs(e: BookEntry): Paragraph[] {
   const out: Paragraph[] = []
 
@@ -150,7 +175,7 @@ function entryParagraphs(e: BookEntry): Paragraph[] {
     new Paragraph({
       spacing: { after: 100 },
       keepNext: true,
-      children: [run(e.title, { bold: true, size: 26 })],
+      children: rich(e.title, { bold: true, size: 26 }),
     })
   )
 
@@ -188,7 +213,7 @@ function entryParagraphs(e: BookEntry): Paragraph[] {
         new Paragraph({
           spacing: { after: 80 },
           alignment: AlignmentType.JUSTIFIED,
-          children: [run(`${s.label}: `, { bold: true }), run(e.sections[s.key])],
+          children: [run(`${s.label}: `, { bold: true }), ...rich(e.sections[s.key])],
         })
       )
     }
@@ -198,10 +223,9 @@ function entryParagraphs(e: BookEntry): Paragraph[] {
         spacing: { after: 80 },
         alignment: AlignmentType.JUSTIFIED,
         children: [
-          run(
-            e.legacyText.trim() || "[Abstract text missing — contact the author before printing.]",
-            { color: "B00020" }
-          ),
+          ...(e.legacyText.trim()
+            ? rich(e.legacyText, { color: "B00020" })
+            : [run("[Abstract text missing — contact the author before printing.]", { color: "B00020" })]),
         ],
       }),
       new Paragraph({
@@ -215,7 +239,10 @@ function entryParagraphs(e: BookEntry): Paragraph[] {
     out.push(
       new Paragraph({
         spacing: { before: 60, after: 240 },
-        children: [run("Keywords: ", { bold: true, size: 20 }), run(e.keywords.join("; "), { size: 20 })],
+        children: [
+          run("Keywords: ", { bold: true, size: 20 }),
+          ...e.keywords.flatMap((k, i) => [...(i > 0 ? [run("; ", { size: 20 })] : []), ...rich(k, { size: 20 })]),
+        ],
       })
     )
   }

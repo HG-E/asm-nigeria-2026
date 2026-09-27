@@ -3,6 +3,7 @@ import { type NextRequest } from "next/server"
 
 import { generateParticipationCertificate, generatePresentationCertificate } from "@/lib/certificate"
 import { createAdminClient } from "@/lib/supabase/admin"
+import { toPlain } from "@/lib/rich-text"
 
 async function handleParticipation(referenceNumber: string, email: string) {
   const admin = createAdminClient()
@@ -82,7 +83,7 @@ async function handlePresentation(referenceNumber: string, email: string) {
 
   const pdfBytes = await generatePresentationCertificate({
     fullName: `${correspondingAuthor.first_name} ${correspondingAuthor.last_name}`,
-    abstractTitle: submission.title,
+    abstractTitle: toPlain(submission.title),
     presentationType,
     certificateNumber: submission.reference_number ?? referenceNumber,
   })
