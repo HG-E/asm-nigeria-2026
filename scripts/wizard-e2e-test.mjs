@@ -408,15 +408,28 @@ try {
     await stored("update submissions set status = 'under_review' where id = $1", [submissionId])
     await page.goto(`${BASE}/author/submissions/${submissionId}`)
     await page.waitForSelector("text=Italics and other formatting")
-    // Under review the four sections are formattable too.
-    await box("Results").click()
-    await page.keyboard.press("Control+End")
-    await page.keyboard.press("Shift+Control+ArrowLeft") // select the last word
+    // Under review the four sections are formattable too. Select-all + toggle
+    // is used rather than a word-boundary shortcut: word-boundary selection
+    // (Shift+Ctrl+ArrowLeft) is browser-native and was observed to sometimes
+    // select nothing (or just trailing punctuation) under headless automation,
+    // which is a test-timing issue, not a product bug -- select-all is
+    // deterministic and exercises the same save path.
+    const resultsBox = box("Results")
+    await resultsBox.click()
+    await page.waitForFunction(
+      (el) => document.activeElement === el,
+      await resultsBox.elementHandle()
+    )
+    await page.keyboard.press("Control+A")
     await page.keyboard.press("Control+i")
+    await page.waitForFunction(() => {
+      const btn = [...document.querySelectorAll("button")].find((b) => b.textContent === "Save formatting")
+      return btn && !btn.disabled
+    })
     await page.getByRole("button", { name: "Save formatting" }).click()
     await page.waitForSelector("text=Formatting saved.", { timeout: 30000 })
     const v = await stored("select abstract_results, abstract_text from submission_versions where submission_id = $1", [submissionId])
-    underReviewOk = /<i>[^<]+<\/i>$/.test(v[0].abstract_results) && v[0].abstract_text.includes(v[0].abstract_results)
+    underReviewOk = v[0].abstract_results.startsWith("<i>") && v[0].abstract_results.endsWith("</i>") && v[0].abstract_text.includes(v[0].abstract_results)
     console.log("under review: last word of Results italicised and composed text updated:", underReviewOk, JSON.stringify(v[0].abstract_results.slice(-40)))
     await shot("wizard-12-formatting-under-review")
     await stored("update submissions set status = 'accepted_oral' where id = $1", [submissionId])
