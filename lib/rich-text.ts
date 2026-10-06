@@ -38,6 +38,20 @@ const ALIAS: Record<string, RichMark> = {
 
 const MAX_LENGTH = 20000
 
+// Windows puts this "CF_HTML" header in front of the HTML clipboard format
+// whenever something is copied as rich text (Word, Outlook, many clipboard
+// managers). Browsers normally strip it before handing JS the paste, but some
+// third-party clipboard tools don't, and it has been seen landing as literal
+// text in a pasted title ("Version:1.0 StartHTML:0000000156 EndHTML:..."). It
+// can never be a legitimate word in an abstract, so it's stripped wherever
+// found, on every read -- existing stored text included, not just new paste.
+const CLIPBOARD_HEADER_PATTERN =
+  /Version:\s*[\d.]+\s*StartHTML:\s*-?\d+\s*EndHTML:\s*-?\d+\s*StartFragment:\s*-?\d+\s*EndFragment:\s*-?\d+\s*(?:StartSelection:\s*-?\d+\s*EndSelection:\s*-?\d+\s*)?(?:SourceURL:\s*\S+\s*)?/gi
+
+export function stripClipboardArtifacts(text: string) {
+  return text.replace(CLIPBOARD_HEADER_PATTERN, "")
+}
+
 // Only these three entities are ever produced by escapeText, and only these
 // are decoded (in one pass, so "&amp;lt;" reads back as the literal "&lt;").
 const ENTITY: Record<string, string> = { lt: "<", gt: ">", amp: "&" }
@@ -48,7 +62,7 @@ function decodeEntities(text: string) {
 // Parses stored text into runs of text sharing the same set of marks.
 // Tolerant by design: unbalanced or stray tags never throw and never leak.
 export function parseRich(input: string | null | undefined): RichRun[] {
-  const source = (input ?? "").slice(0, MAX_LENGTH)
+  const source = stripClipboardArtifacts((input ?? "").slice(0, MAX_LENGTH))
   const runs: RichRun[] = []
   const open = new Set<RichMark>()
 

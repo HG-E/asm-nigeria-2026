@@ -5,7 +5,7 @@ import { after } from "next/server"
 
 import { applyFormattingOnly } from "@/lib/abstract-formatting"
 import { requireRole } from "@/lib/auth"
-import { createDecisionDocuments, isAcceptDecision } from "@/lib/decision-documents"
+import { createDecisionDocuments, formatAuthorList, isAcceptDecision } from "@/lib/decision-documents"
 import { sendNotifications } from "@/lib/notifications"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
@@ -161,8 +161,18 @@ export async function finalizeDecisionAction(
               ? "Poster Presentation"
               : "Oral or Poster Presentation"
 
+    // All listed authors, in order, for the formal acceptance letter --
+    // not just the corresponding author (submission_authors already has
+    // first/last name, so no extra profile lookups are needed).
+    const { data: allAuthors } = await createAdminClient()
+      .from("submission_authors")
+      .select("first_name, last_name")
+      .eq("submission_id", submissionId)
+      .order("author_order")
+
     const result = await createDecisionDocuments(decisionId, submissionId, {
       authorFullName: `${author?.first_name ?? ""} ${author?.last_name ?? ""}`.trim(),
+      authorNames: formatAuthorList((allAuthors ?? []).map((a) => `${a.first_name} ${a.last_name}`)),
       abstractTitle: toPlain(submission.title) || "Untitled",
       referenceNumber: submission.reference_number ?? submissionId,
       presentationType,

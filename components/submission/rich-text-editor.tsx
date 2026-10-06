@@ -10,7 +10,7 @@ import type { Editor, JSONContent } from "@tiptap/react"
 import { Bold, Italic, RemoveFormatting, Sparkles, Subscript as SubscriptIcon, Superscript as SuperscriptIcon, Underline as UnderlineIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { normalizeRich, parseRich, serializeRich, type RichMark, type RichRun } from "@/lib/rich-text"
+import { normalizeRich, parseRich, serializeRich, stripClipboardArtifacts, type RichMark, type RichRun } from "@/lib/rich-text"
 import { findItalicSuggestions, type Suggestion } from "@/lib/taxon-suggest"
 import { cn } from "@/lib/utils"
 
@@ -179,6 +179,14 @@ export function RichTextEditor({
         style: `min-height: ${minRows * 1.5}rem`,
         spellcheck: "true",
       },
+      // Some clipboard sources (certain Windows clipboard managers, Outlook)
+      // leak the raw CF_HTML header ("Version:1.0 StartHTML:... EndHTML:...")
+      // into what gets pasted, as either the HTML or the plain-text clipboard
+      // entry -- this strips it from both before it ever reaches the
+      // document, so it's never there to be seen in the first place (saving
+      // strips it again regardless, as a second line of defense).
+      transformPastedText: (text) => stripClipboardArtifacts(text),
+      transformPastedHTML: (html) => stripClipboardArtifacts(html),
       handleKeyDown: (_view, event) => {
         if (event.key === "Enter" || (commitOnComma && event.key === ",")) {
           event.preventDefault()

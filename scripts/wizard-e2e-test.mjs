@@ -209,7 +209,10 @@ try {
     const dt = new DataTransfer()
     dt.setData(
       "text/html",
-      '<p>Isolates of <span style="font-style:italic">Staphylococcus aureus</span> were <b>resistant</b> to penicillin <script>window.__pwned=1</script><span style="vertical-align:super">a</span><span style="color:red;font-family:Comic Sans MS"> only</span></p>'
+      // Leading text mimics the Windows CF_HTML clipboard header some
+      // clipboard tools leak into a paste (seen for real in production,
+      // ASM-ABJ-2026-AMR-059) -- must never end up as literal words.
+      'Version:1.0 StartHTML:0000000105 EndHTML:0000000199 StartFragment:0000000141 EndFragment:0000000163 <p>Isolates of <span style="font-style:italic">Staphylococcus aureus</span> were <b>resistant</b> to penicillin <script>window.__pwned=1</script><span style="vertical-align:super">a</span><span style="color:red;font-family:Comic Sans MS"> only</span></p>'
     )
     dt.setData("text/plain", "fallback text")
     document.activeElement.dispatchEvent(new ClipboardEvent("paste", { clipboardData: dt, bubbles: true, cancelable: true }))
@@ -294,6 +297,8 @@ try {
     console.log("formatting stored correctly (title, keywords, sections, title_plain):", formatStoredOk)
     pasteOk = v.abstract_conclusion === "Isolates of <i>Staphylococcus aureus</i> were <b>resistant</b> to penicillin <sup>a</sup> only"
     console.log("paste from Word kept italic/bold/sup and dropped script/colour/font:", pasteOk, JSON.stringify(v.abstract_conclusion))
+    console.log("CF_HTML clipboard header never reaches stored text:", !/StartHTML|EndHTML|Version:1\.0/.test(v.abstract_conclusion))
+    pasteOk = pasteOk && !/StartHTML|EndHTML|Version:1\.0/.test(v.abstract_conclusion)
     // 10^6 counts as one word with its exponent: formatting never adds words.
     console.log("word count ignores formatting:", v.word_count === sectionWords)
     structuredOk =

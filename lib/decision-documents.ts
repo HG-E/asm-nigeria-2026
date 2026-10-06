@@ -11,6 +11,16 @@ export function isAcceptDecision(decision: string): boolean {
   return ACCEPT_DECISIONS.includes(decision)
 }
 
+// "A", "A and B", "A, B and C" -- how the formal acceptance letter names the
+// full author list (the corresponding author's personal "Dear X," greeting on
+// the shorter notification PDF is unaffected; only the letter body changes).
+export function formatAuthorList(names: string[]): string {
+  const cleaned = names.map((n) => n.trim()).filter(Boolean)
+  if (cleaned.length === 0) return ""
+  if (cleaned.length === 1) return cleaned[0]
+  return `${cleaned.slice(0, -1).join(", ")} and ${cleaned[cleaned.length - 1]}`
+}
+
 // Generates both PDFs, uploads them to the private decision-documents
 // bucket, and records a long, unguessable access token for each -- the
 // email links to these tokens directly (see app/letters/[token]/route.ts),

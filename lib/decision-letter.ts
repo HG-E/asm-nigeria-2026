@@ -170,6 +170,12 @@ class LetterBuilder {
 
 export type DecisionLetterData = {
   authorFullName: string
+  // Every listed author, in author order, formatted as one line ("A, B and
+  // C") -- shown on the formal acceptance letter so it names the full
+  // author list, not only the corresponding author. Falls back to
+  // authorFullName if not given (keeps generatePresentationCertificate and
+  // other single-name callers working unchanged).
+  authorNames?: string
   abstractTitle: string
   referenceNumber: string
   presentationType: string
@@ -246,7 +252,7 @@ export async function generateAcceptanceLetterPdf(data: DecisionLetterData): Pro
   b.drawParagraph("To Whom It May Concern,", { font: regular, size: 11, gapAfter: 14 })
 
   b.drawParagraph(
-    `The American Society for Microbiology (ASM) Nigeria is pleased to confirm that the abstract submitted by ${data.authorFullName} has been accepted for ${data.presentationType} presentation at the First ASM Nigeria Conference (ASM Nigeria 2026), themed "One Health in Action: Advancing Microbial Science for Human, Animal, Environmental and Global Health," holding November 22-24, 2026 in Abuja, Nigeria.`,
+    `The American Society for Microbiology (ASM) Nigeria is pleased to confirm that the abstract submitted by ${data.authorNames || data.authorFullName} has been accepted for ${data.presentationType} presentation at the First ASM Nigeria Conference (ASM Nigeria 2026), themed "One Health in Action: Advancing Microbial Science for Human, Animal, Environmental and Global Health," holding November 22-24, 2026 in Abuja, Nigeria.`,
     { font: regular, size: 11, gapAfter: 12 }
   )
 
