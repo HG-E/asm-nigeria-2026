@@ -6,13 +6,27 @@ import {
   ABSTRACT_SECTIONS,
   countWords,
   normalizeSection,
+  TITLE_MAX_WORDS,
 } from "@/lib/abstract-structure"
 
-export { countWords }
+export { countWords, TITLE_MAX_WORDS }
 
 export const step1Schema = z.object({
   // May carry formatting (italic genus names etc.); only the words count.
-  title: z.string().refine((v) => plainKey(v).length > 0, "Abstract title is required"),
+  // Authoritative check -- the form's live counter is convenience only.
+  title: z.string().superRefine((v, ctx) => {
+    if (plainKey(v).length === 0) {
+      ctx.addIssue({ code: "custom", message: "Abstract title is required" })
+      return
+    }
+    const words = countWords(v)
+    if (words > TITLE_MAX_WORDS) {
+      ctx.addIssue({
+        code: "custom",
+        message: `Title is ${words} words, over the ${TITLE_MAX_WORDS}-word limit.`,
+      })
+    }
+  }),
   subthemeId: z.string().min(1, "Select a scientific subtheme"),
   keywords: z.array(z.string().refine((v) => plainKey(v).length > 0)),
   presentationPreference: z.enum(["oral", "poster", "either"]),

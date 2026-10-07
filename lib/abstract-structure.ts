@@ -60,6 +60,10 @@ export const BOOK_RESTRUCTURE_DEADLINE_LABEL = "Friday, 30 October 2026"
 
 export const ABSTRACT_TOTAL_MAX = ABSTRACT_SECTIONS.reduce((sum, s) => sum + s.max, 0)
 
+// Kept here (not duplicated in the form, the schema and the Book of
+// Abstracts) so the title cap can never quote two different numbers.
+export const TITLE_MAX_WORDS = 21
+
 // Word counts read the words only: formatting tags (<i>, <sup>, ...) never
 // count, and never make an abstract "longer".
 export function countWords(text: string) {

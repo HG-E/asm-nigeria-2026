@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -22,7 +22,9 @@ import {
 } from "@/components/ui/select"
 import { RichTextEditor } from "@/components/submission/rich-text-editor"
 import { KeywordInput } from "@/components/submission/keyword-input"
-import { step1Schema, type Step1Input } from "@/lib/validations/submission"
+import { countWords } from "@/lib/abstract-structure"
+import { step1Schema, TITLE_MAX_WORDS, type Step1Input } from "@/lib/validations/submission"
+import { cn } from "@/lib/utils"
 
 type Subtheme = { id: string; name: string }
 
@@ -43,6 +45,10 @@ export function Step1Form({
     resolver: zodResolver(step1Schema),
     defaultValues,
   })
+
+  const titleValue = useWatch({ control: form.control, name: "title" })
+  const titleWords = countWords(titleValue ?? "")
+  const titleOverLimit = titleWords > TITLE_MAX_WORDS
 
   async function handleSubmit(values: Step1Input) {
     setSubmitError(null)
@@ -66,6 +72,9 @@ export function Step1Form({
                 words and press the Italic button or Ctrl+I.
               </p>
               <RichTextEditor value={field.value} onChange={field.onChange} label="Abstract title" minRows={2} />
+              <p className={cn("text-sm", titleOverLimit ? "text-destructive font-medium" : "text-muted-foreground")}>
+                {titleWords} / {TITLE_MAX_WORDS} words
+              </p>
               <FormMessage />
             </FormItem>
           )}
@@ -140,7 +149,7 @@ export function Step1Form({
         )}
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={form.formState.isSubmitting}>
+          <Button type="submit" disabled={form.formState.isSubmitting || titleOverLimit}>
             {form.formState.isSubmitting ? "Saving..." : submitLabel}
           </Button>
         </div>
