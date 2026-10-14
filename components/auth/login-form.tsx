@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { loginSchema, type LoginInput } from "@/lib/validations/auth"
 
-export function LoginForm() {
+export function LoginForm({ next }: { next?: string }) {
   const router = useRouter()
   const [submitError, setSubmitError] = useState<string | null>(null)
 
@@ -30,7 +30,7 @@ export function LoginForm() {
 
   async function onSubmit(values: LoginInput) {
     setSubmitError(null)
-    const result = await loginAction(values)
+    const result = await loginAction(values, next)
     if ("error" in result) {
       setSubmitError(result.error)
       return

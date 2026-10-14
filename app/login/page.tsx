@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { safeNextPath } from "@/lib/safe-redirect"
 import { createClient } from "@/lib/supabase/server"
 
 export const metadata: Metadata = {
@@ -33,6 +34,9 @@ export default async function LoginPage(props: PageProps<"/login">) {
   const searchParams = await props.searchParams
   const verified = searchParams.verified === "1"
   const reset = searchParams.reset === "1"
+  // Where proxy.ts sent this visitor from (e.g. the abstract page from a
+  // format-notice email) before bouncing them here to log in first.
+  const next = safeNextPath(typeof searchParams.next === "string" ? searchParams.next : undefined) ?? undefined
 
   const supabase = await createClient()
 
@@ -55,10 +59,10 @@ export default async function LoginPage(props: PageProps<"/login">) {
           </CardHeader>
           <CardContent className="space-y-4">
             <Link
-              href={dashboard}
+              href={next ?? dashboard}
               className="bg-primary text-primary-foreground hover:bg-primary/90 flex h-9 w-full items-center justify-center rounded-md text-sm font-medium transition-colors"
             >
-              Go to my dashboard
+              {next ? "Continue to that page" : "Go to my dashboard"}
             </Link>
             <p className="text-muted-foreground text-center text-sm">
               Not you?{" "}
@@ -106,7 +110,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
               </AlertDescription>
             </Alert>
           )}
-          <LoginForm />
+          <LoginForm next={next} />
           <p className="text-muted-foreground text-center text-sm">
             Don&apos;t have an account?{" "}
             <Link href="/register" className="text-foreground underline underline-offset-4">

@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers"
 
+import { safeNextPath } from "@/lib/safe-redirect"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 import { loginSchema, type LoginInput } from "@/lib/validations/auth"
@@ -18,7 +19,13 @@ async function getClientIp(): Promise<string | null> {
   return headerList.get("x-real-ip")
 }
 
-export async function loginAction(input: LoginInput): Promise<LoginResult> {
+// `next` is where proxy.ts sent the visitor from (e.g. the abstract they
+// clicked from the format-notice email) before bouncing them here to log
+// in -- honored over the role-based default so that destination isn't lost,
+// which is exactly what was reported: an author who wasn't already logged
+// in on their device landed on their dashboard after logging in, with no
+// way back to the page the link actually pointed to.
+export async function loginAction(input: LoginInput, next?: string): Promise<LoginResult> {
   const parsed = loginSchema.safeParse(input)
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" }
@@ -55,7 +62,7 @@ export async function loginAction(input: LoginInput): Promise<LoginResult> {
     .eq("id", data.user.id)
     .single()
 
-  const redirectTo =
+  const dashboard =
     {
       author: "/author/dashboard",
       reviewer: "/reviewer/dashboard",
@@ -65,5 +72,5 @@ export async function loginAction(input: LoginInput): Promise<LoginResult> {
       registration_desk: "/registration-desk",
     }[profile?.role ?? "author"] ?? "/author/dashboard"
 
-  return { success: true, redirectTo }
+  return { success: true, redirectTo: safeNextPath(next) ?? dashboard }
 }
