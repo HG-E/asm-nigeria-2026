@@ -201,7 +201,7 @@ export async function generateAcceptanceNotificationPdf(data: DecisionLetterData
 
   b.drawParagraph(`Dear ${data.authorFullName},`, { font: regular, size: 11, gapAfter: 10 })
   b.drawParagraph(
-    `Congratulations! On behalf of the Scientific Programme Committee, your abstract has been accepted for ${data.presentationType} presentation at ASM Nigeria 2026, holding November 22-24, 2026 in Abuja, Nigeria.`,
+    `Congratulations! On behalf of the Scientific Programme Committee, your abstract has been accepted for ${data.presentationType} presentation at ASM Nigeria 2026, holding November 22-25, 2026 in Abuja, Nigeria.`,
     { font: regular, size: 11, gapAfter: 14 }
   )
 
@@ -252,7 +252,7 @@ export async function generateAcceptanceLetterPdf(data: DecisionLetterData): Pro
   b.drawParagraph("To Whom It May Concern,", { font: regular, size: 11, gapAfter: 14 })
 
   b.drawParagraph(
-    `The American Society for Microbiology (ASM) Nigeria is pleased to confirm that the abstract submitted by ${data.authorNames || data.authorFullName} has been accepted for ${data.presentationType} presentation at the First ASM Nigeria Conference (ASM Nigeria 2026), themed "One Health in Action: Advancing Microbial Science for Human, Animal, Environmental and Global Health," holding November 22-24, 2026 in Abuja, Nigeria.`,
+    `The American Society for Microbiology (ASM) Nigeria is pleased to confirm that the abstract submitted by ${data.authorNames || data.authorFullName} has been accepted for ${data.presentationType} presentation at the First ASM Nigeria Conference (ASM Nigeria 2026), themed "One Health in Action: Advancing Microbial Science for Human, Animal, Environmental and Global Health," holding November 22-25, 2026 in Abuja, Nigeria.`,
     { font: regular, size: 11, gapAfter: 12 }
   )
 
