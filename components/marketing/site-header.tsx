@@ -19,7 +19,7 @@ const NAV_LINKS = [
   { href: "/#accommodation", label: "Accommodation" },
   { href: "/#faq", label: "FAQ" },
   { href: "/#contacts", label: "Contact" },
-  { href: "/#partners", label: "Partners" },
+  { href: "/partners", label: "Partners" },
 ]
 
 const DESKTOP_NAV_LINKS = NAV_LINKS.filter((link) =>

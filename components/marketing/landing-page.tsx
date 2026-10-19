@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 
 import { submitContactMessageAction } from "@/app/contact-actions"
+import { PARTNERS } from "@/components/marketing/partners-data"
 import { Reveal } from "@/components/marketing/reveal"
 import { SiteHeader } from "@/components/marketing/site-header"
 import { SpeakerBio } from "@/components/marketing/speaker-bio"
@@ -62,13 +63,6 @@ const PARTNER_BENEFITS = [
   { icon: "🎤", accent: "wi-gold", title: "Thought Leadership", desc: "Speaking and panel opportunities to position your organization at the center of One Health conversations in Nigeria." },
   { icon: "🌱", accent: "wi-red", title: "CSR & Community Impact", desc: "Support mentorship, student attendance, and scientific capacity-building as part of your organization's community impact." },
 ]
-
-// Confirmed partners/sponsors -- empty until real ones are signed on, so
-// the carousel below simply doesn't render rather than showing placeholder
-// or fabricated brands. Add entries here as partnerships are confirmed:
-// { name: "Acme Diagnostics", logo: "/partners/acme.png", url: "https://acme.example", desc: "One-line description of what they do." }
-type Partner = { name: string; logo: string; url: string; desc: string }
-const PARTNERS: Partner[] = []
 
 const THEMES = [
   {
@@ -1447,7 +1441,14 @@ export function LandingPage() {
             )}
             <Reveal delay={160} className="partners-cta">
               <p>Interested in partnering or sponsoring? We&apos;ll share tiers, packages, and pricing directly.</p>
-              <button className="btn btn-primary" onClick={openContactModal}>🤝 Become a Partner</button>
+              <div className="hero-actions" style={{ justifyContent: "center" }}>
+                <button className="btn btn-primary" onClick={openContactModal}>🤝 Become a Partner</button>
+                {PARTNERS.length > 0 && (
+                  <Link href="/partners" className="btn btn-secondary">
+                    View All Partners →
+                  </Link>
+                )}
+              </div>
             </Reveal>
           </div>
         </section>

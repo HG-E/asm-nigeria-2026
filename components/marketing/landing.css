@@ -2377,6 +2377,58 @@
   }
 }
 
+/* ════ /partners PAGE ════ */
+.asm-landing .partners-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 28px;
+}
+.asm-landing .partner-full-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 32px 28px;
+  text-align: center;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.asm-landing .partner-full-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+.asm-landing .pfc-logo-link {
+  display: block;
+}
+.asm-landing .pfc-logo {
+  height: 72px;
+  max-width: 100%;
+  object-fit: contain;
+  margin: 0 auto 18px;
+  display: block;
+}
+.asm-landing .pfc-type {
+  margin-bottom: 12px;
+}
+.asm-landing .pfc-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.asm-landing .pfc-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.asm-landing .pfc-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+}
+.asm-landing .pfc-link:hover {
+  text-decoration: underline;
+}
+
 /* ════ FOOTER ════ */
 .asm-landing footer {
   background: #000e30;
