@@ -20,6 +20,6 @@ export const PARTNERS: Partner[] = [
     type: "Technical Partner",
     desc: "Nigeria's professional body for microbiologists, providing technical expertise and professional support to ASM Nigeria 2026.",
     fullDesc:
-      "Founded in 1972, the Nigerian Society for Microbiology (NSM) is the national professional body for microbiologists in Nigeria. NSM has partnered with ASM Nigeria 2026 to provide technical expertise and professional support in areas where the collaboration can add value, in furtherance of the advancement of microbiology in Nigeria.",
+      "Founded in 1972, the Nigerian Society for Microbiology (NSM) is the national professional body for microbiologists in Nigeria. NSM is partnering with ASM Nigeria 2026 to provide technical expertise and professional support in areas where the collaboration can add value, in furtherance of the advancement of microbiology in Nigeria.",
   },
 ]
