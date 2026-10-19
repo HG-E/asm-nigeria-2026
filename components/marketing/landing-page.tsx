@@ -492,6 +492,10 @@ export function LandingPage() {
   const [toast, setToast] = useState<string | null>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const partnersScrollRef = useRef<HTMLDivElement | null>(null)
+  // Tracks whether there's actually anything to scroll to in each direction,
+  // so the arrows can be disabled instead of sitting there doing nothing --
+  // with only a few partners (today, just one) the track never overflows.
+  const [partnersScroll, setPartnersScroll] = useState({ left: false, right: false })
 
   const [contactOpen, setContactOpen] = useState(false)
   const [contactForm, setContactForm] = useState<ContactFormState>(EMPTY_CONTACT_FORM)
@@ -609,6 +613,25 @@ export function LandingPage() {
     if (!el) return
     el.scrollBy({ left: direction * (el.clientWidth * 0.8), behavior: "smooth" })
   }
+
+  useEffect(() => {
+    const el = partnersScrollRef.current
+    if (!el) return
+    function update() {
+      if (!el) return
+      setPartnersScroll({
+        left: el.scrollLeft > 4,
+        right: el.scrollLeft + el.clientWidth < el.scrollWidth - 4,
+      })
+    }
+    update()
+    el.addEventListener("scroll", update, { passive: true })
+    window.addEventListener("resize", update)
+    return () => {
+      el.removeEventListener("scroll", update)
+      window.removeEventListener("resize", update)
+    }
+  }, [])
 
   function openContactModal() {
     setContactStatus("idle")
@@ -1409,6 +1432,7 @@ export function LandingPage() {
                     className="pc-arrow pc-arrow-left"
                     onClick={() => scrollPartners(-1)}
                     aria-label="Scroll partners left"
+                    disabled={!partnersScroll.left}
                   >
                     ‹
                   </button>
@@ -1433,6 +1457,7 @@ export function LandingPage() {
                     className="pc-arrow pc-arrow-right"
                     onClick={() => scrollPartners(1)}
                     aria-label="Scroll partners right"
+                    disabled={!partnersScroll.right}
                   >
                     ›
                   </button>

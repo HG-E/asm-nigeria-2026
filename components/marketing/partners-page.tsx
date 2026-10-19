@@ -2,11 +2,13 @@ import Link from "next/link"
 
 import { Reveal } from "@/components/marketing/reveal"
 import { SiteHeader } from "@/components/marketing/site-header"
-import { PARTNERS } from "@/components/marketing/partners-data"
+import { PARTNERS, type Partner } from "@/components/marketing/partners-data"
 
 import "./landing.css"
 
-export function PartnersPage() {
+// Takes an optional override so this can be exercised with mock data for
+// visual QA (more partners than exist yet) without touching the real list.
+export function PartnersPage({ partners = PARTNERS }: { partners?: Partner[] } = {}) {
   return (
     <div className="asm-landing speakers-page">
       <SiteHeader />
@@ -33,9 +35,9 @@ export function PartnersPage() {
 
       <section className="section">
         <div className="wrap">
-          {PARTNERS.length > 0 ? (
+          {partners.length > 0 ? (
             <div className="partners-grid">
-              {PARTNERS.map((p, i) => (
+              {partners.map((p, i) => (
                 <Reveal key={p.name} delay={(i % 3) * 80} className="partner-full-card">
                   <a href={p.url} target="_blank" rel="noopener noreferrer" className="pfc-logo-link">
                     {/* eslint-disable-next-line @next/next/no-img-element */}

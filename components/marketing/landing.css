@@ -2327,6 +2327,11 @@
   border-color: var(--gold);
   color: var(--gold);
 }
+.asm-landing .pc-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+  pointer-events: none;
+}
 .asm-landing .pc-track {
   flex: 1;
   display: flex;
