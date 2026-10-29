@@ -2951,9 +2951,6 @@
     font-size: 10px;
     margin-left: 0;
   }
-  .asm-landing .ticker {
-    display: none;
-  }
   .asm-landing .hero-actions {
     flex-direction: column;
   }
@@ -2975,21 +2972,22 @@
      lives in its own section after #hero (see .hero-card-mobile-wrap
      below), and the full countdown card is hidden on mobile entirely (see
      further down), so #hero only ever has to hold hero-left's own content.
-     175px is the fixed chrome above and below the hero on mobile, measured
-     directly (not estimated): ~103px above (SiteHeader + the one-row
-     urgency banner when a deadline banner is showing; the ticker is hidden
-     on mobile) and ~72px for the fixed bottom tab bar below -- the tab bar
-     doesn't push #hero down like the nav/banner do, but it still covers
-     that much of the viewport, so it counts here too. min-height (not
-     height) so hero-left's own content is never forced to stretch or clip
-     if it's ever taller than this on some device -- it just keeps #hero
-     from being shorter than one screen, with align-items: flex-start
-     putting a normal, modest gap below the nav instead of centering the
-     content and opening a much bigger gap above it on tall screens. */
+     217px is the fixed chrome above and below the hero on mobile, measured
+     directly (not estimated): ~145px above (SiteHeader + the one-row
+     urgency banner when a deadline banner is showing + the ticker, which
+     is back on mobile now) and ~72px for the fixed bottom tab bar below --
+     the tab bar doesn't push #hero down like the nav/banner/ticker do, but
+     it still covers that much of the viewport, so it counts here too.
+     min-height (not height) so hero-left's own content is never forced to
+     stretch or clip if it's ever taller than this on some device -- it
+     just keeps #hero from being shorter than one screen, with
+     align-items: flex-start putting a normal, modest gap below the nav
+     instead of centering the content and opening a much bigger gap above
+     it on tall screens. */
   .asm-landing #hero {
-    min-height: calc(100dvh - 175px);
+    min-height: calc(100dvh - 217px);
     align-items: flex-start;
-    padding: 38px 0 16px;
+    padding: 38px 0 12px;
   }
   /* The pill badge above the headline was the single biggest chunk of
      "dead" space before the first real word of the hero -- gone on mobile,
@@ -3016,13 +3014,13 @@
   .asm-landing .hero-title-mobile {
     display: block;
     text-transform: uppercase;
-    font-size: 28px;
+    font-size: 27px;
     overflow-x: hidden;
   }
   .asm-landing .hero-tagline {
     font-size: 11px;
     letter-spacing: 1.5px;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
   }
   /* Strip the pill/ring treatment down to one plain text line (ohb-break
      hidden, ohb-sep shown -- see the base rules above) instead of a boxed,
@@ -3032,7 +3030,7 @@
     background: none;
     border: none;
     padding: 0;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
   }
   .asm-landing .ohb-ring {
     display: inline;
@@ -3052,14 +3050,14 @@
     font-size: 11px;
   }
   .asm-landing .hero-theme {
-    margin-bottom: 5px;
-    padding: 6px 11px;
-    font-size: 12px;
-    line-height: 1.3;
+    margin-bottom: 4px;
+    padding: 5px 10px;
+    font-size: 11.5px;
+    line-height: 1.25;
   }
   .asm-landing .hero-meta {
-    gap: 3px;
-    margin-bottom: 6px;
+    gap: 2px;
+    margin-bottom: 5px;
   }
   .asm-landing .hero-meta-row {
     font-size: 13px;
