@@ -638,10 +638,13 @@
   color: var(--red);
   font-style: normal;
 }
-/* hero-title-gold, not a bare `span` selector -- .hero-title-desktop and
-   .hero-title-mobile below are themselves spans (so their display can be
+/* hero-title-red/-gold, not bare `em`/`span` selectors -- .hero-title-desktop
+   and .hero-title-mobile below are themselves spans (so their display can be
    toggled per breakpoint), and a tag selector here would also paint their
-   whole text gold instead of just the one word meant to be. */
+   whole text instead of just the words meant to be colored. */
+.asm-landing .hero-title-red {
+  color: var(--red);
+}
 .asm-landing .hero-title-gold {
   color: var(--gold);
 }
@@ -2930,18 +2933,15 @@
   .asm-landing .hero-title-desktop {
     display: none;
   }
+  /* Both lines are now full-size text, and "American Society for
+     Microbiology" (34 characters) wraps to 2-3 rows on its own at the
+     inherited 36px -- sized down a bit so that wrap stays short enough to
+     fit one screen on shorter devices like iPhone SE, not just the taller
+     ones with more min-height slack to absorb it. */
   .asm-landing .hero-title-mobile {
     display: block;
     text-transform: uppercase;
-  }
-  /* Sized and weighted on its own (not via a ::first-line trick) so it
-     stays consistent even if it wraps to two rows on the narrowest
-     screens -- ::first-line would only catch whichever row happens to
-     wrap first and leave the rest at the big headline size. */
-  .asm-landing .hero-title-org {
-    font-size: 15px;
-    font-weight: 800;
-    letter-spacing: 0.3px;
+    font-size: 30px;
   }
   .asm-landing .hero-tagline {
     font-size: 11px;
@@ -3088,17 +3088,12 @@
   .asm-landing .hero-title {
     margin-bottom: 2px;
   }
-  /* "Nigeria Conference" together is wider than either "ASM NIGERIA" or
-     "CONFERENCE" alone was at the inherited 36px, so it wraps inside its
-     own line at this width -- sized down directly on the wrapper (not
-     fought out against .display's 36px rule, which this would lose to on
-     source order) to wrap less severely and keep overall height down.
-     hero-title-org keeps its own explicit size regardless. */
+  /* Both lines are now full-size and will wrap within themselves at this
+     width -- sized down directly on the wrapper (not fought out against
+     .display's 36px rule, which this would lose to on source order) to
+     wrap less severely and keep overall height down. */
   .asm-landing .hero-title-mobile {
-    font-size: 28px;
-  }
-  .asm-landing .hero-title-org {
-    font-size: 13px;
+    font-size: 26px;
   }
   /* Decorative subtitle, not load-bearing information -- the theme box
      right below already states the conference theme in full, so this is

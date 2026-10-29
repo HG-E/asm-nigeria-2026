@@ -855,12 +855,13 @@ export function LandingPage() {
               </div>
               {/* Two versions of the same headline, not a separate caption:
                   desktop keeps the short "ASM NIGERIA / CONFERENCE" mark;
-                  mobile spells the org name out in full across two lines
-                  instead, since the chip that used to carry the full name
-                  is hidden there. hero-title-gold replaces the old bare
-                  `span` selector for the gold word so these two wrapper
-                  spans (also spans, also inside .hero-title) don't
-                  themselves pick up that color. */}
+                  mobile spells the org name out in full across two full-size
+                  lines instead, since the chip that used to carry the full
+                  name is hidden there -- "American Society for Microbiology"
+                  in red, "Nigeria Conference" in gold. hero-title-red/-gold
+                  replace the old bare `em`/`span` color selectors so the two
+                  toggle wrappers (also spans) don't themselves pick up
+                  those colors. */}
               <h1 className="display hero-title">
                 <span className="hero-title-desktop">
                   ASM <em>NIGERIA</em>
@@ -868,9 +869,9 @@ export function LandingPage() {
                   <span className="hero-title-gold">CONFERENCE</span>
                 </span>
                 <span className="hero-title-mobile">
-                  <span className="hero-title-org">American Society for Microbiology</span>
+                  <span className="hero-title-red">American Society for Microbiology</span>
                   <br />
-                  <em>Nigeria</em> <span className="hero-title-gold">Conference</span>
+                  <span className="hero-title-gold">Nigeria Conference</span>
                 </span>
               </h1>
               <p className="hero-tagline">One Health · One Future · One Scientific Community</p>
