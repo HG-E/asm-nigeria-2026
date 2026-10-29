@@ -1423,6 +1423,10 @@
   background: var(--gold-bg);
   color: var(--gold-d);
 }
+.asm-landing .db-muted {
+  background: var(--line);
+  color: var(--muted);
+}
 .asm-landing .portal-box {
   background: linear-gradient(135deg, var(--red), var(--red-d));
   border-radius: var(--r-lg);

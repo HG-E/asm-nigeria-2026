@@ -13,9 +13,15 @@ import { ELIGIBLE_SUBTHEMES, SPEAKERS } from "@/components/marketing/speakers-da
 import "./landing.css"
 
 const BANNER_DISMISS_KEY = "asm-2026-urgency-banner-dismissed-aug22"
+const FINAL_BANNER_DISMISS_KEY = "asm-2026-urgency-banner-dismissed-nov2"
 const SECRETARIAT_EMAIL = "asmnigeriaonehealth@gmail.com"
 const CONFERENCE_DATE = new Date("2026-11-22T09:00:00+01:00").getTime()
 const EARLY_DEADLINE = new Date("2026-08-30T22:59:59+00:00").getTime()
+// Matches conferences.late_submission_deadline -- the hard deadline, after
+// which abstract submission closes entirely. Once EARLY_DEADLINE has passed
+// this takes over as the banner/badge shown, so the site's own urgency
+// messaging never silently goes quiet during the week that matters most.
+const FINAL_DEADLINE = new Date("2026-11-02T22:59:59+00:00").getTime()
 
 function pad(n: number) {
   return String(Math.max(0, n)).padStart(2, "0")
@@ -40,10 +46,16 @@ function splitCountdown(msRemaining: number) {
 // land a moment later via the client-only useEffect below.
 const PENDING_COUNTDOWN = { d: "--", h: "--", m: "--", s: "--" }
 
+// Both deadline items below are intentionally hardcoded (not computed),
+// matching the rest of this file's existing dates -- but that means they
+// need updating by hand once each deadline passes, same as every other
+// date on this page. Found stale during review: the early submission and
+// early-bird registration items were still showing dates that had already
+// passed, in an always-visible ticker at the top of the homepage.
 const TICKER_ITEMS = [
   "✈️ Professor KIT Eniola Travel Grant is open for early-career microbiologists — enquire today",
-  "📅 Early Abstract Deadline: August 30, 2026",
-  "💳 Early Registration Cutoff: October 22, 2026",
+  "🚨 Final Abstract Deadline: November 2, 2026 — closing soon",
+  "💳 Late Registration is now open",
   "🌐 Hybrid Conference — attend in person in Abuja or join online",
   "🇳🇬 Maiden American Society for Microbiology Nigeria Conference · 22–25 November 2026, Abuja",
 ]
@@ -487,7 +499,11 @@ export function LandingPage() {
   const [earlyCountdown, setEarlyCountdown] = useState(PENDING_COUNTDOWN)
   const [earlyExpired, setEarlyExpired] = useState(false)
   const [earlyDaysLeft, setEarlyDaysLeft] = useState<number | null>(null)
+  const [finalCountdown, setFinalCountdown] = useState(PENDING_COUNTDOWN)
+  const [finalExpired, setFinalExpired] = useState(false)
+  const [finalDaysLeft, setFinalDaysLeft] = useState<number | null>(null)
   const [bannerDismissed, setBannerDismissed] = useState(false)
+  const [finalBannerDismissed, setFinalBannerDismissed] = useState(false)
 
   const [toast, setToast] = useState<string | null>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -512,13 +528,17 @@ export function LandingPage() {
 
   // Dismissal is per-deadline (keyed to the date in the banner copy) so a
   // visitor who closes it doesn't have it reappear on their next visit, but
-  // it does come back if the deadline text is ever updated.
+  // it does come back if the deadline text is ever updated -- and, since the
+  // early and final banners are two different keys, dismissing one (weeks
+  // apart) never silently suppresses the other.
   useEffect(() => {
     if (typeof window === "undefined") return
-    if (window.localStorage.getItem(BANNER_DISMISS_KEY) !== "1") return
     // Deferred to a callback rather than an unconditional setState in the
     // effect body -- see the identical pattern (and reasoning) in Reveal.
-    const frame = requestAnimationFrame(() => setBannerDismissed(true))
+    const frame = requestAnimationFrame(() => {
+      if (window.localStorage.getItem(BANNER_DISMISS_KEY) === "1") setBannerDismissed(true)
+      if (window.localStorage.getItem(FINAL_BANNER_DISMISS_KEY) === "1") setFinalBannerDismissed(true)
+    })
     return () => cancelAnimationFrame(frame)
   }, [])
 
@@ -526,6 +546,15 @@ export function LandingPage() {
     setBannerDismissed(true)
     try {
       window.localStorage.setItem(BANNER_DISMISS_KEY, "1")
+    } catch {
+      // localStorage unavailable (private browsing etc.) -- dismissal just won't persist
+    }
+  }
+
+  function dismissFinalBanner() {
+    setFinalBannerDismissed(true)
+    try {
+      window.localStorage.setItem(FINAL_BANNER_DISMISS_KEY, "1")
     } catch {
       // localStorage unavailable (private browsing etc.) -- dismissal just won't persist
     }
@@ -539,6 +568,10 @@ export function LandingPage() {
       setEarlyCountdown(splitCountdown(remaining))
       setEarlyExpired(remaining <= 0)
       setEarlyDaysLeft(Math.max(0, Math.ceil(remaining / 86400000)))
+      const finalRemaining = FINAL_DEADLINE - now
+      setFinalCountdown(splitCountdown(finalRemaining))
+      setFinalExpired(finalRemaining <= 0)
+      setFinalDaysLeft(Math.max(0, Math.ceil(finalRemaining / 86400000)))
     }
     tick()
     const id = setInterval(tick, 1000)
@@ -679,6 +712,35 @@ export function LandingPage() {
               Submit Now →
             </Link>
             <button type="button" className="bar-close" onClick={dismissBanner} aria-label="Dismiss this notice">
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+      {/* Once the early deadline has passed, this takes over -- the final
+          deadline is the harder one (miss it and submission closes for
+          good), so the site's urgency messaging never just goes quiet. */}
+      {earlyExpired && !finalExpired && !finalBannerDismissed && (
+        <div id="urgency-bar" role="alert" aria-label="Final deadline notice">
+          <div className="inner">
+            <span className="label">
+              🚨 <strong>Final Abstract Submission closes November 2, 2026</strong> — only
+            </span>
+            <div className="countdown-inline" aria-live="polite">
+              <span className="ci-box">{finalCountdown.d}</span>
+              <span className="ci-sep">d</span>
+              <span className="ci-box">{finalCountdown.h}</span>
+              <span className="ci-sep">h</span>
+              <span className="ci-box">{finalCountdown.m}</span>
+              <span className="ci-sep">m</span>
+              <span className="ci-box">{finalCountdown.s}</span>
+              <span className="ci-sep">s</span>
+            </div>
+            <span className="label">left — last chance to submit</span>
+            <Link href="/register" className="bar-cta">
+              Submit Now →
+            </Link>
+            <button type="button" className="bar-close" onClick={dismissFinalBanner} aria-label="Dismiss this notice">
               ✕
             </button>
           </div>
@@ -1092,23 +1154,36 @@ export function LandingPage() {
               <span className="caption eyebrow" style={{ color: "var(--red)" }}>Abstract Submission</span>
               <h2 className="headline" id="abstract-heading">Share Your Research</h2>
               <div className="rule" />
-              <p className="body-lg">Submit your abstract for oral or poster presentation. Early submissions close <strong style={{ color: "var(--red)" }}>August 30, 2026</strong>.</p>
+              <p className="body-lg">
+                Submit your abstract for oral or poster presentation.{" "}
+                {earlyExpired ? (
+                  <>Final submission closes <strong style={{ color: "var(--red)" }}>November 2, 2026</strong>.</>
+                ) : (
+                  <>Early submissions close <strong style={{ color: "var(--red)" }}>August 30, 2026</strong>.</>
+                )}
+              </p>
             </Reveal>
             <div className="abstract-grid">
               <Reveal delay={80}>
                 <h3 className="subhead" style={{ color: "var(--ink)", marginBottom: 20 }}>Key Deadlines</h3>
                 <div className="deadline-stack">
-                  <div className="dl-card" style={{ "--accent": "var(--red)" } as React.CSSProperties}>
-                    <div className="dl-icon">🚨</div>
+                  <div className="dl-card" style={{ "--accent": earlyExpired ? "var(--muted)" : "var(--red)" } as React.CSSProperties}>
+                    <div className="dl-icon">{earlyExpired ? "✅" : "🚨"}</div>
                     <div><div className="dl-label">Early Submission Closes</div><div className="dl-date">August 30, 2026</div></div>
-                    {!earlyExpired && earlyDaysLeft !== null && (
+                    {!earlyExpired && earlyDaysLeft !== null ? (
                       <span className="dl-badge db-red">{earlyDaysLeft} Day{earlyDaysLeft === 1 ? "" : "s"} Left!</span>
+                    ) : (
+                      <span className="dl-badge db-muted">Closed</span>
                     )}
                   </div>
                   <div className="dl-card" style={{ "--accent": "var(--gold)" } as React.CSSProperties}>
                     <div className="dl-icon">📅</div>
                     <div><div className="dl-label">Final Submission Closes</div><div className="dl-date">November 2, 2026</div></div>
-                    <span className="dl-badge db-gold">Final Deadline</span>
+                    {!finalExpired && finalDaysLeft !== null ? (
+                      <span className="dl-badge db-gold">{finalDaysLeft} Day{finalDaysLeft === 1 ? "" : "s"} Left!</span>
+                    ) : (
+                      <span className="dl-badge db-muted">Closed</span>
+                    )}
                   </div>
                   <div className="dl-card" style={{ "--accent": "var(--blue)" } as React.CSSProperties}>
                     <div className="dl-icon">🎤</div>
