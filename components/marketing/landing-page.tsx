@@ -861,35 +861,55 @@ export function LandingPage() {
               <p className="hero-tagline">One Health · One Future · One Scientific Community</p>
               <div className="one-health-badge">
                 <span className="ohb-ring" aria-hidden="true">🌍</span>
-                <span className="ohb-text"><strong>ONE HEALTH</strong><br />Human · Animal · Environment</span>
+                {/* ohb-break/ohb-sep: on mobile the break is hidden and the
+                    sep shown instead, collapsing this to one plain text
+                    line with no box/ring, instead of the two-line pill
+                    badge desktop still shows. */}
+                <span className="ohb-text">
+                  <strong>ONE HEALTH</strong>
+                  <br className="ohb-break" />
+                  <span className="ohb-sep">— </span>
+                  Human · Animal · Environment
+                </span>
               </div>
               <div className="hero-theme">
                 <strong>Theme:</strong> One Health in Action — Advancing Microbial Science for Global Health,
                 Animal &amp; Environmental Health
               </div>
               <div className="hero-meta" role="list">
-                {/* Hero-native readout of the same confCountdown that drives
-                    the full "Conference Countdown" card just below the hero
-                    -- that card keeps the deadline breakdown, this row puts
-                    the live number where it's seen immediately, in the same
-                    compact row style as the facts below it. */}
-                <div className="hero-meta-row hero-countdown-row" role="listitem" aria-live="polite">
-                  <div className="hero-meta-icon" aria-hidden="true">⏱️</div>
-                  <span>
-                    <strong>{confCountdown.d}d {confCountdown.h}h {confCountdown.m}m</strong> to Abuja
-                  </span>
-                </div>
-                <div className="hero-meta-row" role="listitem">
-                  <div className="hero-meta-icon" aria-hidden="true">📅</div>
-                  <span><strong>22nd – 25th November, 2026</strong></span>
-                </div>
-                <div className="hero-meta-row" role="listitem">
-                  <div className="hero-meta-icon" aria-hidden="true">📍</div>
-                  <span>Conference Centre, <strong>National Open University of Nigeria</strong>, Abuja</span>
+                {/* hero-meta-split: a plain layout wrapper (display:contents
+                    on desktop, so these two rows sit in the vertical list
+                    exactly as before), not a list item itself -- the two
+                    .hero-meta-row children below remain the listitems. Only
+                    the 768px block turns it into a row, putting date and
+                    the live countdown on the same line on mobile. */}
+                <div className="hero-meta-split">
+                  <div className="hero-meta-row hmr-col" role="listitem">
+                    <div className="hero-meta-icon" aria-hidden="true">📅</div>
+                    <span><strong>22–25 Nov 2026</strong></span>
+                  </div>
+                  {/* Hero-native readout of the same confCountdown that
+                      drives the full "Conference Countdown" card just below
+                      the hero -- that card keeps the deadline breakdown,
+                      this row puts the live number where it's seen
+                      immediately, right next to the date. */}
+                  <div className="hero-meta-row hmr-col hero-countdown-row" role="listitem" aria-live="polite">
+                    <div className="hero-meta-icon" aria-hidden="true">⏱️</div>
+                    <span><strong>{confCountdown.d}d {confCountdown.h}h {confCountdown.m}m</strong></span>
+                  </div>
                 </div>
                 <div className="hero-meta-row" role="listitem">
                   <div className="hero-meta-icon" aria-hidden="true">🌐</div>
                   <span><strong>Hybrid</strong> — In-person + Online</span>
+                </div>
+                <div className="hero-meta-row hero-meta-row-location" role="listitem">
+                  <div className="hero-meta-icon" aria-hidden="true">📍</div>
+                  <span className="hmr-loc-full">Conference Centre, <strong>National Open University of Nigeria</strong>, Abuja</span>
+                  {/* Short enough to read as one line down to a 320px
+                      screen, per the "no breaking into another line"
+                      requirement -- the full address is still one tap away
+                      on the Accommodation/Venue section. */}
+                  <span className="hmr-loc-short"><strong>National Open University of Nigeria</strong>, Abuja</span>
                 </div>
               </div>
               <div className="hero-actions hero-actions-primary">

@@ -680,6 +680,9 @@
   letter-spacing: 1px;
   font-size: 12.5px;
 }
+.asm-landing .ohb-sep {
+  display: none;
+}
 .asm-landing .hero-theme {
   background: rgba(204, 34, 41, 0.32);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -710,6 +713,16 @@
   color: rgba(255, 255, 255, 0.82);
   font-size: 15px;
   font-weight: 500;
+}
+/* Layout-only wrapper around the date and countdown rows -- display:contents
+   removes its own box so on desktop those two rows sit in .hero-meta's
+   vertical list exactly as if it weren't there; the 768px block below is
+   what turns it into an actual side-by-side row on mobile. */
+.asm-landing .hero-meta-split {
+  display: contents;
+}
+.asm-landing .hmr-loc-short {
+  display: none;
 }
 .asm-landing .hero-meta-icon {
   width: 36px;
@@ -2900,10 +2913,11 @@
     align-items: center;
     padding: 12px 0 16px;
   }
+  /* The pill badge above the headline was the single biggest chunk of
+     "dead" space before the first real word of the hero -- gone on mobile,
+     where .hero-chip-short already existed just so it could wrap to one
+     line; it's simpler to drop the row entirely here. */
   .asm-landing .hero-chip {
-    margin-bottom: 8px;
-  }
-  .asm-landing .hero-chip-full {
     display: none;
   }
   .asm-landing .hero-title {
@@ -2914,9 +2928,32 @@
     letter-spacing: 1.5px;
     margin-bottom: 8px;
   }
+  /* Strip the pill/ring treatment down to one plain text line (ohb-break
+     hidden, ohb-sep shown -- see the base rules above) instead of a boxed,
+     two-line badge. */
   .asm-landing .one-health-badge {
+    display: block;
+    background: none;
+    border: none;
+    padding: 0;
     margin-bottom: 8px;
-    padding: 4px 12px 4px 4px;
+  }
+  .asm-landing .ohb-ring {
+    display: inline;
+    width: auto;
+    height: auto;
+    background: none;
+    font-size: 12px;
+    margin-right: 2px;
+  }
+  .asm-landing .ohb-break {
+    display: none;
+  }
+  .asm-landing .ohb-sep {
+    display: inline;
+  }
+  .asm-landing .ohb-text {
+    font-size: 11px;
   }
   .asm-landing .hero-theme {
     margin-bottom: 8px;
@@ -2935,6 +2972,45 @@
     width: 24px;
     height: 24px;
     font-size: 13px;
+  }
+  /* Date + live countdown on one row, each a compact icon+text column --
+     this is what hero-meta-split (display:contents on desktop) turns into
+     here. */
+  .asm-landing .hero-meta-split {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+  }
+  .asm-landing .hmr-col {
+    flex: 1;
+    min-width: 0;
+  }
+  .asm-landing .hmr-col .hero-meta-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+  .asm-landing .hmr-col span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* Full address swapped for a shorter one that actually fits one line
+     down to a 320px screen -- see hmr-loc-full/-short in the markup. The
+     overflow rules are a safety net, not the primary fix: without them, a
+     too-long location on some odd device would wrap instead of truncating,
+     silently breaking the "fits in one screen" measurement below. */
+  .asm-landing .hmr-loc-full {
+    display: none;
+  }
+  .asm-landing .hmr-loc-short {
+    display: inline;
+  }
+  .asm-landing .hero-meta-row-location span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
   }
   .asm-landing .hero-actions .btn-lg {
     padding: 13px 28px;
@@ -2991,22 +3067,21 @@
   .asm-landing #hero {
     padding: 8px 0 12px;
   }
-  .asm-landing .hero-chip {
-    margin-bottom: 4px;
-  }
   .asm-landing .hero-title {
     margin-bottom: 2px;
   }
   /* Decorative subtitle, not load-bearing information -- the theme box
      right below already states the conference theme in full, so this is
-     the cheapest ~39px to give back at the one width class narrow enough
-     to still be short on room after every other cut above. */
+     the cheapest bit of height to give back at the one width class narrow
+     enough to still be short on room after every other cut above. */
   .asm-landing .hero-tagline {
     display: none;
   }
   .asm-landing .one-health-badge {
     margin-bottom: 4px;
-    padding: 3px 10px 3px 3px;
+  }
+  .asm-landing .ohb-text {
+    font-size: 10.5px;
   }
   .asm-landing .hero-theme {
     padding: 6px 10px;
@@ -3017,6 +3092,9 @@
   .asm-landing .hero-meta {
     gap: 3px;
     margin-bottom: 4px;
+  }
+  .asm-landing .hero-meta-split {
+    gap: 6px;
   }
   .asm-landing .hero-meta-row {
     font-size: 12.5px;
