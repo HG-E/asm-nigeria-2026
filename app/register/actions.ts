@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers"
 
+import { buildConfirmLink } from "@/lib/auth-links"
 import { sendMail } from "@/lib/email"
 import { wrapEmailHtml } from "@/lib/notifications"
 import { createAdminClient } from "@/lib/supabase/admin"
@@ -46,7 +47,7 @@ export async function registerAction(input: RegisterInput): Promise<RegisterResu
     type: "signup",
     email: data.email,
     password: data.password,
-    options: { data: metadata, redirectTo: `${origin}/login?verified=1` },
+    options: { data: metadata },
   })
 
   if (error) {
@@ -69,7 +70,12 @@ export async function registerAction(input: RegisterInput): Promise<RegisterResu
     })
   }
 
-  const actionLink = linkData.properties.action_link
+  const actionLink = buildConfirmLink(
+    origin,
+    linkData.properties.hashed_token,
+    linkData.properties.verification_type,
+    "/login?verified=1"
+  )
   try {
     await sendMail({
       to: data.email,

@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers"
 
+import { buildConfirmLink } from "@/lib/auth-links"
 import { sendMail } from "@/lib/email"
 import { wrapEmailHtml } from "@/lib/notifications"
 import { createAdminClient } from "@/lib/supabase/admin"
@@ -27,13 +28,13 @@ export async function forgotPasswordAction(input: ForgotPasswordInput): Promise<
   const { data, error } = await admin.auth.admin.generateLink({
     type: "recovery",
     email: parsed.data.email,
-    options: { redirectTo: `${origin}/reset-password` },
   })
 
-  if (error || !data.properties?.action_link) {
+  if (error || !data.properties?.hashed_token) {
     return { ok: true }
   }
 
+  const actionLink = buildConfirmLink(origin, data.properties.hashed_token, data.properties.verification_type, "/reset-password")
   const firstName = (data.user?.user_metadata as { first_name?: string } | null)?.first_name
   try {
     await sendMail({
@@ -43,10 +44,10 @@ export async function forgotPasswordAction(input: ForgotPasswordInput): Promise<
         <p style="margin-top:0;">Dear ${firstName || "Colleague"},</p>
         <p>We received a request to reset your password for the ASM Nigeria 2026 Abstract Management System. Click below to set a new one:</p>
         <p style="text-align:center; margin:28px 0;">
-          <a href="${data.properties.action_link}" style="display:inline-block; background:#003087; color:#ffffff; font-weight:bold; text-decoration:none; padding:12px 28px; border-radius:6px; font-size:14px;">Reset my password</a>
+          <a href="${actionLink}" style="display:inline-block; background:#003087; color:#ffffff; font-weight:bold; text-decoration:none; padding:12px 28px; border-radius:6px; font-size:14px;">Reset my password</a>
         </p>
         <p style="color:#5b6472; font-size:13px;">If the button doesn't work, copy and paste this link into your browser:<br>
-        <span style="word-break:break-all;">${data.properties.action_link}</span></p>
+        <span style="word-break:break-all;">${actionLink}</span></p>
         <p>If you didn't request this, you can safely ignore this email.</p>
       `),
     })
