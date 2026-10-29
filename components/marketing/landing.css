@@ -622,13 +622,14 @@
 /* A grid item's default min-width is auto, not 0 -- its *minimum* size
    still has to fit its content's min-content width even when the track
    itself is an `fr` unit, and a white-space: nowrap descendant anywhere
-   inside (the hero-title-org-scale headline below) reports its full
-   unwrapped width as that minimum, since nowrap text can't be the thing
-   that shrinks. overflow: hidden on an ancestor doesn't change that
-   calculation -- it only clips paint, not the intrinsic-size contribution
-   grid/flex track sizing use. Without this, the single 1fr column at
-   mobile widths was sizing itself off that nowrap width (over 600px)
-   instead of the viewport, pushing everything in .hero-left off-screen.
+   inside reports its full unwrapped width as that minimum, since nowrap
+   text can't be the thing that shrinks. overflow: hidden on an ancestor
+   doesn't change that calculation -- it only clips paint, not the
+   intrinsic-size contribution grid/flex track sizing use. A past nowrap
+   headline treatment here once sized the single 1fr column (mobile) off
+   that nowrap width (over 600px) instead of the viewport, pushing
+   everything in .hero-left off-screen -- kept as a standing defensive
+   rule against the same class of bug recurring with different content.
    (.hero-right doesn't need this: it's `display: none` on mobile, where
    this matters, and not grid-sized on desktop, where it's the only other
    item in the row.) */
@@ -658,45 +659,8 @@
   color: var(--red);
   font-style: normal;
 }
-/* hero-title-red/-gold, not bare `em`/`span` selectors -- .hero-title-desktop
-   and .hero-title-mobile below are themselves spans (so their display can be
-   toggled per breakpoint), and a tag selector here would also paint their
-   whole text instead of just the words meant to be colored. */
-.asm-landing .hero-title-white {
-  color: #fff;
-}
-.asm-landing .hero-title-red {
-  color: var(--red);
-}
 .asm-landing .hero-title-gold {
   color: var(--gold);
-}
-.asm-landing .hero-title-mobile {
-  display: none;
-}
-/* Two elements, not one -- see the long comment on the matching markup in
-   landing-page.tsx for why. This outer one is pinned to the container's own
-   width and clips anything that doesn't fit, so it can never grow the hero
-   wider than its column regardless of what the (possibly much wider,
-   pre-scale) inner line measures. */
-.asm-landing .hero-title-org-line {
-  display: block;
-  width: 100%;
-  overflow: hidden;
-}
-/* The inner line is what's actually measured and horizontally scaled by
-   the matching effect in landing-page.tsx to exactly span
-   .hero-title-gold's width below it -- see the comment on that effect for
-   why a fixed font-size can't do this reliably across viewport widths on
-   its own. inline-block so its own width is content-based (unaffected by
-   the outer's forced 100%) and the scaleX transform has a definite box to
-   scale; white-space: nowrap keeps it from ever wrapping; transform-origin:
-   left so it grows/shrinks from the same left edge the text already starts
-   at, instead of from its center. */
-.asm-landing .hero-title-org-scale {
-  display: inline-block;
-  white-space: nowrap;
-  transform-origin: left center;
 }
 .asm-landing .hero-tagline {
   color: rgba(255, 255, 255, 0.55);
@@ -2992,30 +2956,15 @@
   /* The pill badge above the headline was the single biggest chunk of
      "dead" space before the first real word of the hero -- gone on mobile,
      where .hero-chip-short already existed just so it could wrap to one
-     line; it's simpler to drop the row entirely here. hero-title-mobile
-     (below) carries the full org name in the headline itself instead. */
+     line; it's simpler to drop the row entirely here. The headline itself
+     is the same short "ASM NIGERIA / CONFERENCE" mark as desktop now, not
+     a separate mobile version, so there's no other element here taking its
+     place. */
   .asm-landing .hero-chip {
     display: none;
   }
   .asm-landing .hero-title {
     margin-bottom: 2px;
-  }
-  .asm-landing .hero-title-desktop {
-    display: none;
-  }
-  /* Both lines render at this same font-size -- the org-name line (see
-     .hero-title-org-line above) is then horizontally scaled by JS to match
-     "NIGERIA CONFERENCE"'s width exactly, so its own unscaled size here
-     only needs to be in a reasonable ballpark, not an exact fit. overflow-x
-     is a safety net for the brief unscaled state before that effect runs
-     (and the rare case JS doesn't run at all) -- without it, the org line's
-     natural nowrap width (it's the longer line) would overflow sideways
-     instead of just being clipped until the scale applies. */
-  .asm-landing .hero-title-mobile {
-    display: block;
-    text-transform: uppercase;
-    font-size: 27px;
-    overflow-x: hidden;
   }
   .asm-landing .hero-tagline {
     font-size: 11px;
@@ -3161,13 +3110,6 @@
   }
   .asm-landing .hero-title {
     margin-bottom: 2px;
-  }
-  /* Both lines are now full-size and will wrap within themselves at this
-     width -- sized down directly on the wrapper (not fought out against
-     .display's 36px rule, which this would lose to on source order) to
-     wrap less severely and keep overall height down. */
-  .asm-landing .hero-title-mobile {
-    font-size: 22px;
   }
   /* Decorative subtitle, not load-bearing information -- the theme box
      right below already states the conference theme in full, so this is
