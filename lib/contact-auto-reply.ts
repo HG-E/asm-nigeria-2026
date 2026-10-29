@@ -14,7 +14,7 @@ const AUTO_REPLIES: Record<string, string> = {
   `,
   "Registration Help": `
     <p>Conference registration (attending the event itself) is separate from abstract
-    submission. Early/Regular registration has closed; Late registration is open now — see the
+    submission. Early/Regular registration has closed; Late registration is open now. See the
     registration section on the conference website for current rates and how to register.</p>
   `,
   "Payment Confirmation": `
@@ -40,7 +40,7 @@ const AUTO_REPLIES: Record<string, string> = {
   `,
 }
 
-const DEFAULT_REPLY = `<p>Thank you for your message — the secretariat will review it and respond directly.</p>`
+const DEFAULT_REPLY = `<p>Thank you for your message. The secretariat will review it and respond directly.</p>`
 
 export function contactAutoReplyHtml(name: string, subject: string) {
   const body = AUTO_REPLIES[subject] ?? DEFAULT_REPLY
@@ -49,8 +49,8 @@ export function contactAutoReplyHtml(name: string, subject: string) {
     <h2>We received your message</h2>
     <p>Hi ${escapeHtml(firstName)},</p>
     <p>Thanks for contacting ASM Nigeria 2026 (subject: <strong>${escapeHtml(subject)}</strong>).
-    This is an automatic acknowledgement — we'll respond within 2 working days.</p>
+    This is an automatic acknowledgement. We'll respond within 2 working days.</p>
     ${body}
-    <p>— ASM Nigeria 2026 Secretariat</p>
+    <p>ASM Nigeria 2026 Secretariat</p>
   `
 }

@@ -625,6 +625,9 @@
 .asm-landing .hero-chip-short {
   display: none;
 }
+.asm-landing .hero-name-line {
+  display: none;
+}
 /* Mobile counterpart of .hero-right, hidden until the 768px breakpoint
    below shows it (and hides .hero-right in its place). */
 .asm-landing .hero-card-mobile-wrap {
@@ -714,13 +717,6 @@
   font-size: 15px;
   font-weight: 500;
 }
-/* Layout-only wrapper around the date and countdown rows -- display:contents
-   removes its own box so on desktop those two rows sit in .hero-meta's
-   vertical list exactly as if it weren't there; the 768px block below is
-   what turns it into an actual side-by-side row on mobile. */
-.asm-landing .hero-meta-split {
-  display: contents;
-}
 .asm-landing .hmr-loc-short {
   display: none;
 }
@@ -735,15 +731,15 @@
   font-size: 16px;
   flex-shrink: 0;
 }
-.asm-landing .hero-countdown-row .hero-meta-icon {
-  background: rgba(245, 168, 0, 0.18);
-}
-.asm-landing .hero-countdown-row strong {
-  color: var(--gold);
-  font-variant-numeric: tabular-nums;
-}
 .asm-landing .hero-meta-row strong {
   color: var(--gold);
+}
+/* Mobile-only slim countdown bar below the CTA buttons -- see the 768px
+   block for the rule that reveals it and sizes it to match the button row
+   above. Hidden on desktop, which already has the full countdown card in
+   hero-right. */
+.asm-landing .hero-countdown-strip {
+  display: none;
 }
 .asm-landing .hero-actions {
   display: flex;
@@ -2898,27 +2894,40 @@
      above this block used to say ("often shorter than 100vh"), which is
      why that min-height:auto/flex-start pairing existed. hero-right now
      lives in its own section after #hero (see .hero-card-mobile-wrap
-     below) specifically so #hero can be sized to one screen and its
-     content centered the same way the desktop hero already is. 176px below
-     is the fixed chrome that eats into that one screen on mobile: SiteHeader
-     (68px, measured) + the one-row urgency banner (~40px when a deadline
-     banner is showing; the ticker is hidden on mobile) above the hero, AND
-     the fixed bottom tab bar (~64px incl. its padding) below it -- the tab
-     bar doesn't push #hero down like the others, but it still covers that
-     much of the viewport, so it has to count here too or the hero's last
-     row ends up hidden behind it instead of merely "below the fold". Update
-     this constant if any of those four heights change. */
+     below), and the full countdown card is hidden on mobile entirely (see
+     further down), so #hero only ever has to hold hero-left's own content.
+     min-height is auto, not a 100dvh-based floor: with the chip, badge box,
+     one meta row and the big countdown card all gone or shrunk, that
+     content is now well under one screen on most devices, and a
+     viewport-relative floor just reserved the empty leftover as a dead
+     gap -- first above the title when it was center-aligned, then below
+     the CTAs once this switched to flex-start. An explicit "fits within
+     one screen" is still enforced by the FITS check in the measurement
+     script (heroBottom <= tab bar top): natural content height here is
+     comfortably under that budget on every tested device (320-430px
+     wide), so there's never a need to force the box taller than its
+     content to satisfy it. */
   .asm-landing #hero {
-    min-height: calc(100dvh - 184px);
-    align-items: center;
-    padding: 12px 0 16px;
+    min-height: auto;
+    align-items: flex-start;
+    padding: 8px 0 12px;
   }
   /* The pill badge above the headline was the single biggest chunk of
      "dead" space before the first real word of the hero -- gone on mobile,
      where .hero-chip-short already existed just so it could wrap to one
-     line; it's simpler to drop the row entirely here. */
+     line; it's simpler to drop the row entirely here. hero-name-line (the
+     plain-text replacement carrying the full org name) sits in its place. */
   .asm-landing .hero-chip {
     display: none;
+  }
+  .asm-landing .hero-name-line {
+    display: block;
+    margin: 0 0 4px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
   }
   .asm-landing .hero-title {
     margin-bottom: 4px;
@@ -2973,28 +2982,6 @@
     height: 24px;
     font-size: 13px;
   }
-  /* Date + live countdown on one row, each a compact icon+text column --
-     this is what hero-meta-split (display:contents on desktop) turns into
-     here. */
-  .asm-landing .hero-meta-split {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-  }
-  .asm-landing .hmr-col {
-    flex: 1;
-    min-width: 0;
-  }
-  .asm-landing .hmr-col .hero-meta-icon {
-    width: 20px;
-    height: 20px;
-    font-size: 11px;
-  }
-  .asm-landing .hmr-col span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
   /* Full address swapped for a shorter one that actually fits one line
      down to a 320px screen -- see hmr-loc-full/-short in the markup. The
      overflow rules are a safety net, not the primary fix: without them, a
@@ -3040,21 +3027,38 @@
   .asm-landing .btn-text-short {
     display: inline;
   }
-  /* hero-right (desktop two-column layout) vs. its mobile counterpart, a
-     standalone section right after #hero -- exactly one of the two is ever
-     shown. */
+  /* Flush with the button row above it: same full width, same left/right
+     edges, so it reads as a continuation of the CTA block rather than a
+     separate element. */
+  .asm-landing .hero-countdown-strip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgba(245, 168, 0, 0.14);
+    border: 1px solid rgba(245, 168, 0, 0.35);
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .asm-landing .hero-countdown-strip strong {
+    color: var(--gold);
+    font-variant-numeric: tabular-nums;
+  }
+  /* hero-right (desktop two-column layout) is still mobile-hidden as
+     before; its mobile counterpart (the full "Conference Countdown" card,
+     with the deadline/format breakdown) is now hidden on mobile too --
+     hero-countdown-strip above already puts the live number where it's
+     seen immediately, and the deadline breakdown itself is still available
+     further down the page in the Key Deadlines cards. */
   .asm-landing .hero-right {
     display: none;
   }
   .asm-landing .hero-card-mobile-wrap {
-    display: block;
-    background: var(--blue-d);
-    padding-bottom: 40px;
-  }
-  .asm-landing .hero-card-mobile {
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 0 24px;
+    display: none;
   }
 }
 @media (max-width: 374px) {
@@ -3093,9 +3097,6 @@
     gap: 3px;
     margin-bottom: 4px;
   }
-  .asm-landing .hero-meta-split {
-    gap: 6px;
-  }
   .asm-landing .hero-meta-row {
     font-size: 12.5px;
   }
@@ -3103,6 +3104,10 @@
     width: 20px;
     height: 20px;
     font-size: 11px;
+  }
+  .asm-landing .hero-countdown-strip {
+    font-size: 11px;
+    padding: 6px 8px;
   }
 }
 @media (max-width: 480px) {

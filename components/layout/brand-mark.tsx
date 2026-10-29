@@ -20,7 +20,7 @@ export function BrandMark({
     <Link href={href} className={cn("flex items-center gap-3", className)}>
       <Image
         src="/brand/asm-logo.png"
-        alt="ASM — Microbes Make Our World"
+        alt="ASM: Microbes Make Our World"
         width={Math.round(height * LOGO_ASPECT)}
         height={height}
         priority

@@ -23,7 +23,7 @@ export function PartnersPage({ partners = PARTNERS }: { partners?: Partner[] } =
             <div className="rule" />
             <p className="body-lg" style={{ color: "rgba(255,255,255,.85)", maxWidth: 640 }}>
               The organizations collaborating with ASM Nigeria 2026 to advance One Health
-              microbiology across Nigeria — read about them below, or{" "}
+              microbiology across Nigeria. Read about them below, or{" "}
               <Link href="/#partners" style={{ color: "var(--gold)" }}>
                 see how to become one
               </Link>
@@ -85,7 +85,7 @@ export function PartnersPage({ partners = PARTNERS }: { partners?: Partner[] } =
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/brand/asm-logo.png"
-                  alt="ASM — Microbes Make Our World"
+                  alt="ASM: Microbes Make Our World"
                   style={{ height: 36, width: "auto", objectFit: "contain", filter: "brightness(0) invert(1)", marginBottom: 12, display: "block" }}
                 />
                 <div className="fb-tagline">One Health. One Future. One Scientific Community.</div>

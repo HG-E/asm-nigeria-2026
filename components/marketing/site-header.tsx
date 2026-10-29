@@ -121,7 +121,7 @@ export function SiteHeader() {
         <div className="nav-wrap">
           <Link href="/" className="nav-brand" aria-label="ASM Nigeria Conference 2026 home">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/asm-logo.png" alt="ASM — Microbes Make Our World" className="nav-logo-img" width={120} height={40} />
+            <img src="/brand/asm-logo.png" alt="ASM: Microbes Make Our World" className="nav-logo-img" width={120} height={40} />
           </Link>
           <div className="nav-links" role="list">
             {DESKTOP_NAV_LINKS.map((link) =>

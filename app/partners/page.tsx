@@ -5,7 +5,7 @@ import { PartnersPage } from "@/components/marketing/partners-page"
 export const metadata: Metadata = {
   title: "Our Partners | ASM Nigeria Conference 2026",
   description:
-    "The organizations partnering with ASM Nigeria 2026 — the Maiden American Society for Microbiology Nigeria Conference — to advance One Health microbiology across Nigeria.",
+    "The organizations partnering with ASM Nigeria 2026, the Maiden American Society for Microbiology Nigeria Conference, to advance One Health microbiology across Nigeria.",
   alternates: { canonical: "/partners" },
   openGraph: {
     title: "Our Partners | ASM Nigeria Conference 2026",

@@ -58,17 +58,17 @@ const PENDING_COUNTDOWN = { d: "--", h: "--", m: "--", s: "--" }
 // early-bird registration items were still showing dates that had already
 // passed, in an always-visible ticker at the top of the homepage.
 const TICKER_ITEMS = [
-  "✈️ Professor KIT Eniola Travel Grant is open for early-career microbiologists — enquire today",
-  "🚨 Final Abstract Deadline: November 2, 2026 — closing soon",
+  "✈️ Professor KIT Eniola Travel Grant is open for early-career microbiologists: enquire today",
+  "🚨 Final Abstract Deadline: November 2, 2026, closing soon",
   "💳 Late Registration is now open",
-  "🌐 Hybrid Conference — attend in person in Abuja or join online",
+  "🌐 Hybrid Conference: attend in person in Abuja or join online",
   "🇳🇬 Maiden American Society for Microbiology Nigeria Conference · 22–25 November 2026, Abuja",
 ]
 
 const WHY_CARDS = [
   { icon: "🔬", accent: "wi-red", title: "World-Class Science", desc: "Keynote lectures, plenary sessions, oral and poster presentations delivering cutting-edge microbiology research." },
   { icon: "🤝", accent: "wi-blue", title: "Network Across Sectors", desc: "Connect with microbiologists, clinicians, vets, environmental scientists, policymakers and industry leaders under one roof." },
-  { icon: "🌍", accent: "wi-gold", title: "One Health Framework", desc: "Experience Africa's first conference fully built around the One Health paradigm — human, animal, and environment together." },
+  { icon: "🌍", accent: "wi-gold", title: "One Health Framework", desc: "Experience Africa's first conference fully built around the One Health paradigm: human, animal, and environment together." },
   { icon: "🎓", accent: "wi-red", title: "Student & ECR Focus", desc: "Dedicated mentorship sessions, early-career researcher support, and a pre-conference hands-on workshop for skills development." },
   { icon: "📢", accent: "wi-blue", title: "Policy Dialogue", desc: "Shape Nigeria's science policy through evidence-based discussions with government stakeholders and industry leaders." },
   { icon: "💡", accent: "wi-gold", title: "AI & Innovation", desc: "Explore how biotechnology and artificial intelligence are revolutionising sustainable microbiology in Africa and beyond." },
@@ -115,7 +115,7 @@ const THEMES = [
   {
     num: 3,
     bg: "rgba(255,255,255,.15)",
-    title: "From Lab to Landscape — Translating Microbial Science into Resilient One Health Systems and Governance",
+    title: "From Lab to Landscape: Translating Microbial Science into Resilient One Health Systems and Governance",
     desc: "Laboratory discovery only delivers public value when it is translated into policy, regulation, and ecological stewardship. This sub-theme welcomes work on science-to-policy translation and One Health governance frameworks, alongside research treating soil, water, and gut microbiomes as shared infrastructure whose resilience underpins both ecosystem stability and human/animal health outcomes.",
     topics: [
       "Science-to-policy translation and evidence-based One Health governance",
@@ -160,15 +160,15 @@ const PROGRAMME_DAYS = [
   { header: "pd-h-blue", label: "Day 1", date: "Nov 22", items: [
     { time: "Morning", text: "Pre-Conference Hands-On Workshop (₦8,000)" },
     { time: "Afternoon", text: "Conference Registration & Welcome" },
-  ], note: "Sunday — no plenary or scientific sessions. Only the pre-conference workshop and early registration desk are open; other attendees should plan to arrive from Nov 23." },
+  ], note: "Sunday: no plenary or scientific sessions. Only the pre-conference workshop and early registration desk are open; other attendees should plan to arrive from Nov 23." },
   { header: "pd-h-red", label: "Day 2", date: "Nov 23", items: [
     { time: "Morning", text: "Opening Ceremony & Keynote Address" },
-    { time: "Late Morning", text: "Plenary Sessions — AMR & Infectious Disease" },
+    { time: "Late Morning", text: "Plenary Sessions: AMR & Infectious Disease" },
     { time: "Afternoon", text: "Scientific Presentations (Oral)" },
     { time: "Evening", text: "Networking Reception" },
   ] },
   { header: "pd-h-gold", label: "Day 3", date: "Nov 24", items: [
-    { time: "Morning", text: "Plenary Sessions — AI & Governance" },
+    { time: "Morning", text: "Plenary Sessions: AI & Governance" },
     { time: "Afternoon", text: "Poster Presentations & Policy Dialogue" },
     { time: "Evening", text: "Cocktail" },
   ] },
@@ -185,8 +185,8 @@ const EARLY_FEES = [
   { cat: "Postgraduate Students", amt: "₦15,000" },
   { cat: "Undergraduate Students", amt: "₦5,000", highlight: true },
   { cat: "International Participants", amt: "$50 USD" },
-  { cat: "Online Participants — Local", amt: "₦25,000" },
-  { cat: "Online Participants — Foreign", amt: "$25 USD" },
+  { cat: "Online Participants (Local)", amt: "₦25,000" },
+  { cat: "Online Participants (Foreign)", amt: "$25 USD" },
   { cat: "Foreign Corporate Bodies", amt: "$150 USD" },
   { cat: "Abstract Submission Fee", amt: "₦3,000", accent: true },
   { cat: "Pre-Conference Hands-On Workshop", amt: "₦8,000" },
@@ -198,8 +198,8 @@ const LATE_FEES = [
   { cat: "Postgraduate Students", amt: "₦20,000" },
   { cat: "Undergraduate Students", amt: "₦8,000", highlight: true },
   { cat: "International Participants", amt: "$55 USD" },
-  { cat: "Online Participants — Local", amt: "₦30,000" },
-  { cat: "Online Participants — Foreign", amt: "$30 USD" },
+  { cat: "Online Participants (Local)", amt: "₦30,000" },
+  { cat: "Online Participants (Foreign)", amt: "$30 USD" },
   { cat: "Foreign Corporate Bodies", amt: "$155 USD" },
   { cat: "Pre-Conference Hands-On Workshop", amt: "₦8,000", accent: true },
 ]
@@ -245,7 +245,7 @@ const FAQS = [
   { q: "What is the abstract submission fee and what does it cover?", a: <>The abstract processing fee is ₦3,000 (or $5 USD). This is separate from your conference registration fee. Payment should be made to the ASM Nigeria account at First Bank (2047664724) before or alongside your abstract submission via the <Link href="/register">official portal</Link>.</> },
   { q: "What is the difference between Early and Late registration?", a: "Early/Regular registration ran until October 22, 2026 at a lower rate (e.g., ASM Members ₦25,000 vs ₦30,000 late). After that date, Late registration rates apply right up to the conference." },
   { q: "What is the Pre-Conference Hands-On Workshop?", a: "The pre-conference workshop on November 22 is an additional paid session (₦8,000) offering practical, skills-based training. It is particularly valuable for students and early-career researchers and requires separate registration." },
-  { q: "How do I confirm my payment was received?", a: <>After making your bank transfer to First Bank (Acc: 2047664724, ASM Nigeria), attach your receipt when you register or submit your abstract — no separate email needed. The admin confirms it from your account within 2–3 working days.</> },
+  { q: "How do I confirm my payment was received?", a: <>After making your bank transfer to First Bank (Acc: 2047664724, ASM Nigeria), attach your receipt when you register or submit your abstract. No separate email is needed. The admin confirms it from your account within 2–3 working days.</> },
   { q: "Can I submit more than one abstract?", a: "Yes, you may submit multiple abstracts. Each abstract requires a separate processing fee of ₦3,000. Each submission must meet all guidelines and address one or two of the five stated sub-themes." },
 ]
 
@@ -641,7 +641,7 @@ export function LandingPage() {
       await navigator.clipboard.writeText(text)
       showToast(`✅ ${msg}`)
     } catch {
-      showToast(`❌ Copy failed — please copy manually: ${text}`)
+      showToast(`❌ Copy failed. Please copy manually: ${text}`)
     }
   }
 
@@ -754,7 +754,7 @@ export function LandingPage() {
           <div className="inner">
             <span className="label">
               <span className="ub-text-full">
-                🚨 <strong>Early Abstract Submission closes August 30, 2026</strong> — only
+                🚨 <strong>Early Abstract Submission closes August 30, 2026</strong>: only
               </span>
               <span className="ub-text-short">🚨 <strong>Aug 30</strong></span>
             </span>
@@ -789,7 +789,7 @@ export function LandingPage() {
           <div className="inner">
             <span className="label">
               <span className="ub-text-full">
-                🚨 <strong>Final Abstract Submission closes November 2, 2026</strong> — only
+                🚨 <strong>Final Abstract Submission closes November 2, 2026</strong>: only
               </span>
               <span className="ub-text-short">🚨 <strong>Nov 2</strong></span>
             </span>
@@ -805,7 +805,7 @@ export function LandingPage() {
                 <span className="ci-sep">s</span>
               </span>
             </div>
-            <span className="label ub-suffix">left — last chance to submit</span>
+            <span className="label ub-suffix">left, last chance to submit</span>
             <Link href="/register" className="bar-cta" aria-label="Submit abstract now">
               <span className="ub-text-full">Submit Now →</span>
               <span className="ub-text-short">Submit →</span>
@@ -853,6 +853,10 @@ export function LandingPage() {
                   <span className="hero-chip-short">🇳🇬 ASM Nigeria Conference · Abuja 2026</span>
                 </span>
               </div>
+              {/* Mobile only -- the chip above (which carried the full org
+                  name) is hidden on mobile, so this plain text line takes
+                  its place instead of leaving the full name absent. */}
+              <p className="hero-name-line">American Society for Microbiology Nigeria Conference</p>
               <h1 className="display hero-title">
                 ASM <em>NIGERIA</em>
                 <br />
@@ -868,39 +872,22 @@ export function LandingPage() {
                 <span className="ohb-text">
                   <strong>ONE HEALTH</strong>
                   <br className="ohb-break" />
-                  <span className="ohb-sep">— </span>
+                  <span className="ohb-sep">: </span>
                   Human · Animal · Environment
                 </span>
               </div>
               <div className="hero-theme">
-                <strong>Theme:</strong> One Health in Action — Advancing Microbial Science for Global Health,
+                <strong>Theme:</strong> One Health in Action: Advancing Microbial Science for Global Health,
                 Animal &amp; Environmental Health
               </div>
               <div className="hero-meta" role="list">
-                {/* hero-meta-split: a plain layout wrapper (display:contents
-                    on desktop, so these two rows sit in the vertical list
-                    exactly as before), not a list item itself -- the two
-                    .hero-meta-row children below remain the listitems. Only
-                    the 768px block turns it into a row, putting date and
-                    the live countdown on the same line on mobile. */}
-                <div className="hero-meta-split">
-                  <div className="hero-meta-row hmr-col" role="listitem">
-                    <div className="hero-meta-icon" aria-hidden="true">📅</div>
-                    <span><strong>22–25 Nov 2026</strong></span>
-                  </div>
-                  {/* Hero-native readout of the same confCountdown that
-                      drives the full "Conference Countdown" card just below
-                      the hero -- that card keeps the deadline breakdown,
-                      this row puts the live number where it's seen
-                      immediately, right next to the date. */}
-                  <div className="hero-meta-row hmr-col hero-countdown-row" role="listitem" aria-live="polite">
-                    <div className="hero-meta-icon" aria-hidden="true">⏱️</div>
-                    <span><strong>{confCountdown.d}d {confCountdown.h}h {confCountdown.m}m</strong></span>
-                  </div>
+                <div className="hero-meta-row" role="listitem">
+                  <div className="hero-meta-icon" aria-hidden="true">📅</div>
+                  <span><strong>22–25 Nov 2026</strong></span>
                 </div>
                 <div className="hero-meta-row" role="listitem">
                   <div className="hero-meta-icon" aria-hidden="true">🌐</div>
-                  <span><strong>Hybrid</strong> — In-person + Online</span>
+                  <span><strong>Hybrid</strong>: In-person + Online</span>
                 </div>
                 <div className="hero-meta-row hero-meta-row-location" role="listitem">
                   <div className="hero-meta-icon" aria-hidden="true">📍</div>
@@ -921,6 +908,16 @@ export function LandingPage() {
                   <span className="btn-text-full">📄 Submit Abstract</span>
                   <span className="btn-text-short">📄 Submit</span>
                 </Link>
+              </div>
+              {/* Mobile only -- a slim countdown bar flush with the button
+                  row above it, so the live countdown is visible on first
+                  look without needing the full "Conference Countdown" card
+                  (hero-card-mobile-wrap below is hidden on mobile now that
+                  this covers the same need more compactly). */}
+              <div className="hero-countdown-strip" aria-live="polite" aria-label="Time until the conference">
+                <span aria-hidden="true">⏱️</span>
+                <strong>{confCountdown.d}d {confCountdown.h}h {confCountdown.m}m {confCountdown.s}s</strong>
+                <span>until Abuja 2026</span>
               </div>
             </div>
 
@@ -1033,7 +1030,7 @@ export function LandingPage() {
               <span className="caption eyebrow" style={{ color: "var(--red)" }}>Why Attend</span>
               <h2 className="headline" id="why-heading">Africa&apos;s Most Impactful<br />Microbiology Event of 2026</h2>
               <div className="rule" />
-              <p className="body-lg">Whether you are a researcher, clinician, student, or policymaker — this is where Nigerian and African science meets global standards.</p>
+              <p className="body-lg">Whether you are a researcher, clinician, student, or policymaker, this is where Nigerian and African science meets global standards.</p>
             </Reveal>
             <div className="why-grid">
               {WHY_CARDS.map((card, i) => (
@@ -1165,7 +1162,7 @@ export function LandingPage() {
           <div className="wrap">
             <Reveal className="reveal-center" style={{ textAlign: "center" } as React.CSSProperties}>
               <span className="caption eyebrow" style={{ color: "var(--red)" }}>Planning Committee</span>
-              <h2 className="headline" id="committee-heading">Maiden American Society for Microbiology Nigeria Conference<br />Abuja 2026 — Subcommittees</h2>
+              <h2 className="headline" id="committee-heading">Maiden American Society for Microbiology Nigeria Conference<br />Abuja 2026 Subcommittees</h2>
               <div className="rule rule-center" />
               <p className="body-lg">Ten subcommittees, drawn from institutions and organizations across Nigeria, plan and run every part of the conference.</p>
             </Reveal>
@@ -1385,7 +1382,7 @@ export function LandingPage() {
                 <Reveal>
                   <div className="reg-alert" role="note">
                     <span style={{ fontSize: 22, flexShrink: 0 }}>💡</span>
-                    <div><strong>Save money:</strong> Register before October 22, 2026 for Early/Regular rates. Undergraduate students get the best rate — only ₦5,000 early.</div>
+                    <div><strong>Save money:</strong> Register before October 22, 2026 for Early/Regular rates. Undergraduate students get the best rate: only ₦5,000 early.</div>
                   </div>
                 </Reveal>
               )}
@@ -1429,8 +1426,8 @@ export function LandingPage() {
                 <h3 className="subhead" style={{ color: "var(--ink)", marginBottom: 4 }}>3-Step Payment Process</h3>
                 <p className="body" style={{ marginBottom: 20 }}>Simple, straightforward, and secure.</p>
                 <div className="step-card"><div className="step-n">1</div><div><div className="step-h">Select your category</div><div className="step-p">Identify your participant category and the applicable fee from the registration table above.</div></div></div>
-                <div className="step-card"><div className="step-n">2</div><div><div className="step-h">Transfer to ASM Nigeria</div><div className="step-p">Send payment to First Bank — Acc No: <strong>2047664724</strong>, ASM Nigeria.</div></div></div>
-                <div className="step-card"><div className="step-n">3</div><div><div className="step-h">Upload your receipt</div><div className="step-p">Attach your bank receipt/teller when you register or submit your abstract — the admin confirms it from your account, no separate email needed.</div></div></div>
+                <div className="step-card"><div className="step-n">2</div><div><div className="step-h">Transfer to ASM Nigeria</div><div className="step-p">Send payment to First Bank, Acc No: <strong>2047664724</strong>, ASM Nigeria.</div></div></div>
+                <div className="step-card"><div className="step-n">3</div><div><div className="step-h">Upload your receipt</div><div className="step-p">Attach your bank receipt/teller when you register or submit your abstract. The admin confirms it from your account, no separate email needed.</div></div></div>
               </Reveal>
             </div>
           </div>
@@ -1443,7 +1440,7 @@ export function LandingPage() {
               <span className="caption eyebrow" style={{ color: "var(--red)" }}>Accommodation</span>
               <h2 className="headline" id="accomm-heading">Accommodation Options<br />in Abuja</h2>
               <div className="rule" />
-              <p className="body-lg">From budget dormitory to luxury apartments — options to suit every traveller.</p>
+              <p className="body-lg">From budget dormitory to luxury apartments, there are options to suit every traveller.</p>
             </Reveal>
             <div className="accomm-grid">
               {ACCOMMODATIONS.map((a, i) => (
@@ -1493,7 +1490,7 @@ export function LandingPage() {
               <Reveal delay={80} className="venue-facts">
                 <div className="vf-card"><div className="vf-label">📍 Address</div><div className="vf-val">Conference Centre, Besides the Library,<br />Opposite the Convocation Square,<br /><strong style={{ color: "var(--gold)" }}>National Open University of Nigeria (NOUN)</strong><br />Abuja Headquarters, FCT</div></div>
                 <div className="vf-card"><div className="vf-label">📅 Dates</div><div className="vf-val"><strong style={{ color: "#fff" }}>22nd – 25th November 2026</strong><br /><span style={{ fontSize: 13, color: "rgba(255,255,255,.5)" }}>4 full days of science and dialogue</span></div></div>
-                <div className="vf-card"><div className="vf-label">🌐 Format</div><div className="vf-val"><strong style={{ color: "var(--gold)" }}>HYBRID</strong> — Attend in Abuja or join virtually from anywhere in the world</div></div>
+                <div className="vf-card"><div className="vf-label">🌐 Format</div><div className="vf-val"><strong style={{ color: "var(--gold)" }}>HYBRID</strong>: Attend in Abuja or join virtually from anywhere in the world</div></div>
               </Reveal>
               <Reveal delay={160} className="map-placeholder">
                 <div className="mp-icon" aria-hidden="true">🗺️</div>
@@ -1577,7 +1574,7 @@ export function LandingPage() {
                   <div className="sec-row"><span>✉️</span><a href={`mailto:${SECRETARIAT_EMAIL}`}>{SECRETARIAT_EMAIL}</a></div>
                   <div className="sec-member-label">Become a Member</div>
                   <div className="sec-row"><span>🌐</span><a href="https://asm.org/membership" target="_blank" rel="noopener noreferrer">asm.org/membership</a></div>
-                  <p className="sec-member-note">Subscribe to Global Outreach membership — free of cost for Nigeria and other LMICs.</p>
+                  <p className="sec-member-note">Subscribe to Global Outreach membership, free of cost for Nigeria and other LMICs.</p>
                   <div style={{ marginTop: 20 }}>
                     <button className="btn btn-secondary btn-block" onClick={openContactModal}>✉️ Send a Message</button>
                   </div>
@@ -1599,7 +1596,7 @@ export function LandingPage() {
               <p className="body-lg" style={{ color: "rgba(255,255,255,.7)" }}>
                 ASM Nigeria 2026 brings together researchers, clinicians, policymakers, and industry
                 leaders from across Nigeria and beyond. Partnering with the conference puts your
-                organization in front of this community — through exhibition space, brand visibility,
+                organization in front of this community through exhibition space, brand visibility,
                 and direct engagement with the next generation of microbial scientists.
               </p>
             </Reveal>
@@ -1677,7 +1674,7 @@ export function LandingPage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/brand/asm-logo.png"
-                  alt="ASM — Microbes Make Our World"
+                  alt="ASM: Microbes Make Our World"
                   style={{ height: 36, width: "auto", objectFit: "contain", filter: "brightness(0) invert(1)", marginBottom: 12, display: "block" }}
                 />
                 <div className="fb-tagline">One Health. One Future. One Scientific Community.</div>

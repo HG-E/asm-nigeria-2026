@@ -22,7 +22,7 @@ export function SpeakersPage() {
             <div className="rule" />
             <p className="body-lg" style={{ color: "rgba(255,255,255,.85)", maxWidth: 640 }}>
               The researchers, administrators, and innovators shaping four days of One Health
-              science at ASM Nigeria 2026 — read their full profiles below, or{" "}
+              science at ASM Nigeria 2026. Read their full profiles below, or{" "}
               <Link href="/#registration" style={{ color: "var(--gold)" }}>
                 register to meet them in Abuja
               </Link>
@@ -82,7 +82,7 @@ export function SpeakersPage() {
           <Reveal className="sp-closing-inner">
             <h2 className="headline" style={{ color: "#fff" }}>Hear From Them In Person</h2>
             <p className="body-lg" style={{ color: "rgba(255,255,255,.85)" }}>
-              Join ASM Nigeria 2026 — 22–25 November, Abuja — for keynotes, plenaries, and
+              Join ASM Nigeria 2026 (22–25 November, Abuja) for keynotes, plenaries, and
               subtheme sessions with every speaker above.
             </p>
             <div className="hero-actions" style={{ justifyContent: "center" }}>
@@ -101,7 +101,7 @@ export function SpeakersPage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/brand/asm-logo.png"
-                  alt="ASM — Microbes Make Our World"
+                  alt="ASM: Microbes Make Our World"
                   style={{ height: 36, width: "auto", objectFit: "contain", filter: "brightness(0) invert(1)", marginBottom: 12, display: "block" }}
                 />
                 <div className="fb-tagline">One Health. One Future. One Scientific Community.</div>

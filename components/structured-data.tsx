@@ -66,7 +66,7 @@ export function ConferenceEventJsonLd() {
   const data = {
     "@context": "https://schema.org",
     "@type": "Event",
-    name: "Maiden American Society for Microbiology Nigeria Conference 2026 — One Health in Action",
+    name: "Maiden American Society for Microbiology Nigeria Conference 2026: One Health in Action",
     description:
       "The Maiden American Society for Microbiology Nigeria Conference, themed 'One Health in Action: Advancing Microbial Science for Human, Animal, Environmental, and Global Health.' A national platform for scientific exchange in microbiology, antimicrobial resistance, and One Health research.",
     startDate: "2026-11-22T09:00:00+01:00",
@@ -141,7 +141,7 @@ export function FaqJsonLd() {
       },
       {
         q: "How do I confirm my payment was received?",
-        a: "After making your bank transfer to First Bank (Acc: 2047664724, ASM Nigeria), attach your receipt when you register or submit your abstract — no separate email needed. The admin confirms it from your account within 2–3 working days.",
+        a: "After making your bank transfer to First Bank (Acc: 2047664724, ASM Nigeria), attach your receipt when you register or submit your abstract. No separate email is needed. The admin confirms it from your account within 2–3 working days.",
       },
       {
         q: "Can I submit more than one abstract?",
