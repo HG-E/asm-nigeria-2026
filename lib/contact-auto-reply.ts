@@ -8,13 +8,13 @@ const SUBMISSION_PORTAL_NOTE =
 
 const AUTO_REPLIES: Record<string, string> = {
   "Abstract Submission": `
-    <p>Early abstracts are due <strong>August 30, 2026</strong>, and the final deadline is
-    <strong>November 2, 2026</strong>. The processing fee is ₦3,000 (or $5 USD).</p>
+    <p>The abstract submission deadline is <strong>November 2, 2026</strong>. The processing
+    fee is ₦3,000 (or $5 USD).</p>
     <p>${SUBMISSION_PORTAL_NOTE}</p>
   `,
   "Registration Help": `
     <p>Conference registration (attending the event itself) is separate from abstract
-    submission. Early/Regular registration closes <strong>October 22, 2026</strong> — see the
+    submission. Early/Regular registration has closed; Late registration is open now — see the
     registration section on the conference website for current rates and how to register.</p>
   `,
   "Payment Confirmation": `

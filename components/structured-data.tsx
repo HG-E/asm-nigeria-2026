@@ -133,7 +133,7 @@ export function FaqJsonLd() {
       },
       {
         q: "What is the difference between Early and Late registration?",
-        a: "Early/Regular registration is available until October 22, 2026, and offers significantly lower rates (e.g., ASM Members ₦25,000 vs ₦30,000 late). Registering early saves you money and helps the organizers plan effectively. We strongly recommend registering before October 22.",
+        a: "Early/Regular registration ran until October 22, 2026 at a lower rate (e.g., ASM Members ₦25,000 vs ₦30,000 late). After that date, Late registration rates apply right up to the conference.",
       },
       {
         q: "What is the Pre-Conference Hands-On Workshop?",

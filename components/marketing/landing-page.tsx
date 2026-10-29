@@ -22,6 +22,11 @@ const EARLY_DEADLINE = new Date("2026-08-30T22:59:59+00:00").getTime()
 // this takes over as the banner/badge shown, so the site's own urgency
 // messaging never silently goes quiet during the week that matters most.
 const FINAL_DEADLINE = new Date("2026-11-02T22:59:59+00:00").getTime()
+// Must match REGISTRATION_PERIOD_CUTOFF in lib/registration-fees.ts exactly
+// -- kept as its own constant rather than imported, per this file's existing
+// "stays fully static" convention (see that file's own comment), the same
+// way EARLY_DEADLINE/FINAL_DEADLINE above are local constants too.
+const REGISTRATION_CUTOFF = new Date("2026-10-22T23:59:59+01:00").getTime()
 
 function pad(n: number) {
   return String(Math.max(0, n)).padStart(2, "0")
@@ -238,7 +243,7 @@ const FAQS = [
   { q: "Who can attend the ASM Nigeria Conference?", a: "The conference is open to microbiologists, researchers, clinicians, veterinarians, environmental scientists, public health professionals, students, policymakers, industry experts, and One Health stakeholders from Nigeria and beyond." },
   { q: "Can I attend online?", a: "Yes! The conference is hybrid. Local online participants pay ₦25,000 (early rate) and foreign online participants pay $25 USD. You'll receive a link to the virtual platform after registration is confirmed." },
   { q: "What is the abstract submission fee and what does it cover?", a: <>The abstract processing fee is ₦3,000 (or $5 USD). This is separate from your conference registration fee. Payment should be made to the ASM Nigeria account at First Bank (2047664724) before or alongside your abstract submission via the <Link href="/register">official portal</Link>.</> },
-  { q: "What is the difference between Early and Late registration?", a: "Early/Regular registration is available until October 22, 2026, and offers significantly lower rates (e.g., ASM Members ₦25,000 vs ₦30,000 late). Registering early saves you money and helps the organizers plan effectively. We strongly recommend registering before October 22." },
+  { q: "What is the difference between Early and Late registration?", a: "Early/Regular registration ran until October 22, 2026 at a lower rate (e.g., ASM Members ₦25,000 vs ₦30,000 late). After that date, Late registration rates apply right up to the conference." },
   { q: "What is the Pre-Conference Hands-On Workshop?", a: "The pre-conference workshop on November 22 is an additional paid session (₦8,000) offering practical, skills-based training. It is particularly valuable for students and early-career researchers and requires separate registration." },
   { q: "How do I confirm my payment was received?", a: <>After making your bank transfer to First Bank (Acc: 2047664724, ASM Nigeria), attach your receipt when you register or submit your abstract — no separate email needed. The admin confirms it from your account within 2–3 working days.</> },
   { q: "Can I submit more than one abstract?", a: "Yes, you may submit multiple abstracts. Each abstract requires a separate processing fee of ₦3,000. Each submission must meet all guidelines and address one or two of the five stated sub-themes." },
@@ -491,6 +496,7 @@ const EMPTY_CONTACT_FORM: ContactFormState = { name: "", email: "", subject: "Ge
 export function LandingPage() {
   const [showBackToTop, setShowBackToTop] = useState(false)
   const [regTab, setRegTab] = useState<"early" | "late">("early")
+  const [registrationClosed, setRegistrationClosed] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [openCommittee, setOpenCommittee] = useState<number | null>(null)
   const [openTheme, setOpenTheme] = useState<number | null>(null)
@@ -524,6 +530,19 @@ export function LandingPage() {
     return () => {
       document.documentElement.style.scrollBehavior = ""
     }
+  }, [])
+
+  // Defaults the fee table to whichever period is actually current, once, on
+  // mount -- found showing "Early/Regular" (all early-bird pricing) as the
+  // selected tab a week after early registration had already closed, next to
+  // copy still saying "Register early and save." A visitor manually
+  // switching tabs afterward is unaffected -- this only sets the default.
+  useEffect(() => {
+    if (Date.now() <= REGISTRATION_CUTOFF) return
+    // Deferred to a callback rather than an unconditional setState in the
+    // effect body -- see the identical pattern (and reasoning) in Reveal.
+    const frame = requestAnimationFrame(() => setRegTab("late"))
+    return () => cancelAnimationFrame(frame)
   }, [])
 
   // Dismissal is per-deadline (keyed to the date in the banner copy) so a
@@ -572,6 +591,7 @@ export function LandingPage() {
       setFinalCountdown(splitCountdown(finalRemaining))
       setFinalExpired(finalRemaining <= 0)
       setFinalDaysLeft(Math.max(0, Math.ceil(finalRemaining / 86400000)))
+      setRegistrationClosed(now > REGISTRATION_CUTOFF)
     }
     tick()
     const id = setInterval(tick, 1000)
@@ -1232,7 +1252,13 @@ export function LandingPage() {
               <span className="caption eyebrow" style={{ color: "var(--red)" }}>Registration &amp; Fees</span>
               <h2 className="headline" id="reg-heading">Secure Your Place</h2>
               <div className="rule" />
-              <p className="body-lg">Early registration closes <strong>October 22, 2026</strong>. Register early and save.</p>
+              <p className="body-lg">
+                {registrationClosed ? (
+                  <>Early/Regular registration has closed. <strong>Late registration</strong> is now open.</>
+                ) : (
+                  <>Early registration closes <strong>October 22, 2026</strong>. Register early and save.</>
+                )}
+              </p>
             </Reveal>
             <div style={{ marginTop: 40 }}>
               <div className="reg-switcher" role="tablist" aria-label="Registration period">
@@ -1269,12 +1295,19 @@ export function LandingPage() {
                   </table>
                 </div>
               </Reveal>
-              <Reveal>
-                <div className="reg-alert" role="note">
-                  <span style={{ fontSize: 22, flexShrink: 0 }}>💡</span>
-                  <div><strong>Save money:</strong> Register before October 22, 2026 for Early/Regular rates. Undergraduate students get the best rate — only ₦5,000 early.</div>
-                </div>
-              </Reveal>
+              {/* Only shown while the saving is still actually available --
+                  once Early/Regular has closed there's no equivalent tip for
+                  Late rates (they only go up from here), so the box just
+                  disappears rather than telling someone to "save money" by
+                  registering before a date that's already passed. */}
+              {!registrationClosed && (
+                <Reveal>
+                  <div className="reg-alert" role="note">
+                    <span style={{ fontSize: 22, flexShrink: 0 }}>💡</span>
+                    <div><strong>Save money:</strong> Register before October 22, 2026 for Early/Regular rates. Undergraduate students get the best rate — only ₦5,000 early.</div>
+                  </div>
+                </Reveal>
+              )}
               <Reveal>
                 <div className="reg-cta">
                   <Link href="/register-conference" className="btn btn-primary btn-lg">
