@@ -868,6 +868,17 @@ export function LandingPage() {
                 Animal &amp; Environmental Health
               </div>
               <div className="hero-meta" role="list">
+                {/* Hero-native readout of the same confCountdown that drives
+                    the full "Conference Countdown" card just below the hero
+                    -- that card keeps the deadline breakdown, this row puts
+                    the live number where it's seen immediately, in the same
+                    compact row style as the facts below it. */}
+                <div className="hero-meta-row hero-countdown-row" role="listitem" aria-live="polite">
+                  <div className="hero-meta-icon" aria-hidden="true">⏱️</div>
+                  <span>
+                    <strong>{confCountdown.d}d {confCountdown.h}h {confCountdown.m}m</strong> to Abuja
+                  </span>
+                </div>
                 <div className="hero-meta-row" role="listitem">
                   <div className="hero-meta-icon" aria-hidden="true">📅</div>
                   <span><strong>22nd – 25th November, 2026</strong></span>
