@@ -12,7 +12,7 @@ import { toHtml } from "@/lib/rich-text"
 // based layout with inline styles throughout, deliberately -- this is the
 // one HTML dialect virtually every email client (Outlook included) renders
 // consistently; flexbox/grid/external CSS are not reliable here.
-function wrapEmailHtml(bodyHtml: string): string {
+export function wrapEmailHtml(bodyHtml: string): string {
   return `
     <div style="background:#eef1f6; padding:32px 16px; margin:0;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:10px; overflow:hidden; border:1px solid #e2e5ea;">
