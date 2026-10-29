@@ -925,18 +925,26 @@ export function LandingPage() {
                   further down on desktop, see #travel-grant) shifted into
                   the hero itself here, in the space that otherwise sits
                   empty below the countdown bar on taller phones. Same
-                  mailto link and content, just the compact pill treatment
-                  instead of the full icon/title/paragraph/button card --
-                  there usually isn't room for that card's full height here
-                  too. */}
-              <a
-                href={`mailto:${SECRETARIAT_EMAIL}?subject=Professor%20KIT%20Eniola%20Travel%20Grant%20Enquiry`}
-                className="hero-grant-strip"
-              >
-                <span aria-hidden="true">✈️</span>
-                <span><strong>Early-Career Travel Grant</strong></span>
-                <span className="hero-grant-cta">Enquire →</span>
-              </a>
+                  content and the same box shape as the standalone card
+                  (icon, eyebrow, title, description, button) -- its own
+                  classes (not travel-grant-card/tg-*) so it can be sized
+                  compactly for the hero without touching that section's
+                  desktop styling. */}
+              <Reveal className="hero-grant-card">
+                <span className="hero-grant-icon" aria-hidden="true">✈️</span>
+                <span className="hero-grant-eyebrow">Travel Support</span>
+                <h3 className="hero-grant-title" id="hero-grant-heading">Professor KIT Eniola Travel Grant</h3>
+                <p className="hero-grant-desc">
+                  For Early Career Microbiologists. Travel support available for eligible early
+                  career participants. Selection criteria apply.
+                </p>
+                <a
+                  href={`mailto:${SECRETARIAT_EMAIL}?subject=Professor%20KIT%20Eniola%20Travel%20Grant%20Enquiry`}
+                  className="hero-grant-btn"
+                >
+                  ✉️ Enquire About the Grant
+                </a>
+              </Reveal>
             </div>
 
             {/* Desktop only (hidden on mobile via CSS) -- see
@@ -959,8 +967,8 @@ export function LandingPage() {
         {/* ═══ TRAVEL GRANT ═══ */}
         {/* Desktop only now (hidden on mobile via CSS) -- this section's
             content is shifted into the hero itself on mobile instead
-            (hero-grant-strip, right after the countdown bar), compactly,
-            so this full card isn't duplicated underneath it. */}
+            (.hero-grant-card, right after the countdown bar), in the same
+            box form, so this card isn't duplicated underneath it. */}
         <section id="travel-grant" className="section-sm" aria-labelledby="travel-grant-heading">
           <div className="wrap">
             <Reveal className="travel-grant-card">

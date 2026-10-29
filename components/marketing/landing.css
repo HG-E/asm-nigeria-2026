@@ -759,10 +759,12 @@
 .asm-landing .hero-countdown-strip {
   display: none;
 }
-/* Mobile-only compact Travel Grant pill -- see the 768px block for the rule
-   that reveals and styles it. Hidden on desktop, which keeps the full
-   #travel-grant section further down the page instead. */
-.asm-landing .hero-grant-strip {
+/* Mobile-only Travel Grant card, same box shape as #travel-grant's own
+   card (icon/eyebrow/title/description/button) just sized for the hero --
+   see the 768px block for the rule that reveals and sizes it. Hidden on
+   desktop, which keeps the full #travel-grant section further down the
+   page instead. */
+.asm-landing .hero-grant-card {
   display: none;
 }
 .asm-landing .hero-actions {
@@ -3066,40 +3068,63 @@
     color: var(--gold);
     font-variant-numeric: tabular-nums;
   }
-  /* Same flush-with-the-buttons treatment as the countdown strip above,
-     just a plain white/blue pill instead of gold -- keeps the two visually
-     distinct (countdown = urgency, grant = an opportunity) while still
-     reading as part of the same stack. The whole pill is the mailto link
-     (shrink-to-fit icon/copy either side of flex:1 so "Enquire" stays
-     pinned right regardless of how the middle text wraps). */
-  .asm-landing .hero-grant-strip {
+  /* Same box shape as the standalone #travel-grant card (icon circle,
+     eyebrow, title, description, button, stacked and centered) just scaled
+     down to fit the hero -- a miniature of the real card, not a
+     reinterpretation of it, since the request was specifically to keep
+     that box form rather than the slimmer pill this replaced. */
+  .asm-landing .hero-grant-card {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 6px;
+    text-align: center;
+    gap: 3px;
     width: 100%;
     margin-top: 6px;
-    padding: 7px 10px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    font-size: 11.5px;
-    line-height: 1.3;
-    white-space: nowrap;
-    color: rgba(255, 255, 255, 0.85);
+    padding: 10px 14px;
+    border-radius: 14px;
+    background: linear-gradient(120deg, var(--blue) 0%, var(--blue-d) 100%);
+    border: 1px solid rgba(245, 168, 0, 0.3);
   }
-  .asm-landing .hero-grant-strip > span:nth-child(2) {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .asm-landing .hero-grant-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
   }
-  .asm-landing .hero-grant-strip strong {
-    color: #fff;
-  }
-  .asm-landing .hero-grant-cta {
-    flex-shrink: 0;
+  .asm-landing .hero-grant-eyebrow {
+    font-size: 9px;
     font-weight: 700;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
     color: var(--gold);
-    white-space: nowrap;
+  }
+  .asm-landing .hero-grant-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+    margin: 0;
+  }
+  .asm-landing .hero-grant-desc {
+    font-size: 10px;
+    line-height: 1.3;
+    color: rgba(255, 255, 255, 0.72);
+    margin: 0;
+  }
+  .asm-landing .hero-grant-btn {
+    margin-top: 3px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #fff;
   }
   /* hero-right (desktop two-column layout) is still mobile-hidden as
      before; its mobile counterpart (the full "Conference Countdown" card,
@@ -3114,8 +3139,8 @@
     display: none;
   }
   /* The standalone Travel Grant section's content now lives inside the
-     hero itself (hero-grant-strip above), compactly, so the full card
-     below would just be a duplicate on mobile. */
+     hero itself (hero-grant-card above), so the full card below would
+     just be a duplicate on mobile. */
   .asm-landing #travel-grant {
     display: none;
   }
@@ -3169,10 +3194,25 @@
     padding: 5px 6px;
     gap: 2px 5px;
   }
-  .asm-landing .hero-grant-strip {
+  .asm-landing .hero-grant-card {
     margin-top: 4px;
-    padding: 5px 8px;
-    font-size: 10.5px;
+    padding: 8px 12px;
+    gap: 2px;
+  }
+  .asm-landing .hero-grant-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+  }
+  .asm-landing .hero-grant-title {
+    font-size: 12px;
+  }
+  .asm-landing .hero-grant-desc {
+    font-size: 9.5px;
+  }
+  .asm-landing .hero-grant-btn {
+    padding: 5px 12px;
+    font-size: 10px;
   }
 }
 @media (max-width: 480px) {
