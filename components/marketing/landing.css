@@ -273,6 +273,15 @@
 .asm-landing #urgency-bar .label strong {
   font-weight: 800;
 }
+.asm-landing .ub-text-short {
+  display: none;
+}
+.asm-landing .ub-seconds {
+  display: contents;
+}
+.asm-landing .btn-text-short {
+  display: none;
+}
 .asm-landing #urgency-bar .countdown-inline {
   display: flex;
   gap: 6px;
@@ -556,6 +565,14 @@
 }
 .asm-landing .hero-chip {
   margin-bottom: 24px;
+}
+.asm-landing .hero-chip-short {
+  display: none;
+}
+/* Mobile counterpart of .hero-right, hidden until the 768px breakpoint
+   below shows it (and hides .hero-right in its place). */
+.asm-landing .hero-card-mobile-wrap {
+  display: none;
 }
 .asm-landing .hero-title {
   color: #fff;
@@ -2728,9 +2745,61 @@
   .asm-landing .footer-grid {
     grid-template-columns: 1fr;
   }
+  /* A mobile app's top alert stays one thin row -- the old column stack
+     (label / countdown / suffix / CTA / close, each its own line) ran to
+     roughly five lines and alone pushed the hero almost 250px down the
+     page. ub-text-short/.ub-suffix below trade the spelled-out copy for
+     a compact version so everything still fits on one row. */
+  .asm-landing #urgency-bar {
+    padding: 6px 10px;
+  }
   .asm-landing #urgency-bar .inner {
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    row-gap: 4px;
+    column-gap: 5px;
+    justify-content: center;
+  }
+  .asm-landing .ub-text-full {
+    display: none;
+  }
+  .asm-landing .ub-text-short {
+    display: inline;
+  }
+  .asm-landing #urgency-bar .label {
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .asm-landing .ub-suffix {
+    display: none;
+  }
+  .asm-landing .ub-seconds {
+    display: none;
+  }
+  .asm-landing .countdown-inline {
+    gap: 2px;
+  }
+  .asm-landing .ci-box {
+    padding: 1px 4px;
+    font-size: 10.5px;
+    min-width: 19px;
+  }
+  .asm-landing .ci-sep {
+    font-size: 10.5px;
+  }
+  .asm-landing #urgency-bar a.bar-cta {
+    font-size: 10.5px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+  .asm-landing .bar-close {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    margin-left: 0;
+  }
+  .asm-landing .ticker {
+    display: none;
   }
   .asm-landing .hero-actions {
     flex-direction: column;
@@ -2745,14 +2814,144 @@
   .asm-landing .wrap {
     padding: 0 16px;
   }
-  /* On mobile the stacked hero content is often shorter than 100vh, so
-     centering it (the desktop behavior) leaves a dead gap between the nav
-     and the hero badge instead of the visible content starting right
-     after the nav. */
+  /* The hero used to stack hero-right (countdown card + stats) directly
+     underneath hero-left inside this same section, making #hero itself
+     about three mobile screens tall -- the opposite of the old assumption
+     above this block used to say ("often shorter than 100vh"), which is
+     why that min-height:auto/flex-start pairing existed. hero-right now
+     lives in its own section after #hero (see .hero-card-mobile-wrap
+     below) specifically so #hero can be sized to one screen and its
+     content centered the same way the desktop hero already is. 108px below
+     is the fixed chrome above #hero on mobile -- SiteHeader (68px, measured
+     directly) plus the now one-row urgency banner (~40px when a deadline
+     banner is showing; the ticker is hidden on mobile above) -- update this
+     constant if either of those ever changes height. */
   .asm-landing #hero {
-    min-height: auto;
-    align-items: flex-start;
-    padding: 28px 0 56px;
+    min-height: calc(100dvh - 112px);
+    align-items: center;
+    padding: 16px 0 20px;
+  }
+  .asm-landing .hero-chip {
+    margin-bottom: 10px;
+  }
+  .asm-landing .hero-chip-full {
+    display: none;
+  }
+  .asm-landing .hero-title {
+    margin-bottom: 6px;
+  }
+  .asm-landing .hero-tagline {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+  }
+  .asm-landing .one-health-badge {
+    margin-bottom: 12px;
+    padding: 5px 14px 5px 5px;
+  }
+  .asm-landing .hero-theme {
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    line-height: 1.35;
+  }
+  .asm-landing .hero-meta {
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .asm-landing .hero-meta-row {
+    font-size: 13px;
+  }
+  .asm-landing .hero-meta-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 13px;
+  }
+  .asm-landing .hero-actions .btn-lg {
+    padding: 13px 28px;
+    font-size: 15px;
+  }
+  /* The hero's own CTA row is the one place where two short pill buttons
+     side by side (the ub-text-short pattern again, for button labels)
+     reads as native-app and saves ~55px of stacked-button height; the
+     other three .hero-actions usages on this page/Partners/Speakers are
+     closing CTAs with room to spare, so they keep the stacked, full-width
+     mobile layout above untouched. */
+  .asm-landing .hero-actions-primary {
+    flex-direction: row;
+    gap: 8px;
+  }
+  .asm-landing .hero-actions-primary .btn {
+    flex: 1;
+    width: auto;
+  }
+  .asm-landing .hero-actions-primary .btn-lg {
+    padding: 11px 10px;
+    font-size: 13px;
+  }
+  .asm-landing .btn-text-full {
+    display: none;
+  }
+  .asm-landing .btn-text-short {
+    display: inline;
+  }
+  /* hero-right (desktop two-column layout) vs. its mobile counterpart, a
+     standalone section right after #hero -- exactly one of the two is ever
+     shown. */
+  .asm-landing .hero-right {
+    display: none;
+  }
+  .asm-landing .hero-card-mobile-wrap {
+    display: block;
+    background: var(--blue-d);
+    padding-bottom: 40px;
+  }
+  .asm-landing .hero-card-mobile {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+}
+@media (max-width: 374px) {
+  /* Narrower than the smallest common modern phone width (iPhone SE and a
+     few older/budget Android widths land right around here). The theme
+     sentence and meta rows wrap onto extra lines at this width, which the
+     768px block's spacing alone can't absorb, so every margin in the hero
+     gets squeezed again here on top of it. .hero-title's own font-size
+     already drops to 36px via the pre-existing .display rule at 480px. */
+  .asm-landing #hero {
+    padding: 12px 0 16px;
+  }
+  .asm-landing .hero-chip {
+    margin-bottom: 6px;
+  }
+  .asm-landing .hero-title {
+    margin-bottom: 4px;
+  }
+  .asm-landing .hero-tagline {
+    margin-bottom: 6px;
+  }
+  .asm-landing .one-health-badge {
+    margin-bottom: 6px;
+    padding: 4px 12px 4px 4px;
+  }
+  .asm-landing .hero-theme {
+    padding: 8px 12px;
+    font-size: 12px;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  .asm-landing .hero-meta {
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  .asm-landing .hero-meta-row {
+    font-size: 12.5px;
+  }
+  .asm-landing .hero-meta-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
   }
 }
 @media (max-width: 480px) {

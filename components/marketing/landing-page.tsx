@@ -708,6 +708,44 @@ export function LandingPage() {
     showToast("✅ Message sent! We will respond within 2 working days.")
   }
 
+  // Rendered twice -- once inside .hero-right for the desktop two-column
+  // hero (unchanged), and once in a standalone section right after #hero,
+  // shown only on mobile (CSS picks exactly one per breakpoint; see
+  // .hero-right / .hero-card-mobile in landing.css). On mobile this content
+  // used to be stacked directly inside #hero, which is why the hero was
+  // three screens tall instead of one -- moving it to its own section lets
+  // #hero itself be sized to fit a single mobile screen, with this card as
+  // the natural next thing scrolled to rather than crammed above the fold.
+  // Defined once here so the two render sites can never drift apart.
+  const heroCountdownCard = (
+    <>
+      <div className="hero-card" role="complementary" aria-label="Conference countdown">
+        <div className="hero-card-header">
+          <span className="hch-icon" aria-hidden="true">⏱️</span>
+          <div>
+            <div className="hch-title">Conference Countdown</div>
+            <div className="hch-sub">22 November 2026 · Abuja, Nigeria</div>
+          </div>
+        </div>
+        <div className="hero-card-body">
+          <div className="countdown-grid" aria-live="polite" aria-label="Time until conference">
+            <div className="cd-box"><div className="cd-num">{confCountdown.d}</div><div className="cd-label">Days</div></div>
+            <div className="cd-box"><div className="cd-num">{confCountdown.h}</div><div className="cd-label">Hrs</div></div>
+            <div className="cd-box"><div className="cd-num">{confCountdown.m}</div><div className="cd-label">Mins</div></div>
+            <div className="cd-box"><div className="cd-num">{confCountdown.s}</div><div className="cd-label">Secs</div></div>
+          </div>
+          <div className="hero-card-divider" />
+          <div className="hero-card-stat"><span className="hcs-label">📅 Abstract Early Deadline</span><span className="hcs-val">Aug 30, 2026</span></div>
+          <div className="hero-card-stat"><span className="hcs-label">📅 Final Abstract Deadline</span><span className="hcs-val">Nov 2, 2026</span></div>
+          <div className="hero-card-stat"><span className="hcs-label">💳 Early Registration Cutoff</span><span className="hcs-val">Oct 22, 2026</span></div>
+          <div className="hero-card-stat"><span className="hcs-label">🎤 Presentation Mode</span><span className="hcs-val">Oral / Poster</span></div>
+          <div className="hero-card-stat"><span className="hcs-label">🌐 Format</span><span className="hcs-val">Hybrid</span></div>
+        </div>
+      </div>
+      <div className="hero-powered-by hero-powered-by-right">Powered by the ASM Country Ambassador to Nigeria Project Fund</div>
+    </>
+  )
+
   return (
     <div className="asm-landing">
       {/* ═══ URGENCY BANNER ═══ */}
@@ -715,7 +753,10 @@ export function LandingPage() {
         <div id="urgency-bar" role="alert" aria-label="Urgent deadline notice">
           <div className="inner">
             <span className="label">
-              🚨 <strong>Early Abstract Submission closes August 30, 2026</strong> — only
+              <span className="ub-text-full">
+                🚨 <strong>Early Abstract Submission closes August 30, 2026</strong> — only
+              </span>
+              <span className="ub-text-short">🚨 <strong>Aug 30</strong></span>
             </span>
             <div className="countdown-inline" aria-live="polite">
               <span className="ci-box">{earlyCountdown.d}</span>
@@ -724,12 +765,15 @@ export function LandingPage() {
               <span className="ci-sep">h</span>
               <span className="ci-box">{earlyCountdown.m}</span>
               <span className="ci-sep">m</span>
-              <span className="ci-box">{earlyCountdown.s}</span>
-              <span className="ci-sep">s</span>
+              <span className="ub-seconds">
+                <span className="ci-box">{earlyCountdown.s}</span>
+                <span className="ci-sep">s</span>
+              </span>
             </div>
-            <span className="label">left</span>
-            <Link href="/register" className="bar-cta">
-              Submit Now →
+            <span className="label ub-suffix">left</span>
+            <Link href="/register" className="bar-cta" aria-label="Submit abstract now">
+              <span className="ub-text-full">Submit Now →</span>
+              <span className="ub-text-short">Submit →</span>
             </Link>
             <button type="button" className="bar-close" onClick={dismissBanner} aria-label="Dismiss this notice">
               ✕
@@ -744,7 +788,10 @@ export function LandingPage() {
         <div id="urgency-bar" role="alert" aria-label="Final deadline notice">
           <div className="inner">
             <span className="label">
-              🚨 <strong>Final Abstract Submission closes November 2, 2026</strong> — only
+              <span className="ub-text-full">
+                🚨 <strong>Final Abstract Submission closes November 2, 2026</strong> — only
+              </span>
+              <span className="ub-text-short">🚨 <strong>Nov 2</strong></span>
             </span>
             <div className="countdown-inline" aria-live="polite">
               <span className="ci-box">{finalCountdown.d}</span>
@@ -753,12 +800,15 @@ export function LandingPage() {
               <span className="ci-sep">h</span>
               <span className="ci-box">{finalCountdown.m}</span>
               <span className="ci-sep">m</span>
-              <span className="ci-box">{finalCountdown.s}</span>
-              <span className="ci-sep">s</span>
+              <span className="ub-seconds">
+                <span className="ci-box">{finalCountdown.s}</span>
+                <span className="ci-sep">s</span>
+              </span>
             </div>
-            <span className="label">left — last chance to submit</span>
-            <Link href="/register" className="bar-cta">
-              Submit Now →
+            <span className="label ub-suffix">left — last chance to submit</span>
+            <Link href="/register" className="bar-cta" aria-label="Submit abstract now">
+              <span className="ub-text-full">Submit Now →</span>
+              <span className="ub-text-short">Submit →</span>
             </Link>
             <button type="button" className="bar-close" onClick={dismissFinalBanner} aria-label="Dismiss this notice">
               ✕
@@ -794,7 +844,13 @@ export function LandingPage() {
               <div className="hero-chip">
                 <span className="chip chip-white">
                   <span className="dot" />
-                  🇳🇬 Maiden American Society for Microbiology Nigeria Conference · Abuja 2026
+                  {/* Full name on desktop; a shorter line on mobile so the
+                      pill badge reads as one line instead of wrapping to
+                      three and losing its pill shape. */}
+                  <span className="hero-chip-full">
+                    🇳🇬 Maiden American Society for Microbiology Nigeria Conference · Abuja 2026
+                  </span>
+                  <span className="hero-chip-short">🇳🇬 ASM Nigeria Conference · Abuja 2026</span>
                 </span>
               </div>
               <h1 className="display hero-title">
@@ -825,40 +881,34 @@ export function LandingPage() {
                   <span><strong>Hybrid</strong> — In-person + Online</span>
                 </div>
               </div>
-              <div className="hero-actions">
-                <a href="#registration" className="btn btn-primary btn-lg">🎟️ Register Now</a>
-                <Link href="/register" className="btn btn-secondary btn-lg">📄 Submit Abstract</Link>
+              <div className="hero-actions hero-actions-primary">
+                <a href="#registration" className="btn btn-primary btn-lg">
+                  <span className="btn-text-full">🎟️ Register Now</span>
+                  <span className="btn-text-short">🎟️ Register</span>
+                </a>
+                <Link href="/register" className="btn btn-secondary btn-lg">
+                  <span className="btn-text-full">📄 Submit Abstract</span>
+                  <span className="btn-text-short">📄 Submit</span>
+                </Link>
               </div>
             </div>
 
+            {/* Desktop only (hidden on mobile via CSS) -- see
+                heroCountdownCard above and its mobile counterpart just
+                below, outside #hero. */}
             <div className="hero-right">
-              <div className="hero-card" role="complementary" aria-label="Conference countdown">
-                <div className="hero-card-header">
-                  <span className="hch-icon" aria-hidden="true">⏱️</span>
-                  <div>
-                    <div className="hch-title">Conference Countdown</div>
-                    <div className="hch-sub">22 November 2026 · Abuja, Nigeria</div>
-                  </div>
-                </div>
-                <div className="hero-card-body">
-                  <div className="countdown-grid" aria-live="polite" aria-label="Time until conference">
-                    <div className="cd-box"><div className="cd-num">{confCountdown.d}</div><div className="cd-label">Days</div></div>
-                    <div className="cd-box"><div className="cd-num">{confCountdown.h}</div><div className="cd-label">Hrs</div></div>
-                    <div className="cd-box"><div className="cd-num">{confCountdown.m}</div><div className="cd-label">Mins</div></div>
-                    <div className="cd-box"><div className="cd-num">{confCountdown.s}</div><div className="cd-label">Secs</div></div>
-                  </div>
-                  <div className="hero-card-divider" />
-                  <div className="hero-card-stat"><span className="hcs-label">📅 Abstract Early Deadline</span><span className="hcs-val">Aug 30, 2026</span></div>
-                  <div className="hero-card-stat"><span className="hcs-label">📅 Final Abstract Deadline</span><span className="hcs-val">Nov 2, 2026</span></div>
-                  <div className="hero-card-stat"><span className="hcs-label">💳 Early Registration Cutoff</span><span className="hcs-val">Oct 22, 2026</span></div>
-                  <div className="hero-card-stat"><span className="hcs-label">🎤 Presentation Mode</span><span className="hcs-val">Oral / Poster</span></div>
-                  <div className="hero-card-stat"><span className="hcs-label">🌐 Format</span><span className="hcs-val">Hybrid</span></div>
-                </div>
-              </div>
-              <div className="hero-powered-by hero-powered-by-right">Powered by the ASM Country Ambassador to Nigeria Project Fund</div>
+              {heroCountdownCard}
             </div>
           </div>
         </section>
+
+        {/* Mobile only (hidden on desktop via CSS): the same countdown card
+            as hero-right above, but as its own section so #hero itself can
+            be sized to fit one mobile screen instead of stacking this
+            underneath hero-left inside it. */}
+        <div className="hero-card-mobile-wrap" aria-hidden={false}>
+          <div className="hero-card-mobile">{heroCountdownCard}</div>
+        </div>
 
         {/* ═══ STATS BAR ═══ */}
         <div id="stats" role="region" aria-label="Key conference figures">
