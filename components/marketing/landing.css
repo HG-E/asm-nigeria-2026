@@ -528,11 +528,15 @@
     padding: 3px;
     box-sizing: content-box;
   }
+  /* 72px, not 64px -- that's the tab bar's real measured height (6px
+     padding top/bottom + icon/label content + env(safe-area-inset-bottom)
+     on notched devices), and the 64px guess here was shortchanging it by
+     just enough to tuck the footer's last line under the bar. */
   .asm-landing {
-    padding-bottom: 64px;
+    padding-bottom: 80px;
   }
   .asm-landing .back-to-top {
-    bottom: calc(64px + 12px);
+    bottom: calc(72px + 12px);
   }
 }
 
