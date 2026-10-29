@@ -921,6 +921,22 @@ export function LandingPage() {
                 </strong>
                 <span>until Abuja 2026</span>
               </div>
+              {/* Mobile only -- the Travel Grant block (its own full section
+                  further down on desktop, see #travel-grant) shifted into
+                  the hero itself here, in the space that otherwise sits
+                  empty below the countdown bar on taller phones. Same
+                  mailto link and content, just the compact pill treatment
+                  instead of the full icon/title/paragraph/button card --
+                  there usually isn't room for that card's full height here
+                  too. */}
+              <a
+                href={`mailto:${SECRETARIAT_EMAIL}?subject=Professor%20KIT%20Eniola%20Travel%20Grant%20Enquiry`}
+                className="hero-grant-strip"
+              >
+                <span aria-hidden="true">✈️</span>
+                <span><strong>Early-Career Travel Grant</strong></span>
+                <span className="hero-grant-cta">Enquire →</span>
+              </a>
             </div>
 
             {/* Desktop only (hidden on mobile via CSS) -- see
@@ -941,10 +957,11 @@ export function LandingPage() {
         </div>
 
         {/* ═══ TRAVEL GRANT ═══ */}
-        {/* Moved up to sit directly after the hero (used to come after the
-            stats bar) -- a real, specific benefit belongs closer to the top
-            than three generic numbers do. */}
-        <section id="travel-grant" className="section-sm travel-grant-tight" aria-labelledby="travel-grant-heading">
+        {/* Desktop only now (hidden on mobile via CSS) -- this section's
+            content is shifted into the hero itself on mobile instead
+            (hero-grant-strip, right after the countdown bar), compactly,
+            so this full card isn't duplicated underneath it. */}
+        <section id="travel-grant" className="section-sm" aria-labelledby="travel-grant-heading">
           <div className="wrap">
             <Reveal className="travel-grant-card">
               <div className="tg-icon" aria-hidden="true">✈️</div>

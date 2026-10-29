@@ -759,6 +759,12 @@
 .asm-landing .hero-countdown-strip {
   display: none;
 }
+/* Mobile-only compact Travel Grant pill -- see the 768px block for the rule
+   that reveals and styles it. Hidden on desktop, which keeps the full
+   #travel-grant section further down the page instead. */
+.asm-landing .hero-grant-strip {
+  display: none;
+}
 .asm-landing .hero-actions {
   display: flex;
   gap: 12px;
@@ -2815,31 +2821,6 @@
   .asm-landing .section-sm {
     padding: 44px 0;
   }
-  /* Now sits directly under the hero (moved up from after the stats bar),
-     so the usual 44px top padding would just put the old dead-space
-     problem right back -- tight at the top so it reads as a continuation
-     of the hero, normal spacing at the bottom before the stats bar. The
-     card itself also loses some of its desktop-scaled padding/gap so it
-     feels sized for this tighter slot instead of like a full standalone
-     section. */
-  .asm-landing .travel-grant-tight {
-    padding: 20px 0 36px;
-  }
-  .asm-landing .travel-grant-tight .travel-grant-card {
-    gap: 14px;
-    padding: 22px 20px;
-  }
-  .asm-landing .travel-grant-tight .tg-icon {
-    width: 56px;
-    height: 56px;
-    font-size: 24px;
-  }
-  .asm-landing .travel-grant-tight .tg-title {
-    font-size: 18px;
-  }
-  .asm-landing .travel-grant-tight .tg-desc {
-    font-size: 13px;
-  }
   .asm-landing .why-grid,
   .asm-landing .speakers-row,
   .asm-landing .abstract-grid,
@@ -2951,7 +2932,7 @@
   .asm-landing #hero {
     min-height: calc(100dvh - 217px);
     align-items: flex-start;
-    padding: 38px 0 12px;
+    padding: 38px 0 6px;
   }
   /* The pill badge above the headline was the single biggest chunk of
      "dead" space before the first real word of the hero -- gone on mobile,
@@ -2969,7 +2950,7 @@
   .asm-landing .hero-tagline {
     font-size: 11px;
     letter-spacing: 1.5px;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
   /* Strip the pill/ring treatment down to one plain text line (ohb-break
      hidden, ohb-sep shown -- see the base rules above) instead of a boxed,
@@ -2979,7 +2960,7 @@
     background: none;
     border: none;
     padding: 0;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
   .asm-landing .ohb-ring {
     display: inline;
@@ -2999,22 +2980,22 @@
     font-size: 11px;
   }
   .asm-landing .hero-theme {
-    margin-bottom: 4px;
-    padding: 5px 10px;
-    font-size: 11.5px;
-    line-height: 1.25;
+    margin-bottom: 3px;
+    padding: 4px 9px;
+    font-size: 11px;
+    line-height: 1.2;
   }
   .asm-landing .hero-meta {
-    gap: 2px;
-    margin-bottom: 5px;
+    gap: 1px;
+    margin-bottom: 4px;
   }
   .asm-landing .hero-meta-row {
-    font-size: 13px;
+    font-size: 12px;
   }
   .asm-landing .hero-meta-icon {
-    width: 24px;
-    height: 24px;
-    font-size: 13px;
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
   }
   /* Full address swapped for a shorter one that actually fits one line
      down to a 320px screen -- see hmr-loc-full/-short in the markup. The
@@ -3052,7 +3033,7 @@
     width: auto;
   }
   .asm-landing .hero-actions-primary .btn-lg {
-    padding: 11px 10px;
+    padding: 9px 10px;
     font-size: 13px;
   }
   .asm-landing .btn-text-full {
@@ -3085,6 +3066,41 @@
     color: var(--gold);
     font-variant-numeric: tabular-nums;
   }
+  /* Same flush-with-the-buttons treatment as the countdown strip above,
+     just a plain white/blue pill instead of gold -- keeps the two visually
+     distinct (countdown = urgency, grant = an opportunity) while still
+     reading as part of the same stack. The whole pill is the mailto link
+     (shrink-to-fit icon/copy either side of flex:1 so "Enquire" stays
+     pinned right regardless of how the middle text wraps). */
+  .asm-landing .hero-grant-strip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    margin-top: 6px;
+    padding: 7px 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    font-size: 11.5px;
+    line-height: 1.3;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .asm-landing .hero-grant-strip > span:nth-child(2) {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .asm-landing .hero-grant-strip strong {
+    color: #fff;
+  }
+  .asm-landing .hero-grant-cta {
+    flex-shrink: 0;
+    font-weight: 700;
+    color: var(--gold);
+    white-space: nowrap;
+  }
   /* hero-right (desktop two-column layout) is still mobile-hidden as
      before; its mobile counterpart (the full "Conference Countdown" card,
      with the deadline/format breakdown) is now hidden on mobile too --
@@ -3097,6 +3113,12 @@
   .asm-landing .hero-card-mobile-wrap {
     display: none;
   }
+  /* The standalone Travel Grant section's content now lives inside the
+     hero itself (hero-grant-strip above), compactly, so the full card
+     below would just be a duplicate on mobile. */
+  .asm-landing #travel-grant {
+    display: none;
+  }
 }
 @media (max-width: 374px) {
   /* Narrower than the smallest common modern phone width (iPhone SE and a
@@ -3106,7 +3128,7 @@
      gets squeezed again here on top of it. .hero-title's own font-size
      already drops to 36px via the pre-existing .display rule at 480px. */
   .asm-landing #hero {
-    padding: 28px 0 12px;
+    padding: 24px 0 4px;
   }
   .asm-landing .hero-title {
     margin-bottom: 2px;
@@ -3119,33 +3141,38 @@
     display: none;
   }
   .asm-landing .one-health-badge {
-    margin-bottom: 2px;
+    margin-bottom: 1px;
   }
   .asm-landing .ohb-text {
     font-size: 10.5px;
   }
   .asm-landing .hero-theme {
-    padding: 4px 8px;
+    padding: 3px 7px;
     font-size: 11px;
     line-height: 1.2;
-    margin-bottom: 2px;
+    margin-bottom: 1px;
   }
   .asm-landing .hero-meta {
-    gap: 2px;
-    margin-bottom: 3px;
+    gap: 1px;
+    margin-bottom: 2px;
   }
   .asm-landing .hero-meta-row {
-    font-size: 12.5px;
+    font-size: 11.5px;
   }
   .asm-landing .hero-meta-icon {
-    width: 20px;
-    height: 20px;
-    font-size: 11px;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
   }
   .asm-landing .hero-countdown-strip {
     font-size: 10px;
     padding: 5px 6px;
     gap: 2px 5px;
+  }
+  .asm-landing .hero-grant-strip {
+    margin-top: 4px;
+    padding: 5px 8px;
+    font-size: 10.5px;
   }
 }
 @media (max-width: 480px) {
