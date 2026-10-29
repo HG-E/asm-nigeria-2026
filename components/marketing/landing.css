@@ -2851,6 +2851,31 @@
   .asm-landing .section-sm {
     padding: 44px 0;
   }
+  /* Now sits directly under the hero (moved up from after the stats bar),
+     so the usual 44px top padding would just put the old dead-space
+     problem right back -- tight at the top so it reads as a continuation
+     of the hero, normal spacing at the bottom before the stats bar. The
+     card itself also loses some of its desktop-scaled padding/gap so it
+     feels sized for this tighter slot instead of like a full standalone
+     section. */
+  .asm-landing .travel-grant-tight {
+    padding: 20px 0 36px;
+  }
+  .asm-landing .travel-grant-tight .travel-grant-card {
+    gap: 14px;
+    padding: 22px 20px;
+  }
+  .asm-landing .travel-grant-tight .tg-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+  }
+  .asm-landing .travel-grant-tight .tg-title {
+    font-size: 18px;
+  }
+  .asm-landing .travel-grant-tight .tg-desc {
+    font-size: 13px;
+  }
   .asm-landing .why-grid,
   .asm-landing .speakers-row,
   .asm-landing .abstract-grid,
@@ -2964,7 +2989,7 @@
   .asm-landing #hero {
     min-height: calc(100dvh - 175px);
     align-items: flex-start;
-    padding: 30px 0 16px;
+    padding: 38px 0 16px;
   }
   /* The pill badge above the headline was the single biggest chunk of
      "dead" space before the first real word of the hero -- gone on mobile,
@@ -2975,7 +3000,7 @@
     display: none;
   }
   .asm-landing .hero-title {
-    margin-bottom: 3px;
+    margin-bottom: 2px;
   }
   .asm-landing .hero-title-desktop {
     display: none;
@@ -2991,13 +3016,13 @@
   .asm-landing .hero-title-mobile {
     display: block;
     text-transform: uppercase;
-    font-size: 30px;
+    font-size: 28px;
     overflow-x: hidden;
   }
   .asm-landing .hero-tagline {
     font-size: 11px;
     letter-spacing: 1.5px;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
   }
   /* Strip the pill/ring treatment down to one plain text line (ohb-break
      hidden, ohb-sep shown -- see the base rules above) instead of a boxed,
@@ -3007,7 +3032,7 @@
     background: none;
     border: none;
     padding: 0;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
   }
   .asm-landing .ohb-ring {
     display: inline;
@@ -3027,14 +3052,14 @@
     font-size: 11px;
   }
   .asm-landing .hero-theme {
-    margin-bottom: 6px;
-    padding: 7px 12px;
+    margin-bottom: 5px;
+    padding: 6px 11px;
     font-size: 12px;
     line-height: 1.3;
   }
   .asm-landing .hero-meta {
-    gap: 4px;
-    margin-bottom: 8px;
+    gap: 3px;
+    margin-bottom: 6px;
   }
   .asm-landing .hero-meta-row {
     font-size: 13px;
@@ -3134,7 +3159,7 @@
      gets squeezed again here on top of it. .hero-title's own font-size
      already drops to 36px via the pre-existing .display rule at 480px. */
   .asm-landing #hero {
-    padding: 22px 0 12px;
+    padding: 28px 0 12px;
   }
   .asm-landing .hero-title {
     margin-bottom: 2px;
@@ -3144,7 +3169,7 @@
      .display's 36px rule, which this would lose to on source order) to
      wrap less severely and keep overall height down. */
   .asm-landing .hero-title-mobile {
-    font-size: 24px;
+    font-size: 22px;
   }
   /* Decorative subtitle, not load-bearing information -- the theme box
      right below already states the conference theme in full, so this is
@@ -3154,16 +3179,16 @@
     display: none;
   }
   .asm-landing .one-health-badge {
-    margin-bottom: 3px;
+    margin-bottom: 2px;
   }
   .asm-landing .ohb-text {
     font-size: 10.5px;
   }
   .asm-landing .hero-theme {
-    padding: 5px 9px;
+    padding: 4px 8px;
     font-size: 11px;
     line-height: 1.2;
-    margin-bottom: 3px;
+    margin-bottom: 2px;
   }
   .asm-landing .hero-meta {
     gap: 2px;

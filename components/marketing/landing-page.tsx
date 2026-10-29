@@ -1002,26 +1002,11 @@ export function LandingPage() {
           <div className="hero-card-mobile">{heroCountdownCard}</div>
         </div>
 
-        {/* ═══ STATS BAR ═══ */}
-        <div id="stats" role="region" aria-label="Key conference figures">
-          <div className="stats-wrap">
-            <Reveal delay={0} className="stat-item">
-              <div className="stat-num">1<span className="unit">st</span></div>
-              <div className="stat-desc">ASM Conference in Nigeria</div>
-            </Reveal>
-            <Reveal delay={80} className="stat-item">
-              <div className="stat-num">4</div>
-              <div className="stat-desc">Days of Science &amp; Dialogue</div>
-            </Reveal>
-            <Reveal delay={160} className="stat-item">
-              <div className="stat-num">500<span className="unit">+</span></div>
-              <div className="stat-desc">Scientists, Clinicians &amp; Students</div>
-            </Reveal>
-          </div>
-        </div>
-
         {/* ═══ TRAVEL GRANT ═══ */}
-        <section id="travel-grant" className="section-sm" aria-labelledby="travel-grant-heading">
+        {/* Moved up to sit directly after the hero (used to come after the
+            stats bar) -- a real, specific benefit belongs closer to the top
+            than three generic numbers do. */}
+        <section id="travel-grant" className="section-sm travel-grant-tight" aria-labelledby="travel-grant-heading">
           <div className="wrap">
             <Reveal className="travel-grant-card">
               <div className="tg-icon" aria-hidden="true">✈️</div>
@@ -1039,6 +1024,24 @@ export function LandingPage() {
             </Reveal>
           </div>
         </section>
+
+        {/* ═══ STATS BAR ═══ */}
+        <div id="stats" role="region" aria-label="Key conference figures">
+          <div className="stats-wrap">
+            <Reveal delay={0} className="stat-item">
+              <div className="stat-num">1<span className="unit">st</span></div>
+              <div className="stat-desc">ASM Conference in Nigeria</div>
+            </Reveal>
+            <Reveal delay={80} className="stat-item">
+              <div className="stat-num">4</div>
+              <div className="stat-desc">Days of Science &amp; Dialogue</div>
+            </Reveal>
+            <Reveal delay={160} className="stat-item">
+              <div className="stat-num">500<span className="unit">+</span></div>
+              <div className="stat-desc">Scientists, Clinicians &amp; Students</div>
+            </Reveal>
+          </div>
+        </div>
 
         {/* ═══ WHY ATTEND ═══ */}
         <section id="why" className="section" aria-labelledby="why-heading">
