@@ -2917,7 +2917,7 @@
   .asm-landing #hero {
     min-height: calc(100dvh - 175px);
     align-items: flex-start;
-    padding: 20px 0 16px;
+    padding: 30px 0 16px;
   }
   /* The pill badge above the headline was the single biggest chunk of
      "dead" space before the first real word of the hero -- gone on mobile,
@@ -2928,7 +2928,7 @@
     display: none;
   }
   .asm-landing .hero-title {
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
   .asm-landing .hero-title-desktop {
     display: none;
@@ -2946,7 +2946,7 @@
   .asm-landing .hero-tagline {
     font-size: 11px;
     letter-spacing: 1.5px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
   /* Strip the pill/ring treatment down to one plain text line (ohb-break
      hidden, ohb-sep shown -- see the base rules above) instead of a boxed,
@@ -2956,7 +2956,7 @@
     background: none;
     border: none;
     padding: 0;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
   .asm-landing .ohb-ring {
     display: inline;
@@ -2976,14 +2976,14 @@
     font-size: 11px;
   }
   .asm-landing .hero-theme {
-    margin-bottom: 8px;
-    padding: 8px 12px;
+    margin-bottom: 6px;
+    padding: 7px 12px;
     font-size: 12px;
     line-height: 1.3;
   }
   .asm-landing .hero-meta {
-    gap: 5px;
-    margin-bottom: 10px;
+    gap: 4px;
+    margin-bottom: 8px;
   }
   .asm-landing .hero-meta-row {
     font-size: 13px;
@@ -3083,7 +3083,7 @@
      gets squeezed again here on top of it. .hero-title's own font-size
      already drops to 36px via the pre-existing .display rule at 480px. */
   .asm-landing #hero {
-    padding: 14px 0 12px;
+    padding: 22px 0 12px;
   }
   .asm-landing .hero-title {
     margin-bottom: 2px;
@@ -3093,7 +3093,7 @@
      .display's 36px rule, which this would lose to on source order) to
      wrap less severely and keep overall height down. */
   .asm-landing .hero-title-mobile {
-    font-size: 26px;
+    font-size: 24px;
   }
   /* Decorative subtitle, not load-bearing information -- the theme box
      right below already states the conference theme in full, so this is
@@ -3103,20 +3103,20 @@
     display: none;
   }
   .asm-landing .one-health-badge {
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
   .asm-landing .ohb-text {
     font-size: 10.5px;
   }
   .asm-landing .hero-theme {
-    padding: 6px 10px;
-    font-size: 11.5px;
-    line-height: 1.25;
-    margin-bottom: 4px;
+    padding: 5px 9px;
+    font-size: 11px;
+    line-height: 1.2;
+    margin-bottom: 3px;
   }
   .asm-landing .hero-meta {
-    gap: 3px;
-    margin-bottom: 4px;
+    gap: 2px;
+    margin-bottom: 3px;
   }
   .asm-landing .hero-meta-row {
     font-size: 12.5px;
