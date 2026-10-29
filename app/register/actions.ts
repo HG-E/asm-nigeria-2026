@@ -68,6 +68,28 @@ export async function registerAction(input: RegisterInput): Promise<RegisterResu
       password: data.password,
       user_metadata: metadata,
     })
+    // updateUserById only touches auth.users -- the public.user_profiles
+    // row (what every dashboard, count and listing in this app actually
+    // reads) is populated by a database trigger that fires once, on the
+    // original signup INSERT, and never again. Without this, a retry's
+    // corrected name/institution/department would update auth metadata
+    // and the password, but the profile everyone else sees would silently
+    // keep stuck on the first attempt's (possibly wrong) details. Checked
+    // directly against the database before shipping, not assumed.
+    await admin
+      .from("user_profiles")
+      .update({
+        first_name: data.firstName,
+        last_name: data.lastName,
+        asm_id_number: data.asmIdNumber || "",
+        professional_title: data.professionalTitle,
+        institution: data.institution,
+        department: data.department,
+        country: data.country,
+        phone: data.phone,
+        orcid: data.orcid || null,
+      })
+      .eq("id", linkData.user.id)
   }
 
   const actionLink = buildConfirmLink(
