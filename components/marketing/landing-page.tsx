@@ -853,14 +853,25 @@ export function LandingPage() {
                   <span className="hero-chip-short">🇳🇬 ASM Nigeria Conference · Abuja 2026</span>
                 </span>
               </div>
-              {/* Mobile only -- the chip above (which carried the full org
-                  name) is hidden on mobile, so this plain text line takes
-                  its place instead of leaving the full name absent. */}
-              <p className="hero-name-line">American Society for Microbiology Nigeria Conference</p>
+              {/* Two versions of the same headline, not a separate caption:
+                  desktop keeps the short "ASM NIGERIA / CONFERENCE" mark;
+                  mobile spells the org name out in full across two lines
+                  instead, since the chip that used to carry the full name
+                  is hidden there. hero-title-gold replaces the old bare
+                  `span` selector for the gold word so these two wrapper
+                  spans (also spans, also inside .hero-title) don't
+                  themselves pick up that color. */}
               <h1 className="display hero-title">
-                ASM <em>NIGERIA</em>
-                <br />
-                <span>CONFERENCE</span>
+                <span className="hero-title-desktop">
+                  ASM <em>NIGERIA</em>
+                  <br />
+                  <span className="hero-title-gold">CONFERENCE</span>
+                </span>
+                <span className="hero-title-mobile">
+                  <span className="hero-title-org">American Society for Microbiology</span>
+                  <br />
+                  <em>Nigeria</em> <span className="hero-title-gold">Conference</span>
+                </span>
               </h1>
               <p className="hero-tagline">One Health · One Future · One Scientific Community</p>
               <div className="one-health-badge">
@@ -916,7 +927,9 @@ export function LandingPage() {
                   this covers the same need more compactly). */}
               <div className="hero-countdown-strip" aria-live="polite" aria-label="Time until the conference">
                 <span aria-hidden="true">⏱️</span>
-                <strong>{confCountdown.d}d {confCountdown.h}h {confCountdown.m}m {confCountdown.s}s</strong>
+                <strong>
+                  {confCountdown.d} Days {confCountdown.h} Hours {confCountdown.m} Minutes {confCountdown.s} Seconds
+                </strong>
                 <span>until Abuja 2026</span>
               </div>
             </div>

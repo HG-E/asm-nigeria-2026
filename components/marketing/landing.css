@@ -625,9 +625,6 @@
 .asm-landing .hero-chip-short {
   display: none;
 }
-.asm-landing .hero-name-line {
-  display: none;
-}
 /* Mobile counterpart of .hero-right, hidden until the 768px breakpoint
    below shows it (and hides .hero-right in its place). */
 .asm-landing .hero-card-mobile-wrap {
@@ -641,8 +638,15 @@
   color: var(--red);
   font-style: normal;
 }
-.asm-landing .hero-title span {
+/* hero-title-gold, not a bare `span` selector -- .hero-title-desktop and
+   .hero-title-mobile below are themselves spans (so their display can be
+   toggled per breakpoint), and a tag selector here would also paint their
+   whole text gold instead of just the one word meant to be. */
+.asm-landing .hero-title-gold {
   color: var(--gold);
+}
+.asm-landing .hero-title-mobile {
+  display: none;
 }
 .asm-landing .hero-tagline {
   color: rgba(255, 255, 255, 0.55);
@@ -2896,41 +2900,48 @@
      lives in its own section after #hero (see .hero-card-mobile-wrap
      below), and the full countdown card is hidden on mobile entirely (see
      further down), so #hero only ever has to hold hero-left's own content.
-     min-height is auto, not a 100dvh-based floor: with the chip, badge box,
-     one meta row and the big countdown card all gone or shrunk, that
-     content is now well under one screen on most devices, and a
-     viewport-relative floor just reserved the empty leftover as a dead
-     gap -- first above the title when it was center-aligned, then below
-     the CTAs once this switched to flex-start. An explicit "fits within
-     one screen" is still enforced by the FITS check in the measurement
-     script (heroBottom <= tab bar top): natural content height here is
-     comfortably under that budget on every tested device (320-430px
-     wide), so there's never a need to force the box taller than its
-     content to satisfy it. */
+     175px is the fixed chrome above and below the hero on mobile, measured
+     directly (not estimated): ~103px above (SiteHeader + the one-row
+     urgency banner when a deadline banner is showing; the ticker is hidden
+     on mobile) and ~72px for the fixed bottom tab bar below -- the tab bar
+     doesn't push #hero down like the nav/banner do, but it still covers
+     that much of the viewport, so it counts here too. min-height (not
+     height) so hero-left's own content is never forced to stretch or clip
+     if it's ever taller than this on some device -- it just keeps #hero
+     from being shorter than one screen, with align-items: flex-start
+     putting a normal, modest gap below the nav instead of centering the
+     content and opening a much bigger gap above it on tall screens. */
   .asm-landing #hero {
-    min-height: auto;
+    min-height: calc(100dvh - 175px);
     align-items: flex-start;
-    padding: 8px 0 12px;
+    padding: 20px 0 16px;
   }
   /* The pill badge above the headline was the single biggest chunk of
      "dead" space before the first real word of the hero -- gone on mobile,
      where .hero-chip-short already existed just so it could wrap to one
-     line; it's simpler to drop the row entirely here. hero-name-line (the
-     plain-text replacement carrying the full org name) sits in its place. */
+     line; it's simpler to drop the row entirely here. hero-title-mobile
+     (below) carries the full org name in the headline itself instead. */
   .asm-landing .hero-chip {
     display: none;
   }
-  .asm-landing .hero-name-line {
-    display: block;
-    margin: 0 0 4px;
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.6);
-  }
   .asm-landing .hero-title {
     margin-bottom: 4px;
+  }
+  .asm-landing .hero-title-desktop {
+    display: none;
+  }
+  .asm-landing .hero-title-mobile {
+    display: block;
+    text-transform: uppercase;
+  }
+  /* Sized and weighted on its own (not via a ::first-line trick) so it
+     stays consistent even if it wraps to two rows on the narrowest
+     screens -- ::first-line would only catch whichever row happens to
+     wrap first and leave the rest at the big headline size. */
+  .asm-landing .hero-title-org {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
   }
   .asm-landing .hero-tagline {
     font-size: 11px;
@@ -3032,9 +3043,10 @@
      separate element. */
   .asm-landing .hero-countdown-strip {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 4px 6px;
     width: 100%;
     margin-top: 8px;
     padding: 8px 10px;
@@ -3042,6 +3054,8 @@
     background: rgba(245, 168, 0, 0.14);
     border: 1px solid rgba(245, 168, 0, 0.35);
     font-size: 12px;
+    line-height: 1.3;
+    text-align: center;
     color: rgba(255, 255, 255, 0.85);
   }
   .asm-landing .hero-countdown-strip strong {
@@ -3069,10 +3083,22 @@
      gets squeezed again here on top of it. .hero-title's own font-size
      already drops to 36px via the pre-existing .display rule at 480px. */
   .asm-landing #hero {
-    padding: 8px 0 12px;
+    padding: 14px 0 12px;
   }
   .asm-landing .hero-title {
     margin-bottom: 2px;
+  }
+  /* "Nigeria Conference" together is wider than either "ASM NIGERIA" or
+     "CONFERENCE" alone was at the inherited 36px, so it wraps inside its
+     own line at this width -- sized down directly on the wrapper (not
+     fought out against .display's 36px rule, which this would lose to on
+     source order) to wrap less severely and keep overall height down.
+     hero-title-org keeps its own explicit size regardless. */
+  .asm-landing .hero-title-mobile {
+    font-size: 28px;
+  }
+  .asm-landing .hero-title-org {
+    font-size: 13px;
   }
   /* Decorative subtitle, not load-bearing information -- the theme box
      right below already states the conference theme in full, so this is
@@ -3106,8 +3132,9 @@
     font-size: 11px;
   }
   .asm-landing .hero-countdown-strip {
-    font-size: 11px;
-    padding: 6px 8px;
+    font-size: 10px;
+    padding: 5px 6px;
+    gap: 2px 5px;
   }
 }
 @media (max-width: 480px) {
