@@ -619,6 +619,22 @@
   gap: 64px;
   align-items: stretch;
 }
+/* A grid item's default min-width is auto, not 0 -- its *minimum* size
+   still has to fit its content's min-content width even when the track
+   itself is an `fr` unit, and a white-space: nowrap descendant anywhere
+   inside (the hero-title-org-scale headline below) reports its full
+   unwrapped width as that minimum, since nowrap text can't be the thing
+   that shrinks. overflow: hidden on an ancestor doesn't change that
+   calculation -- it only clips paint, not the intrinsic-size contribution
+   grid/flex track sizing use. Without this, the single 1fr column at
+   mobile widths was sizing itself off that nowrap width (over 600px)
+   instead of the viewport, pushing everything in .hero-left off-screen.
+   (.hero-right doesn't need this: it's `display: none` on mobile, where
+   this matters, and not grid-sized on desktop, where it's the only other
+   item in the row.) */
+.asm-landing .hero-left {
+  min-width: 0;
+}
 .asm-landing .hero-right {
   display: flex;
   flex-direction: column;
@@ -646,6 +662,9 @@
    and .hero-title-mobile below are themselves spans (so their display can be
    toggled per breakpoint), and a tag selector here would also paint their
    whole text instead of just the words meant to be colored. */
+.asm-landing .hero-title-white {
+  color: #fff;
+}
 .asm-landing .hero-title-red {
   color: var(--red);
 }
@@ -654,6 +673,30 @@
 }
 .asm-landing .hero-title-mobile {
   display: none;
+}
+/* Two elements, not one -- see the long comment on the matching markup in
+   landing-page.tsx for why. This outer one is pinned to the container's own
+   width and clips anything that doesn't fit, so it can never grow the hero
+   wider than its column regardless of what the (possibly much wider,
+   pre-scale) inner line measures. */
+.asm-landing .hero-title-org-line {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+}
+/* The inner line is what's actually measured and horizontally scaled by
+   the matching effect in landing-page.tsx to exactly span
+   .hero-title-gold's width below it -- see the comment on that effect for
+   why a fixed font-size can't do this reliably across viewport widths on
+   its own. inline-block so its own width is content-based (unaffected by
+   the outer's forced 100%) and the scaleX transform has a definite box to
+   scale; white-space: nowrap keeps it from ever wrapping; transform-origin:
+   left so it grows/shrinks from the same left edge the text already starts
+   at, instead of from its center. */
+.asm-landing .hero-title-org-scale {
+  display: inline-block;
+  white-space: nowrap;
+  transform-origin: left center;
 }
 .asm-landing .hero-tagline {
   color: rgba(255, 255, 255, 0.55);
@@ -2937,15 +2980,19 @@
   .asm-landing .hero-title-desktop {
     display: none;
   }
-  /* Both lines are now full-size text, and "American Society for
-     Microbiology" (34 characters) wraps to 2-3 rows on its own at the
-     inherited 36px -- sized down a bit so that wrap stays short enough to
-     fit one screen on shorter devices like iPhone SE, not just the taller
-     ones with more min-height slack to absorb it. */
+  /* Both lines render at this same font-size -- the org-name line (see
+     .hero-title-org-line above) is then horizontally scaled by JS to match
+     "NIGERIA CONFERENCE"'s width exactly, so its own unscaled size here
+     only needs to be in a reasonable ballpark, not an exact fit. overflow-x
+     is a safety net for the brief unscaled state before that effect runs
+     (and the rare case JS doesn't run at all) -- without it, the org line's
+     natural nowrap width (it's the longer line) would overflow sideways
+     instead of just being clipped until the scale applies. */
   .asm-landing .hero-title-mobile {
     display: block;
     text-transform: uppercase;
     font-size: 30px;
+    overflow-x: hidden;
   }
   .asm-landing .hero-tagline {
     font-size: 11px;

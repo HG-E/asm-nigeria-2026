@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 
 import { submitContactMessageAction } from "@/app/contact-actions"
 import { PARTNERS } from "@/components/marketing/partners-data"
@@ -11,6 +11,12 @@ import { SpeakerBio } from "@/components/marketing/speaker-bio"
 import { ELIGIBLE_SUBTHEMES, SPEAKERS } from "@/components/marketing/speakers-data"
 
 import "./landing.css"
+
+// useLayoutEffect warns ("does nothing on the server") when it runs during
+// Next's server render of this client component; aliasing to useEffect
+// there avoids the warning while keeping the pre-paint timing (no visible
+// flash before the hero org-name line gets scaled to width) once hydrated.
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect
 
 const BANNER_DISMISS_KEY = "asm-2026-urgency-banner-dismissed-aug22"
 const FINAL_BANNER_DISMISS_KEY = "asm-2026-urgency-banner-dismissed-nov2"
@@ -513,6 +519,8 @@ export function LandingPage() {
 
   const [toast, setToast] = useState<string | null>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const heroOrgLineRef = useRef<HTMLSpanElement | null>(null)
+  const heroNigeriaLineRef = useRef<HTMLSpanElement | null>(null)
   const partnersScrollRef = useRef<HTMLDivElement | null>(null)
   // Tracks whether there's actually anything to scroll to in each direction,
   // so the arrows can be disabled instead of sitting there doing nothing --
@@ -530,6 +538,35 @@ export function LandingPage() {
     return () => {
       document.documentElement.style.scrollBehavior = ""
     }
+  }, [])
+
+  // Scales the mobile hero's org-name line (kept to one line via
+  // white-space: nowrap in CSS) down horizontally so it starts and ends
+  // flush with "NIGERIA CONFERENCE" below it, instead of guessing a
+  // font-size that happens to produce a matching width at one viewport
+  // and drifts at every other. Re-measures on resize/orientation change
+  // and once webfonts finish swapping in, since both change the natural
+  // (unscaled) width this is computed from. A no-op on desktop, where
+  // hero-title-mobile is display:none and both rects report zero width.
+  useIsomorphicLayoutEffect(() => {
+    const orgLine = heroOrgLineRef.current
+    const targetLine = heroNigeriaLineRef.current
+    if (!orgLine || !targetLine) return
+
+    function syncWidth() {
+      if (!orgLine || !targetLine) return
+      orgLine.style.transform = "none"
+      const orgWidth = orgLine.getBoundingClientRect().width
+      const targetWidth = targetLine.getBoundingClientRect().width
+      if (orgWidth > 0 && targetWidth > 0) {
+        orgLine.style.transform = `scaleX(${targetWidth / orgWidth})`
+      }
+    }
+
+    syncWidth()
+    window.addEventListener("resize", syncWidth)
+    document.fonts?.ready?.then(syncWidth)
+    return () => window.removeEventListener("resize", syncWidth)
   }, [])
 
   // Defaults the fee table to whichever period is actually current, once, on
@@ -857,11 +894,19 @@ export function LandingPage() {
                   desktop keeps the short "ASM NIGERIA / CONFERENCE" mark;
                   mobile spells the org name out in full across two full-size
                   lines instead, since the chip that used to carry the full
-                  name is hidden there -- "American Society for Microbiology"
-                  in red, "Nigeria Conference" in gold. hero-title-red/-gold
-                  replace the old bare `em`/`span` color selectors so the two
-                  toggle wrappers (also spans) don't themselves pick up
-                  those colors. */}
+                  name is hidden there -- "American Society for" white,
+                  "Microbiology" red (one unbroken line), "Nigeria Conference"
+                  in gold. hero-title-white/-red/-gold replace the old bare
+                  `em`/`span` color selectors so the toggle wrappers (also
+                  spans) don't themselves pick up those colors.
+                  hero-title-org-line/-org-scale: two nested elements, not
+                  one, because a CSS transform (the width-matching scaleX
+                  the effect above applies) only affects paint, not layout --
+                  scaling a box down doesn't un-claim the full-width space it
+                  needed before scaling. The outer stays block/100%/clipped
+                  so it can never push the hero wider than its container
+                  regardless of the inner's unscaled size; the inner is what
+                  actually gets measured and scaled. */}
               <h1 className="display hero-title">
                 <span className="hero-title-desktop">
                   ASM <em>NIGERIA</em>
@@ -869,9 +914,14 @@ export function LandingPage() {
                   <span className="hero-title-gold">CONFERENCE</span>
                 </span>
                 <span className="hero-title-mobile">
-                  <span className="hero-title-red">American Society for Microbiology</span>
+                  <span className="hero-title-org-line">
+                    <span className="hero-title-org-scale" ref={heroOrgLineRef}>
+                      <span className="hero-title-white">American Society for </span>
+                      <span className="hero-title-red">Microbiology</span>
+                    </span>
+                  </span>
                   <br />
-                  <span className="hero-title-gold">Nigeria Conference</span>
+                  <span className="hero-title-gold" ref={heroNigeriaLineRef}>Nigeria Conference</span>
                 </span>
               </h1>
               <p className="hero-tagline">One Health · One Future · One Scientific Community</p>
