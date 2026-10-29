@@ -49,7 +49,12 @@ export function ConferenceEventJsonLd() {
     const fee = REGISTRATION_FEES[category]
     const offer: Record<string, string> = {
       "@type": "Offer",
-      name: category,
+      // category itself (the PARTICIPANT_CATEGORIES key) stays untouched --
+      // it's matched elsewhere as a functional identifier, not just display
+      // text -- so the em dash some of those keys carry (e.g. "Online
+      // Participants — Local") is swapped only in this outward-facing
+      // schema.org name, not at the source.
+      name: category.replace(/—/g, ":"),
       price: numericPrice(fee[period]),
       priceCurrency: fee.currency,
       availability: "https://schema.org/InStock",
