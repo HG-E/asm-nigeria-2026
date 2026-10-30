@@ -767,6 +767,13 @@
 .asm-landing .hero-grant-card {
   display: none;
 }
+/* Mobile-only compact version of #stats's three figures, shown as the last
+   thing in the hero -- see the 768px block for the rule that reveals and
+   sizes it. Hidden on desktop, which keeps the full #stats bar further
+   down the page instead. */
+.asm-landing .hero-stats-row {
+  display: none;
+}
 .asm-landing .hero-actions {
   display: flex;
   gap: 12px;
@@ -3126,6 +3133,41 @@
     font-weight: 700;
     color: #fff;
   }
+  /* Last thing in the hero -- a compact 3-up readout of #stats's own
+     figures, same shape (number + small label, three across) just scaled
+     down. Flush with the button/countdown/grant-card edges above it via
+     the shared .wrap-less full-width flow already used for those. */
+  .asm-landing .hero-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    width: 100%;
+    margin-top: 6px;
+  }
+  .asm-landing .hero-stat {
+    text-align: center;
+    padding: 6px 2px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
+  .asm-landing .hero-stat-num {
+    font-size: 15px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.1;
+  }
+  .asm-landing .hero-stat-num .unit {
+    font-size: 0.6em;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .asm-landing .hero-stat-desc {
+    font-size: 8px;
+    line-height: 1.2;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 1px;
+  }
   /* hero-right (desktop two-column layout) is still mobile-hidden as
      before; its mobile counterpart (the full "Conference Countdown" card,
      with the deadline/format breakdown) is now hidden on mobile too --
@@ -3140,8 +3182,10 @@
   }
   /* The standalone Travel Grant section's content now lives inside the
      hero itself (hero-grant-card above), so the full card below would
-     just be a duplicate on mobile. */
-  .asm-landing #travel-grant {
+     just be a duplicate on mobile. Same for #stats -- its figures now
+     live in the hero too (hero-stats-row above). */
+  .asm-landing #travel-grant,
+  .asm-landing #stats {
     display: none;
   }
 }

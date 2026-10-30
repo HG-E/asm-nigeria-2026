@@ -945,6 +945,24 @@ export function LandingPage() {
                   ✉️ Enquire About the Grant
                 </a>
               </Reveal>
+              {/* Mobile only -- a compact version of the Stats Bar section
+                  further down (#stats), shifted up to be the last thing
+                  visible in the hero itself instead of requiring a scroll
+                  past it to reach. Same three figures, smaller scale. */}
+              <div className="hero-stats-row" role="region" aria-label="Key conference figures">
+                <div className="hero-stat">
+                  <div className="hero-stat-num">1<span className="unit">st</span></div>
+                  <div className="hero-stat-desc">ASM Conference in Nigeria</div>
+                </div>
+                <div className="hero-stat">
+                  <div className="hero-stat-num">4</div>
+                  <div className="hero-stat-desc">Days of Science &amp; Dialogue</div>
+                </div>
+                <div className="hero-stat">
+                  <div className="hero-stat-num">500<span className="unit">+</span></div>
+                  <div className="hero-stat-desc">Scientists, Clinicians &amp; Students</div>
+                </div>
+              </div>
             </div>
 
             {/* Desktop only (hidden on mobile via CSS) -- see
@@ -989,6 +1007,10 @@ export function LandingPage() {
         </section>
 
         {/* ═══ STATS BAR ═══ */}
+        {/* Desktop only now (hidden on mobile via CSS) -- this bar's figures
+            are shifted into the hero itself on mobile instead
+            (.hero-stats-row, right after the Travel Grant card), so this
+            isn't duplicated underneath it. */}
         <div id="stats" role="region" aria-label="Key conference figures">
           <div className="stats-wrap">
             <Reveal delay={0} className="stat-item">
