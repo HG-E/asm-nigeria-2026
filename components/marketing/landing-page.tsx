@@ -501,7 +501,6 @@ export function LandingPage() {
   const [openCommittee, setOpenCommittee] = useState<number | null>(null)
   const [openTheme, setOpenTheme] = useState<number | null>(null)
   const [openSpeaker, setOpenSpeaker] = useState<number | null>(null)
-  const [openMessage, setOpenMessage] = useState<string | null>(null)
   const [confCountdown, setConfCountdown] = useState(PENDING_COUNTDOWN)
   const [earlyCountdown, setEarlyCountdown] = useState(PENDING_COUNTDOWN)
   const [earlyExpired, setEarlyExpired] = useState(false)
@@ -660,10 +659,6 @@ export function LandingPage() {
 
   function toggleSpeaker(i: number) {
     setOpenSpeaker((current) => (current === i ? null : i))
-  }
-
-  function toggleMessage(key: string) {
-    setOpenMessage((current) => (current === key ? null : key))
   }
 
   function scrollPartners(direction: -1 | 1) {
@@ -1033,153 +1028,12 @@ export function LandingPage() {
           </div>
         </div>
 
-        {/* ═══ WHY ATTEND ═══ */}
-        <section id="why" className="section" aria-labelledby="why-heading">
-          <div className="wrap">
-            {/* The convener's photo/name/title used to sit beside this text
-                as a sidebar -- moved into its own Messages section below
-                (with the ASM President's welcome) so this block is just the
-                conference description, and considerably shorter on mobile
-                where the two used to stack into one long scroll. */}
-            <Reveal className="about-conference about-conference-full">
-              <span className="caption eyebrow" style={{ color: "var(--red)" }}>About the Conference</span>
-              <h2 className="headline">A National Platform for Scientific Exchange</h2>
-              <div className="rule" />
-              <p className="body-lg">
-                The American Society for Microbiology (ASM) One Health Scientific Conference is the
-                maiden ASM scientific conference in Nigeria, a landmark gathering of microbiologists,
-                researchers, clinicians, veterinarians, environmental scientists, public health
-                professionals, students, policymakers, and industry leaders sharing cutting-edge
-                research and translating microbial science into solutions for human, animal, and
-                environmental health.
-              </p>
-              <p className="body-lg">
-                Under the theme &ldquo;One Health in Action: Advancing Microbial Science for Human,
-                Animal, Environmental, and Global Health,&rdquo; four days of keynotes, plenary and
-                scientific sessions, workshops, and policy dialogue will nurture the next generation of
-                microbial scientists and strengthen microbiology&apos;s contribution to Nigeria&apos;s
-                health, research, and sustainable development agenda.
-              </p>
-            </Reveal>
-
-            {/* ═══ MESSAGES: ASM PRESIDENT + CONFERENCE CONVENER ═══ */}
-            {/* ASM Global's own welcome leads (the parent society's
-                endorsement), then the local convener's. Same open/close
-                accordion interaction as the speaker cards below, so the
-                full President's letter (several paragraphs) doesn't force
-                a long scroll by default on mobile -- collapsed to a short
-                preview until tapped open. */}
-            <div className="messages-row">
-              <Reveal delay={40} className={openMessage === "president" ? "message-card open" : "message-card"}>
-                <div
-                  className="msg-header"
-                  onClick={() => toggleMessage("president")}
-                  role="button"
-                  tabIndex={0}
-                  aria-expanded={openMessage === "president"}
-                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleMessage("president") } }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/speakers/vaughn-cooper.jpg" alt="Vaughn Cooper, PhD" className="msg-photo" />
-                  <div className="msg-info">
-                    <span className="chip chip-blue">ASM President</span>
-                    <div className="msg-name">Vaughn Cooper, PhD</div>
-                    <div className="msg-title">ASM President &middot; 2026&ndash;2027</div>
-                  </div>
-                  <span className="faq-arrow msg-arrow" aria-hidden="true">⌄</span>
-                </div>
-                <div className="msg-body">
-                  <div className="msg-body-inner">
-                    <div className="msg-text">
-                      <p>To the organizers, ASM members in Nigeria, distinguished guests and participants of
-                        the inaugural ASM Nigeria Scientific Conference, Abuja, Nigeria, November 22&ndash;25,
-                        2026:</p>
-                      <p>It is my pleasure to welcome all attendees and congratulate the hosts and organizers
-                        of this inaugural scientific conference.</p>
-                      <p>With its timely theme, &ldquo;One Health in Action: Advancing Microbial Science for
-                        Human, Animal, Environmental, and Global Health,&rdquo; this conference is an
-                        important step toward strengthening scientific dialogue, professional networks and
-                        collaborative solutions to urgent health and environmental challenges.</p>
-                      <p>As we say at ASM, &ldquo;Microbes Make Our World.&rdquo; Microorganisms are
-                        essential to life, shaping human and animal health, food systems, the environment
-                        and entire ecosystems. Understanding their roles and harnessing microbial science
-                        are vital to addressing some of humanity&apos;s most pressing challenges.</p>
-                      <p>I am especially pleased that this conference is supported by the 2026 ASM Ambassador
-                        Project Fund (APF). This program reflects the value of international collaboration
-                        and empowers ASM Ambassadors to turn scientific ideas into meaningful activities that
-                        advance microbiology, strengthen professional networks, broaden engagement and
-                        address local challenges.</p>
-                      <p>The conference theme highlights the critical role of microbial science in tackling
-                        interconnected challenges, including antimicrobial resistance, emerging infectious
-                        diseases, food security, environmental sustainability and resilient health systems.
-                        It also emphasizes the importance of turning discoveries into practical solutions
-                        through multidisciplinary collaboration and a strong One Health approach.</p>
-                      <p>To ASM members in Nigeria, thank you for your commitment and active participation.
-                        I encourage you to use this conference to make connections, engage with colleagues
-                        from around the world, mentor emerging scientists and build research partnerships
-                        that support Nigeria&apos;s scientific and public health priorities.</p>
-                      <p>I want to recognize ASM Country Ambassador to Nigeria Sylvia Onyinyechi
-                        Anyadoh-Nwadike, PhD, whose vision, leadership and dedication were instrumental in
-                        bringing this conference to life. By championing this initiative through the 2026
-                        ASM Ambassador Project Fund, she has created lasting opportunities for
-                        Nigeria&apos;s scientific community and helped build a vibrant, inclusive
-                        microbiology network.</p>
-                      <p>Thank you to the conference planning and scientific committees, institutional
-                        partners, sponsors, volunteers, Chief Host and Vice Chancellor of the National Open
-                        University of Nigeria, principal and special guests of honor, and awardees. Your
-                        support and leadership have made this conference possible.</p>
-                      <p>On behalf of ASM, I wish you a productive, engaging, and memorable conference.</p>
-                      <div className="msg-sign">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src="/signatures/vaughn-cooper.png" alt="" className="msg-signature" aria-hidden="true" />
-                        <p className="msg-signoff">Vaughn Cooper, PhD<br />ASM President, 2026&ndash;2027</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-
-              <Reveal delay={80} className="message-card message-card-static">
-                <div className="msg-header">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/speakers/sylvia-anyadoh-nwadike.jpg"
-                    alt="Sylvia O. Anyadoh-Nwadike, PhD"
-                    className="msg-photo"
-                  />
-                  <div className="msg-info">
-                    <span className="chip chip-gold">Conference Convener</span>
-                    <div className="msg-name">Sylvia O. Anyadoh-Nwadike, PhD</div>
-                    <div className="msg-title">ASM Country Ambassador to Nigeria</div>
-                  </div>
-                </div>
-              </Reveal>
-            </div>
-
-            <Reveal delay={80}>
-              <span className="caption eyebrow" style={{ color: "var(--red)" }}>Why Attend</span>
-              <h2 className="headline" id="why-heading">Africa&apos;s Most Impactful<br />Microbiology Event of 2026</h2>
-              <div className="rule" />
-              <p className="body-lg">Whether you are a researcher, clinician, student, or policymaker, this is where Nigerian and African science meets global standards.</p>
-            </Reveal>
-            <div className="why-grid">
-              {WHY_CARDS.map((card, i) => (
-                <Reveal key={card.title} delay={(i % 3) * 80} className="why-card">
-                  <div className={`why-icon ${card.accent}`}>{card.icon}</div>
-                  <h3 className="why-title">{card.title}</h3>
-                  <p className="why-desc">{card.desc}</p>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ═══ ABOUT ASM GLOBAL ═══ */}
-        {/* The parent society's own story, kept short: a tagline, a compact
-            stat grid (native HTML/CSS, not slide screenshots -- the source
-            deck is 101MB and far too heavy to host as a public asset) and
-            the short video ASM supplied, which fits comfortably as a
-            public asset at ~12MB. */}
+        {/* Opens the story at the global level, right after the hero: who
+            ASM is, before the page narrows to the Nigeria conference itself.
+            A compact stat grid (native HTML/CSS, not slide screenshots --
+            the source deck is 101MB and far too heavy to host as a public
+            asset) plus the short video ASM supplied. */}
         <section id="asm-global" className="section">
           <div className="wrap">
             <Reveal>
@@ -1187,11 +1041,11 @@ export function LandingPage() {
               <h2 className="headline">Microbes Make Our World</h2>
               <div className="rule" />
               <p className="body-lg">
-                The American Society for Microbiology is a global community shaping the future of
-                microbial sciences since 1899. ASM connects millions of scientists and stakeholders
-                across the microbial sciences &mdash; through collaboration and connection across
-                generations, geographies and specialties, ASM helps turn microbial science into
-                possibilities that improve health, advance knowledge, power industry and change lives.
+                For over a century, the American Society for Microbiology has connected the people who
+                study the organisms that quietly run the planet &mdash; the scientists turning microbial
+                discovery into better medicine, safer food, cleaner environments and stronger public
+                health systems. ASM Nigeria 2026 is the newest chapter of that community: a conference
+                built in the same spirit, for Africa&apos;s own microbial scientists.
               </p>
             </Reveal>
 
@@ -1229,6 +1083,155 @@ export function LandingPage() {
                 <a href="https://asm.org" target="_blank" rel="noopener noreferrer">asm.org</a>.
               </p>
             </Reveal>
+          </div>
+        </section>
+
+        {/* ═══ ABOUT THE CONFERENCE (CONVENER) ═══ */}
+        {/* Restored to its original two-column form -- text left, the
+            Convener's portrait and title on the right (desktop); stacked
+            on mobile. Splitting this back out from the President's address
+            into its own section (below) is what keeps either one from
+            running long on mobile -- each section now carries only its own
+            text and its own portrait, not both stacked together. */}
+        <section id="about" className="section">
+          <div className="wrap">
+            <div className="profile-row">
+              <Reveal className="profile-copy">
+                <span className="caption eyebrow" style={{ color: "var(--red)" }}>About the Conference</span>
+                <h2 className="headline">A National Platform for Scientific Exchange</h2>
+                <div className="rule" />
+                <p className="body-lg">
+                  The maiden ASM Nigeria Scientific Conference brings One Health onto one stage:
+                  microbiologists, clinicians, veterinarians, environmental scientists, public health
+                  professionals, students, policymakers and industry leaders, sharing the research and
+                  the relationships that turn microbial science into solutions for human, animal and
+                  environmental health.
+                </p>
+                <p className="body-lg">
+                  Under the theme &ldquo;One Health in Action: Advancing Microbial Science for Human,
+                  Animal, Environmental, and Global Health,&rdquo; four days of keynotes, plenary and
+                  scientific sessions, hands-on workshops and policy dialogue will nurture the next
+                  generation of microbial scientists and strengthen microbiology&apos;s contribution to
+                  Nigeria&apos;s health, research and sustainable development agenda.
+                </p>
+              </Reveal>
+              <Reveal delay={40} className="profile-side">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/speakers/sylvia-anyadoh-nwadike.jpg"
+                  alt="Sylvia O. Anyadoh-Nwadike, PhD"
+                  className="profile-photo"
+                />
+                <div className="profile-side-details">
+                  <span className="caption eyebrow" style={{ color: "var(--gold-d)" }}>Conference Convener</span>
+                  <h3 className="profile-name">Sylvia O. Anyadoh-Nwadike, PhD</h3>
+                  <p className="profile-title">ASM Country Ambassador to Nigeria</p>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ ASM PRESIDENT'S ADDRESS ═══ */}
+        {/* Mirrors the Convener section's own layout and proportions
+            (text left, portrait right) rather than a different pattern, so
+            the two read as companion sections. Full letter, verbatim -- a
+            real address from a named individual isn't ours to summarize or
+            rewrite. */}
+        <section id="president-message" className="section">
+          <div className="wrap">
+            <div className="profile-row">
+              <Reveal className="profile-copy profile-copy-letter">
+                <span className="caption eyebrow" style={{ color: "var(--red)" }}>A Message from ASM Global</span>
+                <h2 className="headline">Welcome From Your ASM President</h2>
+                <div className="rule" />
+                <p>To the organizers, ASM members in Nigeria, distinguished guests and participants of
+                  the inaugural ASM Nigeria Scientific Conference, Abuja, Nigeria, November
+                  22&ndash;25, 2026:</p>
+                <p>It is my pleasure to welcome all attendees and congratulate the hosts and organizers
+                  of this inaugural scientific conference.</p>
+                <p>With its timely theme, &ldquo;One Health in Action: Advancing Microbial Science for
+                  Human, Animal, Environmental, and Global Health,&rdquo; this conference is an
+                  important step toward strengthening scientific dialogue, professional networks and
+                  collaborative solutions to urgent health and environmental challenges.</p>
+                <p>As we say at ASM, &ldquo;Microbes Make Our World.&rdquo; Microorganisms are essential
+                  to life, shaping human and animal health, food systems, the environment and entire
+                  ecosystems. Understanding their roles and harnessing microbial science are vital to
+                  addressing some of humanity&apos;s most pressing challenges.</p>
+                <p>I am especially pleased that this conference is supported by the 2026 ASM Ambassador
+                  Project Fund (APF). This program reflects the value of international collaboration and
+                  empowers ASM Ambassadors to turn scientific ideas into meaningful activities that
+                  advance microbiology, strengthen professional networks, broaden engagement and address
+                  local challenges. It also demonstrates how strategic support for ambassador-led
+                  initiatives can create meaningful opportunities for scientific exchange, capacity
+                  development and collaboration.</p>
+                <p>The conference theme highlights the critical role of microbial science in tackling
+                  interconnected challenges, including antimicrobial resistance, emerging infectious
+                  diseases, food security, environmental sustainability and resilient health systems. It
+                  also emphasizes the importance of turning discoveries into practical solutions through
+                  multidisciplinary collaboration and a strong One Health approach.</p>
+                <p>To ASM members in Nigeria, thank you for your commitment and active participation.
+                  Your involvement reflects a shared dedication to scientific excellence, professional
+                  growth and the advancement of microbiology. I encourage you to use this conference to
+                  make connections, engage with colleagues from around the world, mentor emerging
+                  scientists and build research partnerships that support Nigeria&apos;s scientific and
+                  public health priorities. Your contributions help keep Nigeria&apos;s microbiology
+                  community vibrant, visible and connected to the global scientific community.</p>
+                <p>I want to recognize ASM Country Ambassador to Nigeria Sylvia Onyinyechi
+                  Anyadoh-Nwadike, PhD, whose vision, leadership and dedication were instrumental in
+                  bringing this conference to life. Her efforts to foster collaboration, promote
+                  mentorship, engage young scientists and strengthen ASM&apos;s presence in Nigeria
+                  deserve recognition. By championing this initiative through the 2026 ASM Ambassador
+                  Project Fund, she has created lasting opportunities for Nigeria&apos;s scientific
+                  community and helped build a vibrant, inclusive microbiology network.</p>
+                <p>Thank you to the conference planning and scientific committees, institutional
+                  partners, sponsors, volunteers, Chief Host and Vice Chancellor of the National Open
+                  University of Nigeria, principal and special guests of honor, and awardees. Your
+                  support and leadership have made this conference possible and reflect a shared
+                  commitment to scientific progress and collaboration.</p>
+                <p>ASM is committed to supporting microbiologists and strengthening scientific capacity
+                  worldwide. I encourage everyone to make the most of this time together by sharing
+                  ideas, building new skills and forming collaborations that extend beyond the
+                  conference. I hope the connections made here lead to meaningful solutions and lasting
+                  opportunities for microbiologists in Nigeria and around the world.</p>
+                <p>On behalf of ASM, I wish you a productive, engaging, and memorable conference.</p>
+                <div className="profile-sign">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/signatures/vaughn-cooper.png" alt="" className="profile-signature" aria-hidden="true" />
+                  <p className="profile-signoff">Warm regards,<br />Vaughn Cooper, PhD<br />ASM President, 2026&ndash;2027</p>
+                </div>
+              </Reveal>
+              <Reveal delay={40} className="profile-side">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/speakers/vaughn-cooper.jpg" alt="Vaughn Cooper, PhD" className="profile-photo" />
+                <div className="profile-side-details">
+                  <span className="caption eyebrow" style={{ color: "var(--gold-d)" }}>ASM President</span>
+                  <h3 className="profile-name">Vaughn Cooper, PhD</h3>
+                  <p className="profile-title">ASM President &middot; 2026&ndash;2027</p>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ WHY ATTEND ═══ */}
+        <section id="why" className="section" aria-labelledby="why-heading">
+          <div className="wrap">
+            <Reveal>
+              <span className="caption eyebrow" style={{ color: "var(--red)" }}>Why Attend</span>
+              <h2 className="headline" id="why-heading">Africa&apos;s Most Impactful<br />Microbiology Event of 2026</h2>
+              <div className="rule" />
+              <p className="body-lg">Whether you are a researcher, clinician, student, or policymaker, this is where Nigerian and African science meets global standards.</p>
+            </Reveal>
+            <div className="why-grid">
+              {WHY_CARDS.map((card, i) => (
+                <Reveal key={card.title} delay={(i % 3) * 80} className="why-card">
+                  <div className={`why-icon ${card.accent}`}>{card.icon}</div>
+                  <h3 className="why-title">{card.title}</h3>
+                  <p className="why-desc">{card.desc}</p>
+                </Reveal>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -1868,36 +1871,43 @@ export function LandingPage() {
                 <div className="fb-tagline">One Health. One Future. One Scientific Community.</div>
                 <div className="fb-desc">The Maiden American Society for Microbiology Nigeria Conference brings together One Health scientists and stakeholders for four days of science, dialogue, and discovery in Abuja.</div>
               </div>
-              <div className="footer-col">
-                <h4>Conference</h4>
-                <ul>
-                  <li><a href="#why">Why Attend</a></li>
-                  <li><a href="#themes">Sub-Themes</a></li>
-                  <li><a href="#programme">Programme</a></li>
-                  <li><Link href="/speakers">Speakers</Link></li>
-                  <li><Link href="/partners">Partners</Link></li>
-                  <li><a href="#planning-committee">Planning Committee</a></li>
-                </ul>
-              </div>
-              <div className="footer-col">
-                <h4>Participate</h4>
-                <ul>
-                  <li><Link href="/register">Submit Abstract</Link></li>
-                  <li><a href="#registration">Register</a></li>
-                  <li><a href="#payment">Payment</a></li>
-                  <li><a href="#accommodation">Accommodation</a></li>
-                </ul>
-              </div>
-              <div className="footer-col">
-                <h4>Information</h4>
-                <ul>
-                  <li><a href="#venue">Venue</a></li>
-                  <li><a href="#faq">FAQ</a></li>
-                  <li><a href="#contacts">Contact</a></li>
-                  <li><Link href="/terms">Terms</Link></li>
-                  <li><Link href="/privacy">Privacy</Link></li>
-                  <li><a href="https://www.asm.org" target="_blank" rel="noopener noreferrer">ASM Global ↗</a></li>
-                </ul>
+              {/* Grouped so mobile can lay these three out as a 3-column
+                  row beneath the brand block, instead of each heading's
+                  list stacking full-width one after another. */}
+              <div className="footer-nav-cols">
+                <div className="footer-col">
+                  <h4>Conference</h4>
+                  <ul>
+                    <li><a href="#about">About the Conference</a></li>
+                    <li><a href="#president-message">President&apos;s Message</a></li>
+                    <li><a href="#why">Why Attend</a></li>
+                    <li><a href="#themes">Sub-Themes</a></li>
+                    <li><a href="#programme">Programme</a></li>
+                    <li><Link href="/speakers">Speakers</Link></li>
+                    <li><Link href="/partners">Partners</Link></li>
+                    <li><a href="#planning-committee">Planning Committee</a></li>
+                  </ul>
+                </div>
+                <div className="footer-col">
+                  <h4>Participate</h4>
+                  <ul>
+                    <li><Link href="/register">Submit Abstract</Link></li>
+                    <li><a href="#registration">Register</a></li>
+                    <li><a href="#payment">Payment</a></li>
+                    <li><a href="#accommodation">Accommodation</a></li>
+                  </ul>
+                </div>
+                <div className="footer-col">
+                  <h4>Information</h4>
+                  <ul>
+                    <li><a href="#venue">Venue</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#contacts">Contact</a></li>
+                    <li><Link href="/terms">Terms</Link></li>
+                    <li><Link href="/privacy">Privacy</Link></li>
+                    <li><a href="https://www.asm.org" target="_blank" rel="noopener noreferrer">ASM Global ↗</a></li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>

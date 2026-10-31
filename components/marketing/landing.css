@@ -925,133 +925,95 @@
 .asm-landing #why {
   background: #fff;
 }
-.asm-landing .about-conference-full {
-  margin: 0 0 40px;
-  padding-bottom: 40px;
-  border-bottom: 1px solid var(--line);
-}
-.asm-landing .about-conference p + p {
-  margin-top: 14px;
-}
 
-/* ════ MESSAGES (ASM President + Conference Convener) ════ */
-.asm-landing .messages-row {
+/* ════ PROFILE SECTIONS (About the Conference + President's Address) ════ */
+/* Shared by both sections deliberately -- they're meant to read as a
+   matched pair (text column + portrait column), not two different
+   components, so one set of rules keeps them in lockstep. */
+.asm-landing #about {
+  background: #fff;
+}
+.asm-landing #president-message {
+  background: var(--off);
+}
+.asm-landing .profile-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  align-items: start;
-  margin: 0 0 64px;
-  padding-bottom: 48px;
-  border-bottom: 1px solid var(--line);
+  gap: 48px;
+  align-items: stretch;
 }
-.asm-landing .message-card {
-  background: var(--panel, #fafafa);
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  overflow: hidden;
+.asm-landing .profile-copy p + p {
+  margin-top: 14px;
 }
-.asm-landing .msg-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 20px;
-  cursor: pointer;
-}
-.asm-landing .message-card-static .msg-header {
-  cursor: default;
-}
-.asm-landing .msg-photo {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: top center;
-  flex-shrink: 0;
-}
-.asm-landing .msg-info {
-  flex: 1;
-  min-width: 0;
-}
-.asm-landing .msg-name {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--ink);
-  margin: 4px 0 2px;
-  line-height: 1.3;
-}
-.asm-landing .msg-title {
-  font-size: 13px;
+.asm-landing .profile-copy-letter {
+  font-size: 15px;
   color: var(--muted);
-  font-weight: 600;
+  line-height: 1.75;
 }
-.asm-landing .msg-arrow {
-  margin-left: auto;
+.asm-landing .profile-sign {
+  margin-top: 24px;
 }
-.asm-landing .message-card.open .msg-arrow {
-  transform: rotate(180deg);
-  color: var(--red);
-}
-.asm-landing .msg-body {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.asm-landing .message-card.open .msg-body {
-  grid-template-rows: 1fr;
-}
-.asm-landing .msg-body-inner {
-  overflow: hidden;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-.asm-landing .message-card.open .msg-body-inner {
-  opacity: 1;
-  transition: opacity 0.35s ease 0.1s;
-}
-.asm-landing .msg-text {
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.7;
-  border-top: 1px solid var(--line);
-  margin: 0 20px;
-  padding: 20px 0 28px;
-}
-.asm-landing .msg-text p + p {
-  margin-top: 12px;
-}
-.asm-landing .msg-sign {
-  margin-top: 20px;
-}
-.asm-landing .msg-signature {
+.asm-landing .profile-signature {
   height: 48px;
   object-fit: contain;
   display: block;
 }
-.asm-landing .msg-signoff {
-  font-size: 13px;
+.asm-landing .profile-signoff {
+  font-size: 14px;
   color: var(--ink);
   font-weight: 700;
-  margin-top: 4px;
-  line-height: 1.5;
+  margin-top: 6px;
+  line-height: 1.6;
 }
-@media (prefers-reduced-motion: reduce) {
-  .asm-landing .message-card,
-  .asm-landing .msg-body,
-  .asm-landing .msg-body-inner,
-  .asm-landing .msg-arrow {
-    transition: none;
-  }
+.asm-landing .profile-side {
+  display: flex;
+  flex-direction: column;
+  align-self: start;
+  position: sticky;
+  top: 100px;
+}
+.asm-landing .profile-photo {
+  width: 100%;
+  aspect-ratio: 486 / 652;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: var(--r-lg);
+}
+.asm-landing .profile-side-details {
+  padding-top: 20px;
+}
+.asm-landing .profile-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 6px 0 4px;
+  line-height: 1.3;
+}
+.asm-landing .profile-title {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 10px;
 }
 @media (max-width: 900px) {
-  .asm-landing .messages-row {
+  .asm-landing .profile-row {
     grid-template-columns: 1fr;
-    gap: 16px;
+  }
+  .asm-landing .profile-side {
+    position: static;
+  }
+  .asm-landing .profile-photo {
+    max-width: 240px;
+    margin: 0 auto;
+  }
+  .asm-landing .profile-side-details {
+    text-align: center;
   }
 }
 
 /* ════ ABOUT ASM GLOBAL ════ */
 .asm-landing #asm-global {
-  background: #fff;
+  background: var(--off);
 }
 .asm-landing .global-stats-grid {
   display: grid;
@@ -1061,7 +1023,7 @@
 }
 .asm-landing .global-stat {
   padding: 24px 20px;
-  background: #fafafa;
+  background: #fff;
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
 }
@@ -2708,7 +2670,12 @@
 }
 .asm-landing .footer-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  grid-template-columns: 1.5fr 3fr;
+  gap: 40px;
+}
+.asm-landing .footer-nav-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 40px;
 }
 .asm-landing .footer-brand .fb-tagline {
@@ -2950,7 +2917,11 @@
 /* ════ RESPONSIVE ════ */
 @media (max-width: 1024px) {
   .asm-landing .footer-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+  }
+  .asm-landing .footer-nav-cols {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
   }
   .asm-landing .hero-content {
     grid-template-columns: 1fr;
@@ -2986,8 +2957,19 @@
   .asm-landing .prog-days {
     grid-template-columns: 1fr;
   }
-  .asm-landing .footer-grid {
-    grid-template-columns: 1fr;
+  .asm-landing .footer-nav-cols {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .asm-landing .footer-col h4 {
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+  .asm-landing .footer-col ul {
+    gap: 8px;
+  }
+  .asm-landing .footer-col a {
+    font-size: 12px;
   }
   /* A mobile app's top alert stays one thin row -- the old column stack
      (label / countdown / suffix / CTA / close, each its own line) ran to
