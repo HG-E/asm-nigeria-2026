@@ -2148,47 +2148,60 @@
   color: #fff;
   line-height: 1.6;
 }
-.asm-landing .map-placeholder {
+.asm-landing .venue-map {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--r-lg);
-  height: 340px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+.asm-landing .venue-map-frame {
+  width: 100%;
+  height: 300px;
+  border: 0;
+  display: block;
+  filter: grayscale(0.15) contrast(1.05);
+}
+.asm-landing .venue-map-caption {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 14px;
-  text-align: center;
-  padding: 32px;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
 }
-.asm-landing .map-placeholder .mp-icon {
-  font-size: 52px;
-}
-.asm-landing .map-placeholder .mp-name {
-  font-size: 17px;
+.asm-landing .venue-map .mp-name {
+  font-size: 15px;
   font-weight: 700;
   color: #fff;
 }
-.asm-landing .map-placeholder .mp-addr {
+.asm-landing .venue-map .mp-addr {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.5);
+  margin-top: 2px;
 }
-.asm-landing .map-placeholder a {
+.asm-landing .venue-map-caption a {
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: var(--gold);
   color: var(--blue-d);
   font-weight: 800;
-  font-size: 14px;
-  padding: 13px 24px;
+  font-size: 13px;
+  padding: 11px 18px;
   border-radius: var(--r);
   transition: 0.2s;
-  margin-top: 6px;
 }
-.asm-landing .map-placeholder a:hover {
+.asm-landing .venue-map-caption a:hover {
   background: var(--gold-d);
   transform: translateY(-2px);
+}
+@media (max-width: 640px) {
+  .asm-landing .venue-map-caption {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 /* ════ FAQ ════ */

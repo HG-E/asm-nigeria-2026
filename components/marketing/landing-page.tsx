@@ -1702,11 +1702,21 @@ export function LandingPage() {
                 <div className="vf-card"><div className="vf-label">📅 Dates</div><div className="vf-val"><strong style={{ color: "#fff" }}>22nd – 25th November 2026</strong><br /><span style={{ fontSize: 13, color: "rgba(255,255,255,.5)" }}>4 full days of science and dialogue</span></div></div>
                 <div className="vf-card"><div className="vf-label">🌐 Format</div><div className="vf-val"><strong style={{ color: "var(--gold)" }}>HYBRID</strong>: Attend in Abuja or join virtually from anywhere in the world</div></div>
               </Reveal>
-              <Reveal delay={160} className="map-placeholder">
-                <div className="mp-icon" aria-hidden="true">🗺️</div>
-                <div className="mp-name">National Open University of Nigeria, Abuja Headquarters</div>
-                <div className="mp-addr">Conference Centre · FCT, Nigeria</div>
-                <a href="https://maps.google.com/?q=National+Open+University+of+Nigeria+Abuja" target="_blank" rel="noopener noreferrer" aria-label="View NOUN Abuja on Google Maps">📍 Open in Google Maps →</a>
+              <Reveal delay={160} className="venue-map">
+                <iframe
+                  className="venue-map-frame"
+                  title="National Open University of Nigeria, Abuja Headquarters map"
+                  src="https://www.google.com/maps?q=National+Open+University+of+Nigeria+Abuja&output=embed"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+                <div className="venue-map-caption">
+                  <div>
+                    <div className="mp-name">National Open University of Nigeria, Abuja Headquarters</div>
+                    <div className="mp-addr">Conference Centre &middot; FCT, Nigeria</div>
+                  </div>
+                  <a href="https://maps.google.com/?q=National+Open+University+of+Nigeria+Abuja" target="_blank" rel="noopener noreferrer" aria-label="Open NOUN Abuja in Google Maps">Open in Maps →</a>
+                </div>
               </Reveal>
             </div>
           </div>

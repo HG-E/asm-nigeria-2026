@@ -37,6 +37,10 @@ const nextConfig: NextConfig = {
       "img-src 'self' data: blob: " + SUPABASE_ORIGIN,
       "font-src 'self' data:",
       "connect-src 'self' " + SUPABASE_ORIGIN,
+      // The Venue section embeds a Google Maps iframe -- without this,
+      // frame-src silently falls back to default-src 'self' and the CSP
+      // blocks the embed outright (an empty frame, no visible error).
+      "frame-src https://www.google.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
