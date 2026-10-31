@@ -501,6 +501,7 @@ export function LandingPage() {
   const [openCommittee, setOpenCommittee] = useState<number | null>(null)
   const [openTheme, setOpenTheme] = useState<number | null>(null)
   const [openSpeaker, setOpenSpeaker] = useState<number | null>(null)
+  const [presidentExpanded, setPresidentExpanded] = useState(false)
   const [confCountdown, setConfCountdown] = useState(PENDING_COUNTDOWN)
   const [earlyCountdown, setEarlyCountdown] = useState(PENDING_COUNTDOWN)
   const [earlyExpired, setEarlyExpired] = useState(false)
@@ -1031,58 +1032,59 @@ export function LandingPage() {
         {/* ═══ ABOUT ASM GLOBAL ═══ */}
         {/* Opens the story at the global level, right after the hero: who
             ASM is, before the page narrows to the Nigeria conference itself.
-            A compact stat grid (native HTML/CSS, not slide screenshots --
-            the source deck is 101MB and far too heavy to host as a public
-            asset) plus the short video ASM supplied. */}
+            Text + stats sit beside the video rather than stacked above it,
+            so the section uses the screen's width instead of its height --
+            the previous full-width stack (paragraph, then a 4-across stat
+            row, then the video) ran well past one screen on a laptop. */}
         <section id="asm-global" className="section">
           <div className="wrap">
-            <Reveal>
-              <span className="caption eyebrow" style={{ color: "var(--red)" }}>About ASM Global</span>
-              <h2 className="headline">Microbes Make Our World</h2>
-              <div className="rule" />
-              <p className="body-lg">
-                For over a century, the American Society for Microbiology has connected the people who
-                study the organisms that quietly run the planet &mdash; the scientists turning microbial
-                discovery into better medicine, safer food, cleaner environments and stronger public
-                health systems. ASM Nigeria 2026 is the newest chapter of that community: a conference
-                built in the same spirit, for Africa&apos;s own microbial scientists.
-              </p>
-            </Reveal>
+            <div className="global-row">
+              <Reveal className="global-copy">
+                <span className="caption eyebrow" style={{ color: "var(--red)" }}>About ASM Global</span>
+                <h2 className="headline">Microbes Make Our World</h2>
+                <div className="rule" />
+                <p className="body-lg">
+                  For over a century, the American Society for Microbiology has connected the people
+                  who study the organisms that quietly run the planet &mdash; turning microbial
+                  discovery into better medicine, safer food, cleaner environments and stronger public
+                  health systems. ASM Nigeria 2026 is the newest chapter of that community.
+                </p>
+                <div className="global-stats-grid">
+                  <Reveal delay={0} className="global-stat">
+                    <div className="global-stat-figure">1899</div>
+                    <div className="global-stat-label">Founded &mdash; over a century advancing microbial sciences</div>
+                  </Reveal>
+                  <Reveal delay={60} className="global-stat">
+                    <div className="global-stat-figure">38,000+</div>
+                    <div className="global-stat-label">Peers connected through ASM Connect and global meetings</div>
+                  </Reveal>
+                  <Reveal delay={120} className="global-stat">
+                    <div className="global-stat-figure">17</div>
+                    <div className="global-stat-label">Journals, publishing 15% of all microbiology articles worldwide</div>
+                  </Reveal>
+                  <Reveal delay={180} className="global-stat">
+                    <div className="global-stat-figure">29</div>
+                    <div className="global-stat-label">Countries with ASM-supported lab capacity &mdash; 633 labs, 14,369 staff trained</div>
+                  </Reveal>
+                </div>
+              </Reveal>
 
-            <div className="global-stats-grid">
-              <Reveal delay={0} className="global-stat">
-                <div className="global-stat-figure">1899</div>
-                <div className="global-stat-label">Founded &mdash; over a century advancing microbial sciences</div>
-              </Reveal>
-              <Reveal delay={60} className="global-stat">
-                <div className="global-stat-figure">38,000+</div>
-                <div className="global-stat-label">Peers connected through ASM Connect and global meetings</div>
-              </Reveal>
-              <Reveal delay={120} className="global-stat">
-                <div className="global-stat-figure">17</div>
-                <div className="global-stat-label">Journals, publishing 15% of all microbiology articles worldwide</div>
-              </Reveal>
-              <Reveal delay={180} className="global-stat">
-                <div className="global-stat-figure">29</div>
-                <div className="global-stat-label">Countries with ASM-supported lab capacity &mdash; 633 laboratories, 14,369 healthcare staff trained</div>
+              <Reveal delay={40} className="global-video-side">
+                <video
+                  controls
+                  preload="metadata"
+                  className="global-video"
+                  aria-label="We Are ASM: Microbes Make Our World"
+                >
+                  <source src="/media/we-are-asm.mp4" type="video/mp4" />
+                </video>
+                <p className="global-video-caption">
+                  &ldquo;We Are ASM. Microbes Make Our World.&rdquo; &mdash; courtesy of ASM Global, video
+                  by Kirsten Bartlet. For the full ASM Global overview, visit{" "}
+                  <a href="https://asm.org" target="_blank" rel="noopener noreferrer">asm.org</a>.
+                </p>
               </Reveal>
             </div>
-
-            <Reveal delay={40} className="global-video-block">
-              <video
-                controls
-                preload="metadata"
-                className="global-video"
-                aria-label="We Are ASM: Microbes Make Our World"
-              >
-                <source src="/media/we-are-asm.mp4" type="video/mp4" />
-              </video>
-              <p className="global-video-caption">
-                &ldquo;We Are ASM. Microbes Make Our World.&rdquo; &mdash; courtesy of ASM Global, video by
-                Kirsten Bartlet. For the full ASM Global overview, visit{" "}
-                <a href="https://asm.org" target="_blank" rel="noopener noreferrer">asm.org</a>.
-              </p>
-            </Reveal>
           </div>
         </section>
 
@@ -1149,57 +1151,74 @@ export function LandingPage() {
                   the inaugural ASM Nigeria Scientific Conference, Abuja, Nigeria, November
                   22&ndash;25, 2026:</p>
                 <p>It is my pleasure to welcome all attendees and congratulate the hosts and organizers
-                  of this inaugural scientific conference.</p>
-                <p>With its timely theme, &ldquo;One Health in Action: Advancing Microbial Science for
-                  Human, Animal, Environmental, and Global Health,&rdquo; this conference is an
-                  important step toward strengthening scientific dialogue, professional networks and
-                  collaborative solutions to urgent health and environmental challenges.</p>
-                <p>As we say at ASM, &ldquo;Microbes Make Our World.&rdquo; Microorganisms are essential
-                  to life, shaping human and animal health, food systems, the environment and entire
-                  ecosystems. Understanding their roles and harnessing microbial science are vital to
-                  addressing some of humanity&apos;s most pressing challenges.</p>
-                <p>I am especially pleased that this conference is supported by the 2026 ASM Ambassador
-                  Project Fund (APF). This program reflects the value of international collaboration and
-                  empowers ASM Ambassadors to turn scientific ideas into meaningful activities that
-                  advance microbiology, strengthen professional networks, broaden engagement and address
-                  local challenges. It also demonstrates how strategic support for ambassador-led
-                  initiatives can create meaningful opportunities for scientific exchange, capacity
-                  development and collaboration.</p>
-                <p>The conference theme highlights the critical role of microbial science in tackling
-                  interconnected challenges, including antimicrobial resistance, emerging infectious
-                  diseases, food security, environmental sustainability and resilient health systems. It
-                  also emphasizes the importance of turning discoveries into practical solutions through
-                  multidisciplinary collaboration and a strong One Health approach.</p>
-                <p>To ASM members in Nigeria, thank you for your commitment and active participation.
-                  Your involvement reflects a shared dedication to scientific excellence, professional
-                  growth and the advancement of microbiology. I encourage you to use this conference to
-                  make connections, engage with colleagues from around the world, mentor emerging
-                  scientists and build research partnerships that support Nigeria&apos;s scientific and
-                  public health priorities. Your contributions help keep Nigeria&apos;s microbiology
-                  community vibrant, visible and connected to the global scientific community.</p>
-                <p>I want to recognize ASM Country Ambassador to Nigeria Sylvia Onyinyechi
-                  Anyadoh-Nwadike, PhD, whose vision, leadership and dedication were instrumental in
-                  bringing this conference to life. Her efforts to foster collaboration, promote
-                  mentorship, engage young scientists and strengthen ASM&apos;s presence in Nigeria
-                  deserve recognition. By championing this initiative through the 2026 ASM Ambassador
-                  Project Fund, she has created lasting opportunities for Nigeria&apos;s scientific
-                  community and helped build a vibrant, inclusive microbiology network.</p>
-                <p>Thank you to the conference planning and scientific committees, institutional
-                  partners, sponsors, volunteers, Chief Host and Vice Chancellor of the National Open
-                  University of Nigeria, principal and special guests of honor, and awardees. Your
-                  support and leadership have made this conference possible and reflect a shared
-                  commitment to scientific progress and collaboration.</p>
-                <p>ASM is committed to supporting microbiologists and strengthening scientific capacity
-                  worldwide. I encourage everyone to make the most of this time together by sharing
-                  ideas, building new skills and forming collaborations that extend beyond the
-                  conference. I hope the connections made here lead to meaningful solutions and lasting
-                  opportunities for microbiologists in Nigeria and around the world.</p>
-                <p>On behalf of ASM, I wish you a productive, engaging, and memorable conference.</p>
-                <div className="profile-sign">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/signatures/vaughn-cooper.png" alt="" className="profile-signature" aria-hidden="true" />
-                  <p className="profile-signoff">Warm regards,<br />Vaughn Cooper, PhD<br />ASM President, 2026&ndash;2027</p>
+                  of this inaugural scientific conference. With its timely theme, &ldquo;One Health in
+                  Action: Advancing Microbial Science for Human, Animal, Environmental, and Global
+                  Health,&rdquo; this conference is an important step toward strengthening scientific
+                  dialogue, professional networks and collaborative solutions to urgent health and
+                  environmental challenges.</p>
+
+                <div className={presidentExpanded ? "profile-letter-more open" : "profile-letter-more"}>
+                  <div className="profile-letter-more-inner">
+                    <p>As we say at ASM, &ldquo;Microbes Make Our World.&rdquo; Microorganisms are
+                      essential to life, shaping human and animal health, food systems, the environment
+                      and entire ecosystems. Understanding their roles and harnessing microbial science
+                      are vital to addressing some of humanity&apos;s most pressing challenges.</p>
+                    <p>I am especially pleased that this conference is supported by the 2026 ASM
+                      Ambassador Project Fund (APF). This program reflects the value of international
+                      collaboration and empowers ASM Ambassadors to turn scientific ideas into
+                      meaningful activities that advance microbiology, strengthen professional networks,
+                      broaden engagement and address local challenges. It also demonstrates how
+                      strategic support for ambassador-led initiatives can create meaningful
+                      opportunities for scientific exchange, capacity development and collaboration.</p>
+                    <p>The conference theme highlights the critical role of microbial science in
+                      tackling interconnected challenges, including antimicrobial resistance, emerging
+                      infectious diseases, food security, environmental sustainability and resilient
+                      health systems. It also emphasizes the importance of turning discoveries into
+                      practical solutions through multidisciplinary collaboration and a strong One
+                      Health approach.</p>
+                    <p>To ASM members in Nigeria, thank you for your commitment and active
+                      participation. Your involvement reflects a shared dedication to scientific
+                      excellence, professional growth and the advancement of microbiology. I encourage
+                      you to use this conference to make connections, engage with colleagues from
+                      around the world, mentor emerging scientists and build research partnerships
+                      that support Nigeria&apos;s scientific and public health priorities. Your
+                      contributions help keep Nigeria&apos;s microbiology community vibrant, visible
+                      and connected to the global scientific community.</p>
+                    <p>I want to recognize ASM Country Ambassador to Nigeria Sylvia Onyinyechi
+                      Anyadoh-Nwadike, PhD, whose vision, leadership and dedication were instrumental in
+                      bringing this conference to life. Her efforts to foster collaboration, promote
+                      mentorship, engage young scientists and strengthen ASM&apos;s presence in Nigeria
+                      deserve recognition. By championing this initiative through the 2026 ASM
+                      Ambassador Project Fund, she has created lasting opportunities for Nigeria&apos;s
+                      scientific community and helped build a vibrant, inclusive microbiology network.</p>
+                    <p>Thank you to the conference planning and scientific committees, institutional
+                      partners, sponsors, volunteers, Chief Host and Vice Chancellor of the National
+                      Open University of Nigeria, principal and special guests of honor, and awardees.
+                      Your support and leadership have made this conference possible and reflect a
+                      shared commitment to scientific progress and collaboration.</p>
+                    <p>ASM is committed to supporting microbiologists and strengthening scientific
+                      capacity worldwide. I encourage everyone to make the most of this time together by
+                      sharing ideas, building new skills and forming collaborations that extend beyond
+                      the conference. I hope the connections made here lead to meaningful solutions and
+                      lasting opportunities for microbiologists in Nigeria and around the world.</p>
+                    <p>On behalf of ASM, I wish you a productive, engaging, and memorable conference.</p>
+                    <div className="profile-sign">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="/signatures/vaughn-cooper.png" alt="" className="profile-signature" aria-hidden="true" />
+                      <p className="profile-signoff">Warm regards,<br />Vaughn Cooper, PhD<br />ASM President, 2026&ndash;2027</p>
+                    </div>
+                  </div>
                 </div>
+
+                <button
+                  type="button"
+                  className="profile-readmore"
+                  onClick={() => setPresidentExpanded((v) => !v)}
+                  aria-expanded={presidentExpanded}
+                >
+                  {presidentExpanded ? "Show Less" : "Read Full Letter"}
+                  <span className="profile-readmore-arrow" aria-hidden="true">⌄</span>
+                </button>
               </Reveal>
               <Reveal delay={40} className="profile-side">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
