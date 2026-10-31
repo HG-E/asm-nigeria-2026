@@ -925,53 +925,190 @@
 .asm-landing #why {
   background: #fff;
 }
-.asm-landing .about-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
-  align-items: stretch;
-  margin: 0 0 64px;
-  padding-bottom: 48px;
+.asm-landing .about-conference-full {
+  margin: 0 0 40px;
+  padding-bottom: 40px;
   border-bottom: 1px solid var(--line);
 }
 .asm-landing .about-conference p + p {
   margin-top: 14px;
 }
-.asm-landing .convener-side {
-  display: flex;
-  flex-direction: column;
-  align-self: start;
+
+/* ════ MESSAGES (ASM President + Conference Convener) ════ */
+.asm-landing .messages-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+  margin: 0 0 64px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid var(--line);
 }
-.asm-landing .convener-photo-full {
-  width: 100%;
-  aspect-ratio: 486 / 652;
+.asm-landing .message-card {
+  background: var(--panel, #fafafa);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.asm-landing .msg-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px;
+  cursor: pointer;
+}
+.asm-landing .message-card-static .msg-header {
+  cursor: default;
+}
+.asm-landing .msg-photo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
   object-fit: cover;
   object-position: top center;
-  border-radius: var(--r-lg);
+  flex-shrink: 0;
 }
-.asm-landing .convener-side-details {
-  padding-top: 20px;
+.asm-landing .msg-info {
+  flex: 1;
+  min-width: 0;
 }
-.asm-landing .convener-name {
-  font-size: 20px;
+.asm-landing .msg-name {
+  font-size: 16px;
   font-weight: 800;
   color: var(--ink);
-  margin: 6px 0 4px;
+  margin: 4px 0 2px;
   line-height: 1.3;
 }
-.asm-landing .convener-title {
-  font-size: 14px;
+.asm-landing .msg-title {
+  font-size: 13px;
   color: var(--muted);
   font-weight: 600;
-  margin-bottom: 10px;
+}
+.asm-landing .msg-arrow {
+  margin-left: auto;
+}
+.asm-landing .message-card.open .msg-arrow {
+  transform: rotate(180deg);
+  color: var(--red);
+}
+.asm-landing .msg-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.asm-landing .message-card.open .msg-body {
+  grid-template-rows: 1fr;
+}
+.asm-landing .msg-body-inner {
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.asm-landing .message-card.open .msg-body-inner {
+  opacity: 1;
+  transition: opacity 0.35s ease 0.1s;
+}
+.asm-landing .msg-text {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+  border-top: 1px solid var(--line);
+  margin: 0 20px;
+  padding: 20px 0 28px;
+}
+.asm-landing .msg-text p + p {
+  margin-top: 12px;
+}
+.asm-landing .msg-sign {
+  margin-top: 20px;
+}
+.asm-landing .msg-signature {
+  height: 48px;
+  object-fit: contain;
+  display: block;
+}
+.asm-landing .msg-signoff {
+  font-size: 13px;
+  color: var(--ink);
+  font-weight: 700;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+@media (prefers-reduced-motion: reduce) {
+  .asm-landing .message-card,
+  .asm-landing .msg-body,
+  .asm-landing .msg-body-inner,
+  .asm-landing .msg-arrow {
+    transition: none;
+  }
 }
 @media (max-width: 900px) {
-  .asm-landing .about-row {
+  .asm-landing .messages-row {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
-  .asm-landing .convener-photo-full {
-    max-width: 320px;
-    margin: 0 auto;
+}
+
+/* ════ ABOUT ASM GLOBAL ════ */
+.asm-landing #asm-global {
+  background: #fff;
+}
+.asm-landing .global-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin: 40px 0 48px;
+}
+.asm-landing .global-stat {
+  padding: 24px 20px;
+  background: #fafafa;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+.asm-landing .global-stat-figure {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--red);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.asm-landing .global-stat-label {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.asm-landing .global-video-block {
+  max-width: 720px;
+}
+.asm-landing .global-video {
+  width: 100%;
+  border-radius: var(--r-lg);
+  background: #000;
+  display: block;
+}
+.asm-landing .global-video-caption {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.asm-landing .global-video-caption a {
+  color: var(--red);
+  font-weight: 600;
+}
+@media (max-width: 900px) {
+  .asm-landing .global-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin: 28px 0 36px;
+  }
+  .asm-landing .global-stat {
+    padding: 18px 16px;
+  }
+  .asm-landing .global-stat-figure {
+    font-size: 26px;
   }
 }
 .asm-landing .why-grid {
