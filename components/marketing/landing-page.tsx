@@ -1038,37 +1038,19 @@ export function LandingPage() {
             row, then the video) ran well past one screen on a laptop. */}
         <section id="asm-global" className="section">
           <div className="wrap">
-            <div className="global-row">
-              <Reveal className="global-copy">
-                <span className="caption eyebrow" style={{ color: "var(--red)" }}>About ASM Global</span>
-                <h2 className="headline">Microbes Make Our World</h2>
-                <div className="rule" />
-                <p className="body-lg">
-                  For over a century, the American Society for Microbiology has connected the people
-                  who study the organisms that quietly run the planet &mdash; turning microbial
-                  discovery into better medicine, safer food, cleaner environments and stronger public
-                  health systems. ASM Nigeria 2026 is the newest chapter of that community.
-                </p>
-                <div className="global-stats-grid">
-                  <Reveal delay={0} className="global-stat">
-                    <div className="global-stat-figure">1899</div>
-                    <div className="global-stat-label">Founded &mdash; over a century advancing microbial sciences</div>
-                  </Reveal>
-                  <Reveal delay={60} className="global-stat">
-                    <div className="global-stat-figure">38,000+</div>
-                    <div className="global-stat-label">Peers connected through ASM Connect and global meetings</div>
-                  </Reveal>
-                  <Reveal delay={120} className="global-stat">
-                    <div className="global-stat-figure">17</div>
-                    <div className="global-stat-label">Journals, publishing 15% of all microbiology articles worldwide</div>
-                  </Reveal>
-                  <Reveal delay={180} className="global-stat">
-                    <div className="global-stat-figure">29</div>
-                    <div className="global-stat-label">Countries with ASM-supported lab capacity &mdash; 633 labs, 14,369 staff trained</div>
-                  </Reveal>
-                </div>
-              </Reveal>
+            <Reveal className="global-intro">
+              <span className="caption eyebrow" style={{ color: "var(--red)" }}>About ASM Global</span>
+              <h2 className="headline">Microbes Make Our World</h2>
+              <div className="rule" />
+              <p className="body-lg">
+                For over a century, the American Society for Microbiology has connected the people
+                who study the organisms that quietly run the planet &mdash; turning microbial
+                discovery into better medicine, safer food, cleaner environments and stronger public
+                health systems. ASM Nigeria 2026 is the newest chapter of that community.
+              </p>
+            </Reveal>
 
+            <div className="global-row">
               <Reveal delay={40} className="global-video-side">
                 <video
                   controls
@@ -1084,6 +1066,27 @@ export function LandingPage() {
                   <a href="https://asm.org" target="_blank" rel="noopener noreferrer">asm.org</a>.
                 </p>
               </Reveal>
+
+              <Reveal delay={80} className="global-stats-side">
+                <div className="global-stats-grid">
+                  <div className="global-stat">
+                    <div className="global-stat-figure">1899</div>
+                    <div className="global-stat-label">Founded &mdash; over a century advancing microbial sciences</div>
+                  </div>
+                  <div className="global-stat">
+                    <div className="global-stat-figure">38,000+</div>
+                    <div className="global-stat-label">Peers connected through ASM Connect and global meetings</div>
+                  </div>
+                  <div className="global-stat">
+                    <div className="global-stat-figure">17</div>
+                    <div className="global-stat-label">Journals, publishing 15% of all microbiology articles worldwide</div>
+                  </div>
+                  <div className="global-stat">
+                    <div className="global-stat-figure">29</div>
+                    <div className="global-stat-label">Countries with ASM-supported lab capacity &mdash; 633 labs, 14,369 staff trained</div>
+                  </div>
+                </div>
+              </Reveal>
             </div>
           </div>
         </section>
@@ -1097,11 +1100,13 @@ export function LandingPage() {
             text and its own portrait, not both stacked together. */}
         <section id="about" className="section">
           <div className="wrap">
+            <Reveal className="profile-intro">
+              <span className="caption eyebrow" style={{ color: "var(--red)" }}>About the Conference</span>
+              <h2 className="headline">A National Platform for Scientific Exchange</h2>
+              <div className="rule" />
+            </Reveal>
             <div className="profile-row">
               <Reveal className="profile-copy">
-                <span className="caption eyebrow" style={{ color: "var(--red)" }}>About the Conference</span>
-                <h2 className="headline">A National Platform for Scientific Exchange</h2>
-                <div className="rule" />
                 <p className="body-lg">
                   The maiden ASM Nigeria Scientific Conference brings One Health onto one stage:
                   microbiologists, clinicians, veterinarians, environmental scientists, public health
@@ -1142,11 +1147,22 @@ export function LandingPage() {
             rewrite. */}
         <section id="president-message" className="section">
           <div className="wrap">
-            <div className="profile-row">
-              <Reveal className="profile-copy profile-copy-letter">
-                <span className="caption eyebrow" style={{ color: "var(--red)" }}>A Message from ASM Global</span>
-                <h2 className="headline" style={{ color: "#000" }}>Welcome From Your ASM President</h2>
-                <div className="rule" />
+            <Reveal className="profile-intro">
+              <span className="caption eyebrow" style={{ color: "var(--red)" }}>A Message from ASM Global</span>
+              <h2 className="headline" style={{ color: "#000" }}>Welcome From Your ASM President</h2>
+              <div className="rule" />
+            </Reveal>
+            <div className="profile-row profile-row-reverse">
+              <Reveal className="profile-side">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/speakers/vaughn-cooper.jpg" alt="Vaughn Cooper, PhD" className="profile-photo" />
+                <div className="profile-side-details">
+                  <span className="caption eyebrow" style={{ color: "var(--gold-d)" }}>ASM President</span>
+                  <h3 className="profile-name">Vaughn Cooper, PhD</h3>
+                  <p className="profile-title">ASM President &middot; 2026&ndash;2027</p>
+                </div>
+              </Reveal>
+              <Reveal delay={40} className="profile-copy profile-copy-letter">
                 <p>To the organizers, ASM members in Nigeria, distinguished guests and participants of
                   the inaugural ASM Nigeria Scientific Conference, Abuja, Nigeria, November
                   22&ndash;25, 2026:</p>
@@ -1219,15 +1235,6 @@ export function LandingPage() {
                   {presidentExpanded ? "Show Less" : "Read Full Letter"}
                   <span className="profile-readmore-arrow" aria-hidden="true">⌄</span>
                 </button>
-              </Reveal>
-              <Reveal delay={40} className="profile-side">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/speakers/vaughn-cooper.jpg" alt="Vaughn Cooper, PhD" className="profile-photo" />
-                <div className="profile-side-details">
-                  <span className="caption eyebrow" style={{ color: "var(--gold-d)" }}>ASM President</span>
-                  <h3 className="profile-name">Vaughn Cooper, PhD</h3>
-                  <p className="profile-title">ASM President &middot; 2026&ndash;2027</p>
-                </div>
               </Reveal>
             </div>
           </div>

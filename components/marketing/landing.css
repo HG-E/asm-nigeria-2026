@@ -936,16 +936,21 @@
 .asm-landing #president-message {
   background: var(--off);
 }
+.asm-landing .profile-intro {
+  margin-bottom: 28px;
+}
 .asm-landing .profile-row {
   display: grid;
-  /* Text carries the section; the portrait is a fixed-size card beside it,
-     not a half-width poster -- at a 1:1 split the portrait's 486:652
-     aspect ratio made it taller than the text column and pushed the
-     section past one screen on a laptop. */
-  grid-template-columns: 1.3fr minmax(260px, 320px);
+  /* The text column's natural height (2 short paragraphs, or the full
+     letter once expanded) sets the row height; align-items: stretch makes
+     the portrait card match it exactly, top and bottom, instead of
+     sitting at a fixed height of its own. */
+  grid-template-columns: 1.3fr minmax(240px, 320px);
   gap: 40px;
-  align-items: start;
-  justify-content: start;
+  align-items: stretch;
+}
+.asm-landing .profile-row-reverse {
+  grid-template-columns: minmax(240px, 320px) 1.3fr;
 }
 .asm-landing .profile-copy p + p {
   margin-top: 14px;
@@ -1018,9 +1023,7 @@
 .asm-landing .profile-side {
   display: flex;
   flex-direction: column;
-  align-self: start;
-  position: sticky;
-  top: 100px;
+  height: 100%;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
@@ -1029,12 +1032,14 @@
 }
 .asm-landing .profile-photo {
   width: 100%;
-  aspect-ratio: 486 / 652;
+  flex: 1 1 auto;
+  min-height: 220px;
   object-fit: cover;
   object-position: top center;
   border-radius: var(--r-md, 10px);
 }
 .asm-landing .profile-side-details {
+  flex-shrink: 0;
   padding-top: 16px;
 }
 .asm-landing .profile-name {
@@ -1058,13 +1063,28 @@
   }
 }
 @media (max-width: 900px) {
-  .asm-landing .profile-row {
+  .asm-landing .profile-row,
+  .asm-landing .profile-row-reverse {
     grid-template-columns: 1fr;
   }
   .asm-landing .profile-side {
-    position: static;
+    height: auto;
     max-width: 240px;
     margin: 0 auto;
+  }
+  /* Desktop puts the President's portrait first (left) to mirror the
+     Convener section reversed -- on the mobile single column, both
+     sections keep the same reading order regardless: text first, portrait
+     after, so the letter itself is still the first thing read. */
+  .asm-landing .profile-row-reverse .profile-side {
+    order: 2;
+  }
+  .asm-landing .profile-row-reverse .profile-copy {
+    order: 1;
+  }
+  .asm-landing .profile-photo {
+    aspect-ratio: 486 / 652;
+    min-height: 0;
   }
   .asm-landing .profile-side-details {
     text-align: center;
@@ -1075,41 +1095,22 @@
 .asm-landing #asm-global {
   background: var(--off);
 }
+.asm-landing .global-intro {
+  max-width: 760px;
+  margin-bottom: 36px;
+}
 .asm-landing .global-row {
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 48px;
-  align-items: start;
-}
-.asm-landing .global-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin: 28px 0 0;
-}
-.asm-landing .global-stat {
-  padding: 18px 18px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-}
-.asm-landing .global-stat-figure {
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--red);
-  line-height: 1.1;
-  font-variant-numeric: tabular-nums;
-}
-.asm-landing .global-stat-label {
-  margin-top: 8px;
-  font-size: 12.5px;
-  color: var(--muted);
-  font-weight: 600;
-  line-height: 1.5;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 32px;
+  /* Video's own aspect ratio sets the row height; the stats column
+     stretches to match it exactly top and bottom, its tiles growing to
+     fill the space rather than sitting at a fixed size of their own. */
+  align-items: stretch;
 }
 .asm-landing .global-video-side {
-  position: sticky;
-  top: 100px;
+  display: flex;
+  flex-direction: column;
 }
 .asm-landing .global-video {
   width: 100%;
@@ -1127,17 +1128,52 @@
   color: var(--red);
   font-weight: 600;
 }
+.asm-landing .global-stats-side {
+  height: 100%;
+}
+.asm-landing .global-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 16px;
+  height: 100%;
+}
+.asm-landing .global-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+.asm-landing .global-stat-figure {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--red);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.asm-landing .global-stat-label {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+  line-height: 1.5;
+}
 @media (max-width: 900px) {
   .asm-landing .global-row {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
-  .asm-landing .global-video-side {
-    position: static;
+  .asm-landing .global-stats-side {
+    height: auto;
   }
   .asm-landing .global-stats-grid {
     grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: none;
     gap: 14px;
-    margin: 24px 0 0;
+    height: auto;
   }
   .asm-landing .global-stat {
     padding: 18px 16px;
