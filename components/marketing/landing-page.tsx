@@ -1145,7 +1145,7 @@ export function LandingPage() {
             <div className="profile-row">
               <Reveal className="profile-copy profile-copy-letter">
                 <span className="caption eyebrow" style={{ color: "var(--red)" }}>A Message from ASM Global</span>
-                <h2 className="headline">Welcome From Your ASM President</h2>
+                <h2 className="headline" style={{ color: "#000" }}>Welcome From Your ASM President</h2>
                 <div className="rule" />
                 <p>To the organizers, ASM members in Nigeria, distinguished guests and participants of
                   the inaugural ASM Nigeria Scientific Conference, Abuja, Nigeria, November
