@@ -940,17 +940,22 @@
   margin-bottom: 28px;
 }
 .asm-landing .profile-row {
-  display: grid;
-  /* The text column's natural height (2 short paragraphs, or the full
-     letter once expanded) sets the row height; align-items: stretch makes
-     the portrait card match it exactly, top and bottom, instead of
-     sitting at a fixed height of its own. */
-  grid-template-columns: 1.3fr minmax(240px, 320px);
-  gap: 40px;
-  align-items: stretch;
+  /* The portrait card is pinned absolutely (top:0 to bottom:0) inside this
+     relative container, rather than sized as a normal grid/flex sibling --
+     a sibling's own "natural" height (an object-fit image with a tall
+     source photo) can end up taller than the text and get *everything*
+     stretched to match the photo instead of the other way around. Pinning
+     it guarantees the reverse: only .profile-copy is in normal flow, so
+     it alone sets the row's height, and the photo always fills exactly
+     that height, however long the text turns out to be. */
+  position: relative;
 }
-.asm-landing .profile-row-reverse {
-  grid-template-columns: minmax(240px, 320px) 1.3fr;
+.asm-landing .profile-copy {
+  margin-right: 348px;
+}
+.asm-landing .profile-row-reverse .profile-copy {
+  margin-right: 0;
+  margin-left: 348px;
 }
 .asm-landing .profile-copy p + p {
   margin-top: 14px;
@@ -960,80 +965,31 @@
   color: var(--muted);
   line-height: 1.75;
 }
-.asm-landing .profile-letter-more {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.asm-landing .profile-letter-more.open {
-  grid-template-rows: 1fr;
-}
-.asm-landing .profile-letter-more-inner {
-  overflow: hidden;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-.asm-landing .profile-letter-more.open .profile-letter-more-inner {
-  opacity: 1;
-  transition: opacity 0.4s ease 0.1s;
-}
-.asm-landing .profile-letter-more-inner p + p {
+.asm-landing .profile-copy-letter p + p {
   margin-top: 14px;
 }
-.asm-landing .profile-readmore {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 18px;
-  padding: 10px 18px;
-  background: none;
-  border: 1px solid var(--red);
-  border-radius: 999px;
-  color: var(--red);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.2s;
-}
-.asm-landing .profile-readmore:hover {
-  background: var(--red);
-  color: #fff;
-}
-.asm-landing .profile-readmore-arrow {
-  transition: transform 0.3s;
-}
-.asm-landing .profile-readmore[aria-expanded="true"] .profile-readmore-arrow {
-  transform: rotate(180deg);
-}
-.asm-landing .profile-sign {
-  margin-top: 24px;
-}
-.asm-landing .profile-signature {
-  height: 48px;
-  object-fit: contain;
-  display: block;
-}
-.asm-landing .profile-signoff {
-  font-size: 14px;
-  color: var(--ink);
-  font-weight: 700;
-  margin-top: 6px;
-  line-height: 1.6;
-}
 .asm-landing .profile-side {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 308px;
   display: flex;
   flex-direction: column;
-  height: 100%;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   padding: 20px;
   box-shadow: 0 1px 3px rgba(16, 24, 56, 0.05);
 }
+.asm-landing .profile-row-reverse .profile-side {
+  right: auto;
+  left: 0;
+}
 .asm-landing .profile-photo {
   width: 100%;
   flex: 1 1 auto;
-  min-height: 220px;
+  min-height: 0;
   object-fit: cover;
   object-position: top center;
   border-radius: var(--r-md, 10px);
@@ -1055,36 +1011,29 @@
   font-weight: 600;
   margin-bottom: 0;
 }
-@media (prefers-reduced-motion: reduce) {
-  .asm-landing .profile-letter-more,
-  .asm-landing .profile-letter-more-inner,
-  .asm-landing .profile-readmore-arrow {
-    transition: none;
-  }
-}
 @media (max-width: 900px) {
-  .asm-landing .profile-row,
-  .asm-landing .profile-row-reverse {
-    grid-template-columns: 1fr;
+  /* The absolute-positioned pinning is a desktop-only trick for matching
+     column heights side by side -- on the single mobile column the photo
+     goes back to being a normal, modestly-sized block above the text. */
+  .asm-landing .profile-row {
+    display: flex;
+    flex-direction: column;
+  }
+  .asm-landing .profile-copy,
+  .asm-landing .profile-row-reverse .profile-copy {
+    margin: 0;
+    order: 1;
   }
   .asm-landing .profile-side {
-    height: auto;
+    position: static;
+    width: auto;
     max-width: 240px;
-    margin: 0 auto;
-  }
-  /* Desktop puts the President's portrait first (left) to mirror the
-     Convener section reversed -- on the mobile single column, both
-     sections keep the same reading order regardless: text first, portrait
-     after, so the letter itself is still the first thing read. */
-  .asm-landing .profile-row-reverse .profile-side {
+    margin: 0 auto 24px;
     order: 2;
-  }
-  .asm-landing .profile-row-reverse .profile-copy {
-    order: 1;
   }
   .asm-landing .profile-photo {
     aspect-ratio: 486 / 652;
-    min-height: 0;
+    flex: none;
   }
   .asm-landing .profile-side-details {
     text-align: center;
