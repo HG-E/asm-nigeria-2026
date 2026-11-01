@@ -951,11 +951,21 @@
   position: relative;
 }
 .asm-landing .profile-copy {
-  margin-right: 348px;
+  margin-right: 380px;
+  /* A floor so the portrait card (pinned to this column's height) is never
+     forced shorter than a naturally-proportioned photo needs -- without
+     it, a short writeup (About the Conference's two paragraphs) squeezed
+     the card down and the photo had to crop in hard to still fill it.
+     flex+center then keeps short text looking deliberately placed rather
+     than glued to the top with dead space below. */
+  min-height: 560px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .asm-landing .profile-row-reverse .profile-copy {
   margin-right: 0;
-  margin-left: 348px;
+  margin-left: 380px;
 }
 .asm-landing .profile-copy p + p {
   margin-top: 14px;
@@ -973,9 +983,17 @@
   top: 0;
   bottom: 0;
   right: 0;
-  width: 308px;
+  width: 340px;
   display: flex;
   flex-direction: column;
+  /* The card's outer box still matches the text column's height exactly
+     (pinned top/bottom) -- but the photo itself keeps a normal portrait
+     aspect ratio instead of being force-stretched to fill that whole box.
+     Forcing a real photo to cover a very tall, narrow box (the full
+     President letter runs well past 1000px) zooms it in aggressively and
+     crops most of the face out; centering a properly-proportioned photo
+     in the available space reads as an actual portrait, not a sliver. */
+  justify-content: center;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
@@ -988,8 +1006,8 @@
 }
 .asm-landing .profile-photo {
   width: 100%;
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: none;
+  aspect-ratio: 486 / 652;
   object-fit: cover;
   object-position: top center;
   border-radius: var(--r-md, 10px);
@@ -1022,6 +1040,8 @@
   .asm-landing .profile-copy,
   .asm-landing .profile-row-reverse .profile-copy {
     margin: 0;
+    min-height: 0;
+    display: block;
     order: 1;
   }
   .asm-landing .profile-side {
