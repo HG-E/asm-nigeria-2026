@@ -953,15 +953,16 @@
 .asm-landing .profile-copy {
   margin-right: 380px;
   /* A floor so the portrait card (pinned to this column's height) is never
-     forced shorter than a naturally-proportioned photo needs -- without
-     it, a short writeup (About the Conference's two paragraphs) squeezed
-     the card down and the photo had to crop in hard to still fill it.
-     flex+center then keeps short text looking deliberately placed rather
-     than glued to the top with dead space below. */
-  min-height: 560px;
+     forced shorter than a naturally-proportioned photo needs. Top-aligned
+     (not centered): centering had made the text start partway down the
+     column while the photo started right at the top, which read as
+     *more* misaligned than a plain top edge match with empty space below
+     a shorter writeup -- matching starts is what the eye actually judges
+     alignment by. */
+  min-height: 500px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 }
 .asm-landing .profile-row-reverse .profile-copy {
   margin-right: 0;

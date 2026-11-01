@@ -1120,6 +1120,13 @@ export function LandingPage() {
                   generation of microbial scientists and strengthen microbiology&apos;s contribution to
                   Nigeria&apos;s health, research and sustainable development agenda.
                 </p>
+                <p className="body-lg">
+                  Convened under the leadership of the ASM Country Ambassador to Nigeria, the
+                  conference brings this global community to Abuja for the first time, hosted at the
+                  National Open University of Nigeria from 22&ndash;25 November 2026. It is both a
+                  scientific gathering and a statement of intent: that Nigeria&apos;s microbiology
+                  community has a seat at the table shaping the field&apos;s next chapter.
+                </p>
               </Reveal>
               <Reveal delay={40} className="profile-side">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
