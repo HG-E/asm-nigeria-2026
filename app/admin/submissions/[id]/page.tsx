@@ -11,9 +11,10 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AbstractBody } from "@/components/submission/abstract-body"
 import { FormattingEditor } from "@/components/submission/formatting-editor"
+import { RevisionTitleForm } from "@/components/submission/revision-title-form"
 import { canFormatStatus } from "@/lib/abstract-formatting"
 import { isStructured, sectionsFromVersion } from "@/lib/abstract-structure"
-import { adminUpdateFormattingAction } from "./actions"
+import { adminUpdateFormattingAction, adminUpdateRevisionTitleAction } from "./actions"
 import { requireRole } from "@/lib/auth"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
@@ -187,7 +188,21 @@ export default async function AdminSubmissionDetailPage(
         </CardContent>
       </Card>
 
-      {canFormatStatus(submission.status) && (
+      {submission.status === "revision_required" && (
+        <details className="rounded-lg border p-3" open>
+          <summary className="cursor-pointer text-sm font-medium">
+            Make the reviewer&apos;s requested title/keyword change on the author&apos;s behalf
+          </summary>
+          <div className="mt-3">
+            <RevisionTitleForm
+              initial={{ title: submission.title, keywords: submission.keywords ?? [] }}
+              save={adminUpdateRevisionTitleAction.bind(null, id)}
+            />
+          </div>
+        </details>
+      )}
+
+      {canFormatStatus(submission.status) && submission.status !== "revision_required" && (
         <details className="rounded-lg border p-3">
           <summary className="cursor-pointer text-sm font-medium">
             Fix italics and other formatting on the author&apos;s behalf
@@ -200,7 +215,7 @@ export default async function AdminSubmissionDetailPage(
                 sections: version && isStructured(version) ? sectionsFromVersion(version) : null,
               }}
               save={adminUpdateFormattingAction.bind(null, id)}
-              sectionsEditable={submission.status !== "revision_required"}
+              sectionsEditable={true}
             />
           </div>
         </details>

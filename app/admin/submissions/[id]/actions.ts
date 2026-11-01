@@ -4,12 +4,18 @@ import { revalidatePath } from "next/cache"
 import { after } from "next/server"
 
 import { applyFormattingOnly } from "@/lib/abstract-formatting"
+import { normalizeKeywords, normalizeTitle } from "@/lib/abstract-structure"
 import { requireRole } from "@/lib/auth"
 import { createDecisionDocuments, formatAuthorList, isAcceptDecision } from "@/lib/decision-documents"
 import { sendNotifications } from "@/lib/notifications"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
-import { formattingSchema, type FormattingFormInput } from "@/lib/validations/submission"
+import {
+  formattingSchema,
+  revisionTitleSchema,
+  type FormattingFormInput,
+  type RevisionTitleInput,
+} from "@/lib/validations/submission"
 import type { Database } from "@/types/database"
 import { toPlain } from "@/lib/rich-text"
 
@@ -385,6 +391,48 @@ export async function adminUpdateFormattingAction(
     role: "admin",
   })
   if ("error" in result) return result
+
+  revalidatePath(`/admin/submissions/${submissionId}`)
+  revalidatePath(`/author/submissions/${submissionId}`)
+  return { success: true }
+}
+
+// The admin-side counterpart of the author's updateRevisionTitleAction, for
+// when ASM makes the reviewer's requested wording change on the author's
+// behalf. A real edit, not formatting-only -- scoped to a submission that is
+// actually sitting in revision_required, same as the author's own version.
+export async function adminUpdateRevisionTitleAction(
+  submissionId: string,
+  input: RevisionTitleInput
+): Promise<ActionResult> {
+  await requireRole("admin")
+  const parsed = revisionTitleSchema.safeParse(input)
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" }
+  }
+
+  const supabase = await createClient()
+  const { data: submission } = await supabase
+    .from("submissions")
+    .select("id, status")
+    .eq("id", submissionId)
+    .maybeSingle()
+
+  if (!submission || submission.status !== "revision_required") {
+    return { error: "This submission is not open for revision." }
+  }
+
+  const { error } = await supabase
+    .from("submissions")
+    .update({
+      title: normalizeTitle(parsed.data.title),
+      keywords: normalizeKeywords(parsed.data.keywords),
+    })
+    .eq("id", submissionId)
+
+  if (error) {
+    return { error: "Could not save. Please try again." }
+  }
 
   revalidatePath(`/admin/submissions/${submissionId}`)
   revalidatePath(`/author/submissions/${submissionId}`)

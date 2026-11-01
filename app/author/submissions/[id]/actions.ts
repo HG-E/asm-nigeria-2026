@@ -25,8 +25,10 @@ import {
   step3Schema,
   formattingSchema,
   step4Schema,
+  revisionTitleSchema,
   WITHDRAWABLE_STATUSES,
   type FormattingFormInput,
+  type RevisionTitleInput,
   type Step1Input,
   type Step2Input,
   type Step3Input,
@@ -480,6 +482,41 @@ export async function saveRevisionAction(id: string, input: Step3Input): Promise
     return { error: "Could not save. Please try again." }
   }
 
+  return { success: true }
+}
+
+// A revision is exactly the moment the title/keywords are *supposed* to
+// change -- that's usually the whole point of the reviewer's note (fix a
+// capitalization, drop a word, un-italicize a species name). Unlike
+// updateFormattingAction below, this does not compare words against what's
+// stored; it's a real edit, scoped to a submission that's actually open for
+// revision and owned by the caller.
+export async function updateRevisionTitleAction(id: string, input: RevisionTitleInput): Promise<ActionResult> {
+  const session = await requireAuth()
+  const parsed = revisionTitleSchema.safeParse(input)
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" }
+  }
+
+  const supabase = await createClient()
+  const submission = await loadOwnRevisableSubmission(supabase, id, session.authUserId)
+  if (!submission) {
+    return { error: "This submission is not open for revision." }
+  }
+
+  const { error } = await supabase
+    .from("submissions")
+    .update({
+      title: normalizeTitle(parsed.data.title),
+      keywords: normalizeKeywords(parsed.data.keywords),
+    })
+    .eq("id", id)
+
+  if (error) {
+    return { error: "Could not save. Please try again." }
+  }
+
+  revalidatePath(`/author/submissions/${id}`)
   return { success: true }
 }
 

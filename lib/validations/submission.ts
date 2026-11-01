@@ -33,6 +33,12 @@ export const step1Schema = z.object({
 })
 export type Step1Input = z.infer<typeof step1Schema>
 
+// Same title/keyword rules as step 1, for the one other place they're edited
+// as plain text: a revision. Picked from step1Schema (not redefined) so the
+// two can never quietly drift apart.
+export const revisionTitleSchema = step1Schema.pick({ title: true, keywords: true })
+export type RevisionTitleInput = z.infer<typeof revisionTitleSchema>
+
 export const coAuthorSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required"),
   lastName: z.string().trim().min(1, "Last name is required"),

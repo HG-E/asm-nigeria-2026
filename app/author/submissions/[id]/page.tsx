@@ -6,6 +6,7 @@ import { PaymentStep } from "@/components/submission/payment-step"
 import { FormattingEditor } from "@/components/submission/formatting-editor"
 import { RestructureAbstractForm } from "@/components/submission/restructure-abstract-form"
 import { RevisionForm } from "@/components/submission/revision-form"
+import { RevisionTitleForm } from "@/components/submission/revision-title-form"
 import { Step1Form } from "@/components/submission/step1-form"
 import { Step2Form } from "@/components/submission/step2-form"
 import { Step3Form } from "@/components/submission/step3-form"
@@ -35,6 +36,7 @@ import {
   updateContentAction,
   updateDeclarationsAction,
   updateFormattingAction,
+  updateRevisionTitleAction,
   updateStep1Action,
 } from "./actions"
 import { RichText } from "@/components/submission/rich-text"
@@ -152,10 +154,9 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
             </Alert>
           )}
 
-          <FormattingEditor
-            initial={{ title: submission.title, keywords: submission.keywords ?? [], sections: null }}
-            save={updateFormattingAction.bind(null, id)}
-            sectionsEditable={false}
+          <RevisionTitleForm
+            initial={{ title: submission.title, keywords: submission.keywords ?? [] }}
+            save={updateRevisionTitleAction.bind(null, id)}
           />
 
           <RevisionForm
