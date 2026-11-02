@@ -88,7 +88,10 @@ export function Step6Review({
           <RichText value={title} />
         </h3>
         <p className="text-muted-foreground">
-          {subthemeName} &middot; {presentationPreference}
+          {/* Stored as lowercase ("either"/"oral"/"poster"); same raw-value
+              display gap as the Select fixes elsewhere, just as plain text
+              here instead of a dropdown. */}
+          {subthemeName} &middot; {presentationPreference.charAt(0).toUpperCase() + presentationPreference.slice(1)}
         </p>
         {keywords.length > 0 && (
           <div className="flex flex-wrap gap-1 pt-1">
