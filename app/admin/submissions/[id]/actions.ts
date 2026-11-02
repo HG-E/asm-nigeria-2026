@@ -42,7 +42,7 @@ export async function assignReviewerAction(
 
   const { data: submission } = await supabase
     .from("submissions")
-    .select("conference_id, status")
+    .select("conference_id, status, conferences(review_deadline)")
     .eq("id", submissionId)
     .single()
 
@@ -50,13 +50,58 @@ export async function assignReviewerAction(
     return { error: "Submission not found." }
   }
 
-  const { error } = await supabase.from("review_assignments").insert({
-    submission_id: submissionId,
-    reviewer_id: reviewerId,
-    conference_id: submission.conference_id,
-    status: "pending",
-    assigned_by: session.authUserId,
-  })
+  // submit_abstract() sets due_date from the conference's review_deadline
+  // when auto-routing on first submission -- this manual path (used when
+  // nobody matched by subtheme, or an extra reviewer is needed) never did,
+  // so a manually-assigned reviewer's due date showed as "--" on both
+  // dashboards, never counted as overdue, and -- the bigger problem --
+  // app/api/cron/reminders/route.ts filters on due_date is not null, so
+  // they never received a single deadline reminder email either.
+  const reviewDeadline = submission.conferences?.review_deadline ?? null
+
+  // review_assignments_submission_reviewer_key is a plain unique constraint
+  // on (submission_id, reviewer_id) -- not scoped to is_active -- while
+  // removeAssignmentAction only soft-deletes (is_active = false). So a
+  // reviewer who was ever removed from this submission, even once, could
+  // never be re-assigned to it again: the INSERT below would always hit the
+  // constraint and report "already assigned," which is actively misleading
+  // once they're no longer showing as assigned anywhere in the UI.
+  // Reactivate the existing row instead of inserting a fresh one when a
+  // prior (now-inactive) assignment is found, same as a fresh assignment in
+  // every way that matters to the reviewer and the committee.
+  const { data: existing } = await supabase
+    .from("review_assignments")
+    .select("id, is_active")
+    .eq("submission_id", submissionId)
+    .eq("reviewer_id", reviewerId)
+    .maybeSingle()
+
+  if (existing?.is_active) {
+    return { error: "This reviewer is already assigned to this submission." }
+  }
+
+  const { error } = existing
+    ? await supabase
+        .from("review_assignments")
+        .update({
+          is_active: true,
+          status: "pending",
+          assigned_by: session.authUserId,
+          due_date: reviewDeadline,
+          accepted_at: null,
+          completed_at: null,
+          conflict_declared_at: null,
+          conflict_reason: null,
+        })
+        .eq("id", existing.id)
+    : await supabase.from("review_assignments").insert({
+        submission_id: submissionId,
+        reviewer_id: reviewerId,
+        conference_id: submission.conference_id,
+        status: "pending",
+        assigned_by: session.authUserId,
+        due_date: reviewDeadline,
+      })
 
   if (error) {
     if (error.code === "23505") {
@@ -411,8 +456,8 @@ export async function adminUpdateRevisionTitleAction(
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" }
   }
 
-  const supabase = await createClient()
-  const { data: submission } = await supabase
+  const admin = createAdminClient()
+  const { data: submission } = await admin
     .from("submissions")
     .select("id, status")
     .eq("id", submissionId)
@@ -422,7 +467,7 @@ export async function adminUpdateRevisionTitleAction(
     return { error: "This submission is not open for revision." }
   }
 
-  const { error } = await supabase
+  const { error } = await admin
     .from("submissions")
     .update({
       title: normalizeTitle(parsed.data.title),

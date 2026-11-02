@@ -469,7 +469,15 @@ export async function saveRevisionAction(id: string, input: Step3Input): Promise
   const built = await buildVersionFields(parsed.data)
   if ("error" in built) return { error: built.error }
 
-  const { error } = await supabase.from("submission_versions").upsert(
+  // Ownership+status is already verified above via the author's own
+  // session; the write itself goes through the admin client, same as
+  // updateRevisionTitleAction and payment-actions.ts's rejected-receipt
+  // path, since submission_versions' own INSERT/UPDATE policy predates
+  // this codebase's tracked migrations and can't be confirmed here to
+  // actually cover revision_required (only its SELECT policy is tracked,
+  // in 0002) -- using the admin client sidesteps the question rather than
+  // risk the exact same silent-no-op failure the title field had.
+  const { error } = await createAdminClient().from("submission_versions").upsert(
     {
       submission_id: id,
       version_number: submission.current_version + 1,
@@ -491,6 +499,20 @@ export async function saveRevisionAction(id: string, input: Step3Input): Promise
 // updateFormattingAction below, this does not compare words against what's
 // stored; it's a real edit, scoped to a submission that's actually open for
 // revision and owned by the caller.
+//
+// The ownership+status check (loadOwnRevisableSubmission) runs on the
+// author's own session as usual, but the write itself goes through the
+// admin client, same as applyFormattingOnly does for exactly the same
+// reason: authors_update_own_draft_submissions (RLS) only lets an author
+// UPDATE their own submissions row while status = 'draft'. Every other
+// field an author can touch after submission (formatting, the abstract
+// body during a revision) already goes through either the admin client or
+// a SECURITY DEFINER function for this same reason -- a plain
+// .update().eq("id", id) on the author's own session here would match zero
+// rows under that policy and still report success (a bare UPDATE with no
+// .select() returns no error even when nothing changed), so the save would
+// silently do nothing. Caught via code review, not a live report, but it's
+// the same family of bug as the one this form was built to fix.
 export async function updateRevisionTitleAction(id: string, input: RevisionTitleInput): Promise<ActionResult> {
   const session = await requireAuth()
   const parsed = revisionTitleSchema.safeParse(input)
@@ -504,7 +526,7 @@ export async function updateRevisionTitleAction(id: string, input: RevisionTitle
     return { error: "This submission is not open for revision." }
   }
 
-  const { error } = await supabase
+  const { error } = await createAdminClient()
     .from("submissions")
     .update({
       title: normalizeTitle(parsed.data.title),
