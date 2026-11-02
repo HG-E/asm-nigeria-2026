@@ -140,7 +140,15 @@ export function PaymentStep({
         <label className="text-sm font-medium">Currency paid</label>
         <Select value={currency} onValueChange={(value) => setCurrency((value as "NGN" | "USD") ?? "")}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select currency" />
+            {/* Base UI's SelectValue shows the raw stored value with no
+                children mapper -- without this it dropped back to just
+                "NGN"/"USD" instead of the full label once a currency was
+                picked. */}
+            <SelectValue>
+              {(value: string) =>
+                value === "NGN" ? "NGN — Nigerian Naira" : value === "USD" ? "USD — US Dollar" : "Select currency"
+              }
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="NGN">NGN — Nigerian Naira</SelectItem>

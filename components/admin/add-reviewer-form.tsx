@@ -181,7 +181,12 @@ export function AddReviewerForm({ subthemes }: { subthemes: Subtheme[] }) {
                 <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a subtheme" />
+                      {/* Base UI's SelectValue shows the raw stored value
+                          with no children mapper -- without this it showed
+                          the subtheme's UUID instead of its name. */}
+                      <SelectValue>
+                        {(value: string) => subthemes.find((s) => s.id === value)?.name ?? "Select a subtheme"}
+                      </SelectValue>
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>

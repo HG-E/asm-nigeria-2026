@@ -167,7 +167,13 @@ export default async function CommitteeDashboardPage(props: PageProps<"/committe
             </div>
             <Select name="status" defaultValue={statusList.length === 1 ? statusList[0] : ""}>
               <SelectTrigger className="w-48">
-                <SelectValue placeholder="All statuses" />
+                {/* Base UI's SelectValue shows the raw stored value with no
+                    children mapper -- without this it showed the
+                    underscored enum ("revision_required") instead of the
+                    spaced label. */}
+                <SelectValue>
+                  {(value: string) => (value ? value.replaceAll("_", " ") : "All statuses")}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">All statuses</SelectItem>

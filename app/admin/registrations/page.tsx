@@ -97,7 +97,11 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
         <Input name="q" placeholder="Search name, email, or reference" defaultValue={q} className="max-w-xs" />
         <Select name="status" defaultValue={status || "all"}>
           <SelectTrigger className="w-40">
-            <SelectValue placeholder="All statuses" />
+            {/* "all" is the one value here whose label ("All statuses")
+                doesn't match the value itself -- every other option's value
+                and label are the same string, so only this case needed the
+                mapper to avoid literally showing the word "all". */}
+            <SelectValue>{(value: string) => (value === "all" ? "All statuses" : value)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All statuses</SelectItem>

@@ -91,7 +91,12 @@ export function ReviewerAssignmentPanel({
         <div className="flex gap-2">
           <Select value={selected} onValueChange={(value) => setSelected(value ?? "")}>
             <SelectTrigger className="w-64">
-              <SelectValue placeholder="Select a reviewer to assign" />
+              {/* Base UI's SelectValue shows the raw stored value with no
+                  children mapper -- without this it showed the reviewer's
+                  user id instead of their name. */}
+              <SelectValue>
+                {(value: string) => options.find((r) => r.id === value)?.name ?? "Select a reviewer to assign"}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {options.map((r) => (

@@ -76,7 +76,14 @@ export function DecisionForm({
                 <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a decision" />
+                      {/* Base UI's SelectValue shows the raw stored value
+                          with no children mapper -- without this it showed
+                          the decision's enum value instead of its label, a
+                          real risk of a committee member misreading which
+                          decision they're about to submit. */}
+                      <SelectValue>
+                        {(value: string) => DECISIONS.find((d) => d.value === value)?.label ?? "Select a decision"}
+                      </SelectValue>
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>

@@ -115,7 +115,14 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
             </div>
             <Select name="status" defaultValue={statusList.length === 1 ? statusList[0] : ""}>
               <SelectTrigger className="w-48">
-                <SelectValue placeholder="All statuses" />
+                {/* Base UI's SelectValue shows the raw stored value with no
+                    children mapper -- without this it showed the
+                    underscored enum ("revision_required") instead of the
+                    spaced label, and the subtheme select below showed a
+                    bare UUID. */}
+                <SelectValue>
+                  {(value: string) => (value ? value.replaceAll("_", " ") : "All statuses")}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">All statuses</SelectItem>
@@ -128,7 +135,9 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
             </Select>
             <Select name="subtheme" defaultValue={subtheme}>
               <SelectTrigger className="w-56">
-                <SelectValue placeholder="All subthemes" />
+                <SelectValue>
+                  {(value: string) => (subthemes ?? []).find((s) => s.id === value)?.name ?? "All subthemes"}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">All subthemes</SelectItem>

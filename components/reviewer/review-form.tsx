@@ -146,7 +146,16 @@ export function ReviewForm({
                 <Select value={field.value ?? ""} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a recommendation" />
+                      {/* Base UI's SelectValue shows the raw stored value
+                          with no children mapper -- without this it showed
+                          the recommendation's enum value instead of its
+                          label, a real risk of a reviewer misreading which
+                          recommendation they're about to submit. */}
+                      <SelectValue>
+                        {(value: string) =>
+                          RECOMMENDATIONS.find((r) => r.value === value)?.label ?? "Select a recommendation"
+                        }
+                      </SelectValue>
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>

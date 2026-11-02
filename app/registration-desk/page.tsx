@@ -103,7 +103,9 @@ export default async function RegistrationDeskPage(props: PageProps<"/registrati
         <Input name="q" placeholder="Search name, email, or reference" defaultValue={q} className="max-w-xs" />
         <Select name="status" defaultValue={status || "all"}>
           <SelectTrigger className="w-40">
-            <SelectValue placeholder="All statuses" />
+            {/* "all" is the one value whose label doesn't match the value
+                itself -- the mapper avoids literally showing "all". */}
+            <SelectValue>{(value: string) => (value === "all" ? "All statuses" : value)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All statuses</SelectItem>

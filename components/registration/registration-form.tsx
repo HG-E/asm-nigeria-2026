@@ -295,7 +295,13 @@ export function RegistrationForm() {
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select your category" />
+                    {/* Base UI's SelectValue shows the raw stored value with
+                        no children mapper -- without this it dropped the fee
+                        from the label after a category was picked, on the
+                        page every registrant uses. */}
+                    <SelectValue>
+                      {(value: ParticipantCategory | "") => (value ? `${value} — ${feeFor(value, period)}` : "Select your category")}
+                    </SelectValue>
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
