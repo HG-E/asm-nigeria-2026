@@ -8,7 +8,7 @@ const SUBMISSION_PORTAL_NOTE =
 
 const AUTO_REPLIES: Record<string, string> = {
   "Abstract Submission": `
-    <p>The abstract submission deadline is <strong>November 2, 2026</strong>. The processing
+    <p>The abstract submission deadline is <strong>November 9, 2026</strong>. The processing
     fee is ₦3,000 (or $5 USD).</p>
     <p>${SUBMISSION_PORTAL_NOTE}</p>
   `,

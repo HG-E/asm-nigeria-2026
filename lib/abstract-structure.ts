@@ -53,10 +53,14 @@ export type AbstractSections = Record<AbstractSectionKey, string>
 
 // Date by which authors of already-accepted abstracts are asked to have their
 // abstract restructured for the Book of Abstracts. Kept here so the author
-// page and the notice emails can never quote different dates. Chosen to fall
-// just before final abstract submissions close (2 Nov) and leave over three
-// weeks before the conference for layout and print/PDF production.
-export const BOOK_RESTRUCTURE_DEADLINE_LABEL = "Friday, 30 October 2026"
+// page and the notice emails can never quote different dates. With the
+// final submission deadline extended to 9 Nov (from 2 Nov), this can no
+// longer fall before submissions close -- restructuring only applies to
+// abstracts that have already been accepted, so it has to sit after the
+// decision date (16 Nov) instead. Chosen to leave 3 days after decisions
+// go out for authors to act, and 3 clear days before the conference opens
+// (22 Nov) for layout and print/PDF production.
+export const BOOK_RESTRUCTURE_DEADLINE_LABEL = "Thursday, 19 November 2026"
 
 export const ABSTRACT_TOTAL_MAX = ABSTRACT_SECTIONS.reduce((sum, s) => sum + s.max, 0)
 

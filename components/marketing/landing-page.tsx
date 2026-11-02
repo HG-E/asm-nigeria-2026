@@ -13,7 +13,7 @@ import { ELIGIBLE_SUBTHEMES, SPEAKERS } from "@/components/marketing/speakers-da
 import "./landing.css"
 
 const BANNER_DISMISS_KEY = "asm-2026-urgency-banner-dismissed-aug22"
-const FINAL_BANNER_DISMISS_KEY = "asm-2026-urgency-banner-dismissed-nov2"
+const FINAL_BANNER_DISMISS_KEY = "asm-2026-urgency-banner-dismissed-nov9"
 const SECRETARIAT_EMAIL = "asmnigeriaonehealth@gmail.com"
 const CONFERENCE_DATE = new Date("2026-11-22T09:00:00+01:00").getTime()
 const EARLY_DEADLINE = new Date("2026-08-30T22:59:59+00:00").getTime()
@@ -21,7 +21,11 @@ const EARLY_DEADLINE = new Date("2026-08-30T22:59:59+00:00").getTime()
 // which abstract submission closes entirely. Once EARLY_DEADLINE has passed
 // this takes over as the banner/badge shown, so the site's own urgency
 // messaging never silently goes quiet during the week that matters most.
-const FINAL_DEADLINE = new Date("2026-11-02T22:59:59+00:00").getTime()
+// Extended from Nov 2 to Nov 9, 2026 -- review_deadline/decision_date in
+// the conferences table (and every review_assignments.due_date tied to the
+// old review_deadline) moved out to match, keeping the same buffer before
+// the review and decision cycle as before rather than compressing it.
+const FINAL_DEADLINE = new Date("2026-11-09T22:59:59+00:00").getTime()
 // Must match REGISTRATION_PERIOD_CUTOFF in lib/registration-fees.ts exactly
 // -- kept as its own constant rather than imported, per this file's existing
 // "stays fully static" convention (see that file's own comment), the same
@@ -59,7 +63,7 @@ const PENDING_COUNTDOWN = { d: "--", h: "--", m: "--", s: "--" }
 // passed, in an always-visible ticker at the top of the homepage.
 const TICKER_ITEMS = [
   "✈️ Professor KIT Eniola Travel Grant is open for early-career microbiologists: enquire today",
-  "🚨 Final Abstract Deadline: November 2, 2026, closing soon",
+  "🚨 Final Abstract Deadline: November 9, 2026, closing soon",
   "💳 Late Registration is now open",
   "🌐 Hybrid Conference: attend in person in Abuja or join online",
   "🇳🇬 Maiden American Society for Microbiology Nigeria Conference · 22–25 November 2026, Abuja",
@@ -736,7 +740,7 @@ export function LandingPage() {
           </div>
           <div className="hero-card-divider" />
           <div className="hero-card-stat"><span className="hcs-label">📅 Abstract Early Deadline</span><span className="hcs-val">Aug 30, 2026</span></div>
-          <div className="hero-card-stat"><span className="hcs-label">📅 Final Abstract Deadline</span><span className="hcs-val">Nov 2, 2026</span></div>
+          <div className="hero-card-stat"><span className="hcs-label">📅 Final Abstract Deadline</span><span className="hcs-val">Nov 9, 2026</span></div>
           <div className="hero-card-stat"><span className="hcs-label">💳 Early Registration Cutoff</span><span className="hcs-val">Oct 22, 2026</span></div>
           <div className="hero-card-stat"><span className="hcs-label">🎤 Presentation Mode</span><span className="hcs-val">Oral / Poster</span></div>
           <div className="hero-card-stat"><span className="hcs-label">🌐 Format</span><span className="hcs-val">Hybrid</span></div>
@@ -789,9 +793,9 @@ export function LandingPage() {
           <div className="inner">
             <span className="label">
               <span className="ub-text-full">
-                🚨 <strong>Final Abstract Submission closes November 2, 2026</strong>: only
+                🚨 <strong>Final Abstract Submission closes November 9, 2026</strong>: only
               </span>
-              <span className="ub-text-short">🚨 <strong>Nov 2</strong></span>
+              <span className="ub-text-short">🚨 <strong>Nov 9</strong></span>
             </span>
             <div className="countdown-inline" aria-live="polite">
               <span className="ci-box">{finalCountdown.d}</span>
@@ -1458,7 +1462,7 @@ export function LandingPage() {
               <p className="body-lg">
                 Submit your abstract for oral or poster presentation.{" "}
                 {earlyExpired ? (
-                  <>Final submission closes <strong style={{ color: "var(--red)" }}>November 2, 2026</strong>.</>
+                  <>Final submission closes <strong style={{ color: "var(--red)" }}>November 9, 2026</strong>.</>
                 ) : (
                   <>Early submissions close <strong style={{ color: "var(--red)" }}>August 30, 2026</strong>.</>
                 )}
@@ -1479,7 +1483,7 @@ export function LandingPage() {
                   </div>
                   <div className="dl-card" style={{ "--accent": "var(--gold)" } as React.CSSProperties}>
                     <div className="dl-icon">📅</div>
-                    <div><div className="dl-label">Final Submission Closes</div><div className="dl-date">November 2, 2026</div></div>
+                    <div><div className="dl-label">Final Submission Closes</div><div className="dl-date">November 9, 2026</div></div>
                     {!finalExpired && finalDaysLeft !== null ? (
                       <span className="dl-badge db-gold">{finalDaysLeft} Day{finalDaysLeft === 1 ? "" : "s"} Left!</span>
                     ) : (
