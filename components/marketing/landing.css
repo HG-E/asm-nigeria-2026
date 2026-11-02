@@ -969,7 +969,16 @@
   margin-left: 380px;
 }
 .asm-landing .profile-copy p + p {
-  margin-top: 14px;
+  margin-top: 22px;
+}
+/* Scoped to About the Conference's short writeup only (the President's
+   letter uses its own smaller .profile-copy-letter size) -- a touch
+   larger and more open than the site-wide .body-lg, so three paragraphs
+   of real copy close most of the remaining gap to the portrait's bottom
+   edge without needing filler text or a forced container height. */
+.asm-landing .profile-copy .body-lg {
+  font-size: 18.5px;
+  line-height: 1.95;
 }
 .asm-landing .profile-copy-letter {
   font-size: 15px;
