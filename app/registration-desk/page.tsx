@@ -103,9 +103,12 @@ export default async function RegistrationDeskPage(props: PageProps<"/registrati
         <Input name="q" placeholder="Search name, email, or reference" defaultValue={q} className="max-w-xs" />
         <Select name="status" defaultValue={status || "all"}>
           <SelectTrigger className="w-40">
-            {/* "all" is the one value whose label doesn't match the value
-                itself -- the mapper avoids literally showing "all". */}
-            <SelectValue>{(value: string) => (value === "all" ? "All statuses" : value)}</SelectValue>
+            {/* This page is a Server Component -- SelectValue's children-as-
+                function form isn't valid here (functions can't cross the
+                server/client boundary). The current value is already known
+                at render time, so a plain string works: "all" is the one
+                value whose label doesn't match the value itself. */}
+            <SelectValue>{status === "all" || !status ? "All statuses" : status}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All statuses</SelectItem>

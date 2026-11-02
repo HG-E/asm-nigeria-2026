@@ -99,7 +99,8 @@ export default async function CommitteeSubmissionDetailPage(
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <p className="text-muted-foreground">
-            {submission.conference_subthemes?.name} · {submission.presentation_preference}
+            {submission.conference_subthemes?.name} ·{" "}
+            <span className="capitalize">{submission.presentation_preference}</span>
           </p>
           <AbstractBody version={currentVersion} fallback="" />
         </CardContent>

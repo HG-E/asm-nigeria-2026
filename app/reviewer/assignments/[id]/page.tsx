@@ -70,7 +70,8 @@ export default async function ReviewAssignmentPage(
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <p className="text-muted-foreground">
-            {submission.conference_subthemes?.name} &middot; {submission.presentation_preference}
+            {submission.conference_subthemes?.name} &middot;{" "}
+            <span className="capitalize">{submission.presentation_preference}</span>
             {version ? ` · ${version.word_count} words` : ""}
           </p>
           {submission.keywords && submission.keywords.length > 0 && (

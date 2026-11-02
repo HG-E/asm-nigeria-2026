@@ -115,13 +115,15 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
             </div>
             <Select name="status" defaultValue={statusList.length === 1 ? statusList[0] : ""}>
               <SelectTrigger className="w-48">
-                {/* Base UI's SelectValue shows the raw stored value with no
-                    children mapper -- without this it showed the
-                    underscored enum ("revision_required") instead of the
-                    spaced label, and the subtheme select below showed a
-                    bare UUID. */}
+                {/* This page is a Server Component -- SelectValue's
+                    children-as-function form isn't valid here (functions
+                    can't cross the server/client boundary; crashed this
+                    whole page with "Functions are not valid as a child of
+                    Client Components" until caught in testing). The current
+                    value is already known at render time, so a plain
+                    string works just as well. */}
                 <SelectValue>
-                  {(value: string) => (value ? value.replaceAll("_", " ") : "All statuses")}
+                  {statusList.length === 1 ? statusList[0].replaceAll("_", " ") : "All statuses"}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
@@ -136,7 +138,7 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
             <Select name="subtheme" defaultValue={subtheme}>
               <SelectTrigger className="w-56">
                 <SelectValue>
-                  {(value: string) => (subthemes ?? []).find((s) => s.id === value)?.name ?? "All subthemes"}
+                  {subtheme ? ((subthemes ?? []).find((s) => s.id === subtheme)?.name ?? "All subthemes") : "All subthemes"}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
