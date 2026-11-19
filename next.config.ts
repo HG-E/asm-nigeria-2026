@@ -54,7 +54,12 @@ const nextConfig: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+          // camera=(self) -- the registration desk's QR check-in scanner
+          // (components/admin/registration-scanner.tsx) needs getUserMedia
+          // camera access. Without this, Permissions-Policy blocks it
+          // site-wide and the scanner can never request camera permission at
+          // all, regardless of what the browser's own prompt would allow.
+          { key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=()" },
           { key: "Content-Security-Policy", value: csp },
         ],
       },
