@@ -22,19 +22,17 @@ export function referenceNumberFromPayload(payload: string): string | null {
   return ref || null
 }
 
+// "H" (the highest level, ~30% of the code can be damaged/obscured and it
+// still decodes) rather than the default "M" -- a printed, laminated badge
+// scanned under event-hall lighting loses more contrast than a code read
+// straight off a screen, and the payload here is short enough that the
+// denser code this produces is still easy to scan.
+const PRINT_SAFE_OPTIONS = { errorCorrectionLevel: "H" as const, margin: 2, width: 400 }
+
 export async function generateQrPng(referenceNumber: string): Promise<Buffer> {
-  return QRCode.toBuffer(qrPayloadFor(referenceNumber), {
-    type: "png",
-    errorCorrectionLevel: "M",
-    margin: 2,
-    width: 400,
-  })
+  return QRCode.toBuffer(qrPayloadFor(referenceNumber), { type: "png", ...PRINT_SAFE_OPTIONS })
 }
 
 export async function generateQrDataUrl(referenceNumber: string): Promise<string> {
-  return QRCode.toDataURL(qrPayloadFor(referenceNumber), {
-    errorCorrectionLevel: "M",
-    margin: 2,
-    width: 400,
-  })
+  return QRCode.toDataURL(qrPayloadFor(referenceNumber), PRINT_SAFE_OPTIONS)
 }
