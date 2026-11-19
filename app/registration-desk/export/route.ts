@@ -86,18 +86,29 @@ export async function GET(request: Request) {
 
   if (includePhotos) {
     const admin = createAdminClient()
-    const images: EmbeddedImage[] = await Promise.all(
-      registrations.map(async (r): Promise<EmbeddedImage> => {
-        if (!r.passport_photo_path) return null
+    // Downloading every photo at once (Promise.all over the whole list) hits
+    // the same "Too many connections issued to the database" rate limit seen
+    // signing URLs one at a time elsewhere in this app -- a few hundred
+    // registrants is enough to trip it. A small fixed concurrency keeps this
+    // reliable regardless of how many registrants match the filter.
+    const CONCURRENCY = 8
+    const images: EmbeddedImage[] = new Array(registrations.length).fill(null)
+    let next = 0
+    async function worker() {
+      while (next < registrations.length) {
+        const i = next++
+        const r = registrations[i]
+        if (!r.passport_photo_path) continue
         const { data: file } = await admin.storage
           .from("registration-receipts")
           .download(r.passport_photo_path)
-        if (!file) return null
+        if (!file) continue
         const buffer = Buffer.from(await file.arrayBuffer())
         const extension = r.passport_photo_path.toLowerCase().endsWith(".png") ? "png" : "jpeg"
-        return { base64: `data:image/${extension};base64,${buffer.toString("base64")}`, extension }
-      })
-    )
+        images[i] = { base64: `data:image/${extension};base64,${buffer.toString("base64")}`, extension }
+      }
+    }
+    await Promise.all(Array.from({ length: CONCURRENCY }, worker))
     const buffer = await toXlsxWithImages(REGISTRATION_HEADERS, rows, "Conference Registrations", images)
     return new NextResponse(new Uint8Array(buffer), {
       headers: {

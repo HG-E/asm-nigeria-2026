@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { requireRegistrationAccess } from "@/lib/auth"
+import { buildRegistrationFileUrls } from "@/lib/registration-file-urls"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 
@@ -44,20 +45,7 @@ export default async function RegistrationDeskPage(props: PageProps<"/registrati
   // client). The regular session-bound client used for the row query above
   // can't sign URLs against it, so this specifically needs the admin client.
   const storageAdmin = createAdminClient()
-  type FileLinks = { receipt: string | null; photo: string | null; certificate: string | null }
-  const fileUrls = new Map<string, FileLinks>()
-  async function signedUrl(path: string | null) {
-    if (!path) return null
-    const { data } = await storageAdmin.storage.from("registration-receipts").createSignedUrl(path, 60 * 10)
-    return data?.signedUrl ?? null
-  }
-  for (const r of registrations ?? []) {
-    fileUrls.set(r.id, {
-      receipt: await signedUrl(r.payment_receipt_path),
-      photo: await signedUrl(r.passport_photo_path),
-      certificate: await signedUrl(r.asm_certificate_path),
-    })
-  }
+  const fileUrls = await buildRegistrationFileUrls(storageAdmin, registrations ?? [])
 
   const counts = {
     total: registrations?.length ?? 0,
