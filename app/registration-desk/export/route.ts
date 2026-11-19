@@ -5,6 +5,7 @@ import { requireRegistrationAccess } from "@/lib/auth"
 import { generateQrDataUrl } from "@/lib/registration-qr"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
+import { watDateTimeToUtcIso } from "@/lib/wat-date"
 
 const REGISTRATION_HEADERS = [
   "Reference Number",
@@ -48,16 +49,6 @@ function registrationRow(r: RegistrationRow): ExportCell[] {
   ]
 }
 
-// <input type="datetime-local"> sends a bare "YYYY-MM-DDTHH:mm" with no
-// timezone, and a bare "YYYY-MM-DD" when only a date was filled in. Nigeria
-// doesn't observe DST, so a fixed +01:00 offset is always the correct way to
-// read that value as West Africa Time before comparing against created_at.
-function toUtcIso(raw: string | null, endOfDay: boolean): string | null {
-  if (!raw) return null
-  let value = raw.length === 10 ? `${raw}T${endOfDay ? "23:59:59" : "00:00:00"}` : raw
-  if (value.length === 16) value += ":00" // datetime-local with no seconds component
-  return `${value}+01:00`
-}
 
 export async function GET(request: Request) {
   await requireRegistrationAccess()
@@ -66,8 +57,8 @@ export async function GET(request: Request) {
   const format = url.searchParams.get("format") === "xlsx" ? "xlsx" : "csv"
   const includePhotos = url.searchParams.get("photos") === "1" && format === "xlsx"
   const includeQr = url.searchParams.get("qr") === "1" && format === "xlsx"
-  const from = toUtcIso(url.searchParams.get("from"), false)
-  const to = toUtcIso(url.searchParams.get("to"), true)
+  const from = watDateTimeToUtcIso(url.searchParams.get("from"), false)
+  const to = watDateTimeToUtcIso(url.searchParams.get("to"), true)
 
   const supabase = await createClient()
   let query = supabase

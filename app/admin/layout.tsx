@@ -10,6 +10,7 @@ import {
   ScanLine,
   ScrollText,
   Settings,
+  Sticker,
   UserCheck,
   Users,
 } from "lucide-react"
@@ -26,6 +27,7 @@ const NAV: DashboardNavItem[] = [
   { href: "/admin/submissions", label: "Submissions", icon: <FileText /> },
   { href: "/admin/registrations", label: "Registrations", icon: <ClipboardList /> },
   { href: "/admin/registrations/scan", label: "Scan Check-in", icon: <ScanLine /> },
+  { href: "/admin/registrations/badges", label: "Print Badges", icon: <Sticker /> },
   { href: "/admin/reviewers", label: "Reviewers", icon: <UserCheck /> },
   { href: "/admin/committee", label: "Committee", icon: <Users /> },
   { href: "/admin/registration-desk", label: "Registration Desk", icon: <IdCard /> },
