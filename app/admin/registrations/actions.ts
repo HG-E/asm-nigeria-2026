@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { after } from "next/server"
 
-import { requireRole } from "@/lib/auth"
+import { requireRegistrationAccess, requireRole } from "@/lib/auth"
 import { sendMail } from "@/lib/email"
 import { registrationConfirmationHtml, registrationRejectedHtml, registrationVerifiedHtml } from "@/lib/registration-email"
 import { createClient } from "@/lib/supabase/server"
@@ -67,15 +67,21 @@ export async function verifyRegistrationAction(registrationId: string): Promise<
 
 // Independent of payment status -- verified only means they paid, not that
 // they actually showed up. This is what gates Certificate of Participation
-// eligibility, set by hand after the conference.
+// eligibility, set by hand at check-in.
+//
+// registration_desk can't UPDATE conference_registrations directly (RLS only
+// grants that to admin) -- this is the one thing that role exists to do, so
+// it goes through mark_registration_attended, a SECURITY DEFINER function
+// that only flips the attended column and nothing else, rather than widening
+// the row-level UPDATE policy to that role.
 export async function toggleAttendedAction(registrationId: string, attended: boolean): Promise<RegistrationActionResult> {
-  const session = await requireRole("admin")
+  const session = await requireRegistrationAccess()
   const supabase = await createClient()
 
-  const { error } = await supabase
-    .from("conference_registrations")
-    .update({ attended })
-    .eq("id", registrationId)
+  const { error } = await supabase.rpc("mark_registration_attended", {
+    p_registration_id: registrationId,
+    p_attended: attended,
+  })
 
   if (error) {
     return { error: "Could not update attendance. Please try again." }
@@ -90,6 +96,7 @@ export async function toggleAttendedAction(registrationId: string, attended: boo
   })
 
   revalidatePath("/admin/registrations")
+  revalidatePath("/registration-desk")
   return { success: true }
 }
 

@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { CheckCheck, Clock, Layers, UserCheck, XCircle } from "lucide-react"
 
+import { AttendedToggle } from "@/components/admin/attended-toggle"
 import { RegistrationExportForm } from "@/components/admin/registration-export-form"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { StatCard, StatGrid, type StatAccent } from "@/components/dashboard/stat-card"
@@ -156,7 +157,9 @@ export default async function RegistrationDeskPage(props: PageProps<"/registrati
                       <p className="text-muted-foreground mt-1 text-xs">{r.payment_rejection_reason}</p>
                     )}
                   </TableCell>
-                  <TableCell>{r.attended ? "Yes" : "No"}</TableCell>
+                  <TableCell>
+                    <AttendedToggle registrationId={r.id} attended={r.attended} />
+                  </TableCell>
                 </TableRow>
               ))}
               {(registrations?.length ?? 0) === 0 && (

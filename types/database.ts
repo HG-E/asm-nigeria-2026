@@ -1194,6 +1194,10 @@ export type Database = {
         Args: { p_conference_id: string }
         Returns: string
       }
+      mark_registration_attended: {
+        Args: { p_registration_id: string; p_attended: boolean }
+        Returns: undefined
+      }
     }
     Enums: {
       blind_mode: "none" | "single" | "double"
