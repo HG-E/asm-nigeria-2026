@@ -62,9 +62,9 @@ export const PARTNERS: Partner[] = [
     name: "Healths.NG Media Limited",
     logo: "/partners/healthsng-media.png",
     url: "https://healths.ng",
-    type: "Media Partner",
-    desc: "A health-focused Nigerian media outlet providing coverage for ASM Nigeria 2026.",
+    type: "Digital Media Partner",
+    desc: "A health-focused Nigerian tech outlet providing user-driven technology transformation coverage for ASM Nigeria 2026.",
     fullDesc:
-      "Healths.NG Media Limited is a Nigerian media outlet dedicated to health and healthcare-sector reporting. As a media partner, Healths.NG is providing press coverage and amplification for ASM Nigeria 2026 across its platforms.",
+      "Healths.NG Media Limited helps Nigerian healthcare professionals and organizations build a powerful digital presence. As a digital media partner, Healths.NG is amplifying ASM Nigeria 2026's technology and digital reach online.",
   },
 ]
