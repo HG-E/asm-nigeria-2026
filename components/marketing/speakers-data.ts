@@ -127,6 +127,18 @@ const SPEAKER_LIST: Speaker[] = [
   },
   {
     accent: "var(--red)",
+    initials: "CL",
+    image: "/speakers/christopher-leboa.jpg",
+    chip: "chip-blue",
+    chipLabel: "Guest Speaker",
+    name: "Dr. Christopher LeBoa",
+    title: "Postdoctoral Scholar",
+    sub: "University of California, Berkeley",
+    subthemeIndex: 1,
+    bio: "Presenting “The One Health Implications of Irrigation Water Contamination: Transmission Cycles and Potential Interventions.” Dr. Christopher LeBoa is a Postdoctoral Scholar at the University of California, Berkeley. His research primarily focuses on assessing exposure to infectious disease in the environments where people live, work and play. He has previously worked on Salmonella Typhi vaccine effectiveness campaigns and has set up environmental exposure studies for helminths, COVID-19, and antimicrobial-resistant E. coli. He currently works with farmers to understand antimicrobial-resistant bacteria in irrigation water and their crops, with the goal of reducing exposures for consumers.",
+  },
+  {
+    accent: "var(--red)",
     initials: "MC",
     image: "/speakers/mark-chee.jpg",
     chip: "chip-blue",

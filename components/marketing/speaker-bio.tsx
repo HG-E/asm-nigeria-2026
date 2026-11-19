@@ -1,6 +1,6 @@
 // Genus names are italicized per scientific convention; "spp." and the rest
 // of the text stay upright. Add further taxa here as new bios need them.
-const ITALIC_TERMS = /(Drosophila|Staphylococcus)/g
+const ITALIC_TERMS = /(Drosophila|Staphylococcus|Salmonella|E\. coli)/g
 
 export function SpeakerBio({ text }: { text: string }) {
   const parts = text.split(ITALIC_TERMS)
