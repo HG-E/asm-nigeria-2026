@@ -138,9 +138,27 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
               {(registrations ?? []).map((r) => (
                 <TableRow key={r.id}>
                   <TableCell className="bg-card sticky left-0 z-10 border-r">
-                    <div className="font-medium">{r.full_name}</div>
-                    <div className="text-muted-foreground text-xs">{r.email}</div>
-                    <div className="text-muted-foreground font-mono text-xs">{r.reference_number ?? "—"}</div>
+                    <div className="flex items-start gap-3">
+                      {fileUrls.get(r.id)?.photo ? (
+                        <Link href={fileUrls.get(r.id)!.photo!} target="_blank" rel="noreferrer" title="Open full-size headshot">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={fileUrls.get(r.id)!.photo!}
+                            alt={`${r.full_name}'s headshot`}
+                            className="size-12 shrink-0 rounded-full border object-cover"
+                          />
+                        </Link>
+                      ) : (
+                        <div className="text-muted-foreground flex size-12 shrink-0 items-center justify-center rounded-full border text-[10px]">
+                          No photo
+                        </div>
+                      )}
+                      <div>
+                        <div className="font-medium">{r.full_name}</div>
+                        <div className="text-muted-foreground text-xs">{r.email}</div>
+                        <div className="text-muted-foreground font-mono text-xs">{r.reference_number ?? "—"}</div>
+                      </div>
+                    </div>
                   </TableCell>
                   <TableCell className="text-sm">
                     {r.participant_category}
