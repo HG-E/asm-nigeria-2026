@@ -50,39 +50,45 @@ export async function toXlsx(
 // match, so base64 sidesteps the mismatch entirely.
 export type EmbeddedImage = { base64: string; extension: "jpeg" | "png" } | null
 
-// Same shape as toXlsx, but with a leading "Photo" column holding an actual
-// embedded image per row (not a link) -- images[i] corresponds to rows[i].
-// A missing/null entry just leaves that row's photo cell blank.
+export type ImageColumn = { label: string; images: EmbeddedImage[] }
+
+// Same shape as toXlsx, but with one or more leading columns holding an
+// actual embedded image per row (not a link) -- column.images[i]
+// corresponds to rows[i]. A missing/null entry just leaves that row's cell
+// blank for that column.
 export async function toXlsxWithImages(
   headers: string[],
   rows: ExportCell[][],
   sheetName: string,
-  images: EmbeddedImage[]
+  imageColumns: ImageColumn[]
 ): Promise<Buffer> {
   const workbook = new ExcelJS.Workbook()
   const sheet = workbook.addWorksheet(sheetName.slice(0, 31))
-  sheet.addRow(["Photo", ...headers])
+  const leadingCount = imageColumns.length
+  sheet.addRow([...imageColumns.map((c) => c.label), ...headers])
   sheet.getRow(1).font = { bold: true }
-  sheet.getColumn(1).width = 12
+  for (let col = 1; col <= leadingCount; col++) sheet.getColumn(col).width = 12
 
   rows.forEach((row, i) => {
-    const excelRow = sheet.addRow(["", ...row])
+    const excelRow = sheet.addRow([...imageColumns.map(() => ""), ...row])
     excelRow.height = 56
 
-    const image = images[i]
-    if (image) {
+    imageColumns.forEach((column, colIndex) => {
+      const image = column.images[i]
+      if (!image) return
       const imageId = workbook.addImage(image)
       // Row index here is 0-based from the top of the sheet; header occupies
-      // row 0, so data row i sits at row (i + 1).
+      // row 0, so data row i sits at row (i + 1). Column index is likewise
+      // 0-based, so the first image column sits at col 0, the second at 1, etc.
       sheet.addImage(imageId, {
-        tl: { col: 0.08, row: i + 1.08 },
+        tl: { col: colIndex + 0.08, row: i + 1.08 },
         ext: { width: 52, height: 52 },
       })
-    }
+    })
   })
 
   sheet.columns.forEach((column, idx) => {
-    if (idx === 0) return
+    if (idx < leadingCount) return
     let maxLength = 10
     column.eachCell?.({ includeEmpty: true }, (cell) => {
       const length = cell.value ? String(cell.value).length : 0

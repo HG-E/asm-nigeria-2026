@@ -30,6 +30,10 @@ export function RegistrationExportForm() {
             <input type="checkbox" name="photos" value="1" className="size-4" />
             Include headshots
           </label>
+          <label className="flex items-center gap-2 pb-2 text-sm">
+            <input type="checkbox" name="qr" value="1" className="size-4" />
+            Include badge QR codes
+          </label>
           <button
             type="submit"
             name="format"
@@ -43,8 +47,9 @@ export function RegistrationExportForm() {
           </button>
         </form>
         <p className="text-muted-foreground mt-2 text-xs">
-          Leave the date fields blank to export everyone. Times are West Africa Time (Nigeria). Headshots embed
-          directly in the spreadsheet, but only when downloading XLSX -- CSV can&apos;t hold an image.
+          Leave the date fields blank to export everyone. Times are West Africa Time (Nigeria). Headshots and QR
+          codes embed directly in the spreadsheet, but only when downloading XLSX -- CSV can&apos;t hold an image.
+          Each QR encodes that registrant&apos;s reference number for scanning at check-in and never expires.
         </p>
       </CardContent>
     </Card>

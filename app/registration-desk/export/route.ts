@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
 
-import { toCsv, toXlsx, toXlsxWithImages, type EmbeddedImage, type ExportCell } from "@/lib/exports/format"
+import { toCsv, toXlsx, toXlsxWithImages, type EmbeddedImage, type ExportCell, type ImageColumn } from "@/lib/exports/format"
 import { requireRegistrationAccess } from "@/lib/auth"
+import { generateQrDataUrl } from "@/lib/registration-qr"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 
@@ -64,6 +65,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url)
   const format = url.searchParams.get("format") === "xlsx" ? "xlsx" : "csv"
   const includePhotos = url.searchParams.get("photos") === "1" && format === "xlsx"
+  const includeQr = url.searchParams.get("qr") === "1" && format === "xlsx"
   const from = toUtcIso(url.searchParams.get("from"), false)
   const to = toUtcIso(url.searchParams.get("to"), true)
 
@@ -84,32 +86,52 @@ export async function GET(request: Request) {
 
   const filename = `asm-nigeria-2026-conference-registrations${from || to ? "-filtered" : ""}.${format}`
 
-  if (includePhotos) {
-    const admin = createAdminClient()
-    // Downloading every photo at once (Promise.all over the whole list) hits
-    // the same "Too many connections issued to the database" rate limit seen
-    // signing URLs one at a time elsewhere in this app -- a few hundred
-    // registrants is enough to trip it. A small fixed concurrency keeps this
-    // reliable regardless of how many registrants match the filter.
-    const CONCURRENCY = 8
-    const images: EmbeddedImage[] = new Array(registrations.length).fill(null)
-    let next = 0
-    async function worker() {
-      while (next < registrations.length) {
-        const i = next++
-        const r = registrations[i]
-        if (!r.passport_photo_path) continue
-        const { data: file } = await admin.storage
-          .from("registration-receipts")
-          .download(r.passport_photo_path)
-        if (!file) continue
-        const buffer = Buffer.from(await file.arrayBuffer())
-        const extension = r.passport_photo_path.toLowerCase().endsWith(".png") ? "png" : "jpeg"
-        images[i] = { base64: `data:image/${extension};base64,${buffer.toString("base64")}`, extension }
+  if (includePhotos || includeQr) {
+    const imageColumns: ImageColumn[] = []
+
+    if (includePhotos) {
+      const admin = createAdminClient()
+      // Downloading every photo at once (Promise.all over the whole list)
+      // hits the same "Too many connections issued to the database" rate
+      // limit seen signing URLs one at a time elsewhere in this app -- a few
+      // hundred registrants is enough to trip it. A small fixed concurrency
+      // keeps this reliable regardless of how many registrants match the
+      // filter.
+      const CONCURRENCY = 8
+      const images: EmbeddedImage[] = new Array(registrations.length).fill(null)
+      let next = 0
+      async function worker() {
+        while (next < registrations.length) {
+          const i = next++
+          const r = registrations[i]
+          if (!r.passport_photo_path) continue
+          const { data: file } = await admin.storage
+            .from("registration-receipts")
+            .download(r.passport_photo_path)
+          if (!file) continue
+          const buffer = Buffer.from(await file.arrayBuffer())
+          const extension = r.passport_photo_path.toLowerCase().endsWith(".png") ? "png" : "jpeg"
+          images[i] = { base64: `data:image/${extension};base64,${buffer.toString("base64")}`, extension }
+        }
       }
+      await Promise.all(Array.from({ length: CONCURRENCY }, worker))
+      imageColumns.push({ label: "Photo", images })
     }
-    await Promise.all(Array.from({ length: CONCURRENCY }, worker))
-    const buffer = await toXlsxWithImages(REGISTRATION_HEADERS, rows, "Conference Registrations", images)
+
+    if (includeQr) {
+      // Pure local CPU work, no network round trip -- safe to generate all
+      // of these in parallel regardless of how many registrants match.
+      const qrImages: EmbeddedImage[] = await Promise.all(
+        registrations.map(async (r): Promise<EmbeddedImage> => {
+          if (!r.reference_number) return null
+          const dataUrl = await generateQrDataUrl(r.reference_number)
+          return { base64: dataUrl, extension: "png" }
+        })
+      )
+      imageColumns.push({ label: "QR", images: qrImages })
+    }
+
+    const buffer = await toXlsxWithImages(REGISTRATION_HEADERS, rows, "Conference Registrations", imageColumns)
     return new NextResponse(new Uint8Array(buffer), {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

@@ -149,6 +149,16 @@ export default async function RegistrationDeskPage(props: PageProps<"/registrati
                           </span>
                         )
                       })}
+                      {r.reference_number && (
+                        <Link
+                          href={`/registration-desk/qr/${r.reference_number}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-primary underline underline-offset-4"
+                        >
+                          Badge QR
+                        </Link>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>

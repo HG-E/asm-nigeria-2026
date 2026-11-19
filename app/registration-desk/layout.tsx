@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { ClipboardList } from "lucide-react"
+import { ClipboardList, ScanLine } from "lucide-react"
 
 import { DashboardShell, type DashboardNavItem } from "@/components/layout/dashboard-shell"
 import { requireRegistrationAccess } from "@/lib/auth"
@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 
 const NAV: DashboardNavItem[] = [
   { href: "/registration-desk", label: "Registrations", icon: <ClipboardList /> },
+  { href: "/registration-desk/scan", label: "Scan Check-in", icon: <ScanLine /> },
 ]
 
 export default async function RegistrationDeskLayout({ children }: LayoutProps<"/registration-desk">) {

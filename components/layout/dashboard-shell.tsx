@@ -41,6 +41,16 @@ export function DashboardShell({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
+  // Longest-prefix match, not "every item whose href prefixes pathname":
+  // without this, a nav item nested under another's path (e.g. both
+  // "/registration-desk" and "/registration-desk/scan" as separate entries)
+  // would show as active at the same time as its more specific child route.
+  const activeHref = nav.reduce<string | null>((best, item) => {
+    const matches = pathname === item.href || pathname.startsWith(`${item.href}/`)
+    if (!matches) return best
+    if (best === null || item.href.length > best.length) return item.href
+    return best
+  }, null)
 
   return (
     <TooltipProvider>
@@ -64,7 +74,7 @@ export function DashboardShell({
               <SidebarGroupContent>
                 <SidebarMenu>
                   {nav.map((item) => {
-                    const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
+                    const isActive = item.href === activeHref
                     return (
                       <SidebarMenuItem key={item.href}>
                         <SidebarMenuButton
