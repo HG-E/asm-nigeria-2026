@@ -12,16 +12,6 @@ import { createClient } from "@/lib/supabase/server"
 import { cn } from "@/lib/utils"
 import { watDateTimeToUtcIso } from "@/lib/wat-date"
 
-// The printed badge shows a short ID (just the trailing number), matching
-// the template's original single-digit placeholder -- the full reference
-// number would overflow that space. The QR still encodes the complete
-// reference number, so scanning is unaffected either way.
-function shortRegistrationId(referenceNumber: string | null): string {
-  if (!referenceNumber) return "—"
-  const match = referenceNumber.match(/(\d+)$/)
-  return match ? match[1] : referenceNumber
-}
-
 export default async function RegistrationBadgesPage(props: PageProps<"/admin/registrations/badges">) {
   await requireRole("admin")
   const searchParams = await props.searchParams
@@ -108,7 +98,7 @@ export default async function RegistrationBadgesPage(props: PageProps<"/admin/re
               photoUrl={fileUrls.get(r.id)?.photo ?? null}
               fullName={r.full_name}
               affiliation={r.institution}
-              registrationId={shortRegistrationId(r.reference_number)}
+              registrationId={r.reference_number ?? "—"}
               qrDataUrl={qrDataUrls[i] ?? ""}
             />
           </div>
