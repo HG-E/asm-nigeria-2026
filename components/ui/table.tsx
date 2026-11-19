@@ -6,9 +6,15 @@ import { cn } from "@/lib/utils"
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
+    // Bounded height, not just overflow-x: an unbounded container is exactly
+    // as tall as all its rows, so on a few hundred rows its horizontal
+    // scrollbar sits far below the fold -- unreachable without first
+    // scrolling the whole page down to the very bottom of the table. Capping
+    // the height keeps both scrollbars inside the visible viewport no matter
+    // how long the table gets.
     <div
       data-slot="table-container"
-      className="relative w-full overflow-x-auto"
+      className="relative max-h-[70vh] w-full overflow-auto"
     >
       <table
         data-slot="table"
@@ -23,7 +29,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
   return (
     <thead
       data-slot="table-header"
-      className={cn("[&_tr]:border-b", className)}
+      className={cn("bg-card sticky top-0 z-30 [&_tr]:border-b", className)}
       {...props}
     />
   )
