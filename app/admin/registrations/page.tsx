@@ -2,6 +2,7 @@ import Link from "next/link"
 import { CheckCheck, Clock, Layers, UserCheck, XCircle } from "lucide-react"
 
 import { AttendedToggle } from "@/components/admin/attended-toggle"
+import { RegistrationExportForm } from "@/components/admin/registration-export-form"
 import { RegistrationVerificationPanel } from "@/components/admin/registration-verification-panel"
 import { RetryRegistrationConfirmationButton } from "@/components/admin/retry-registration-confirmation-button"
 import { PageHeader } from "@/components/dashboard/page-header"
@@ -115,6 +116,8 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
           </SelectContent>
         </Select>
       </form>
+
+      <RegistrationExportForm />
 
       <Card>
         <CardHeader>

@@ -1,15 +1,14 @@
 import Link from "next/link"
 import { CheckCheck, Clock, Layers, UserCheck, XCircle } from "lucide-react"
 
+import { RegistrationExportForm } from "@/components/admin/registration-export-form"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { StatCard, StatGrid, type StatAccent } from "@/components/dashboard/stat-card"
 import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { cn } from "@/lib/utils"
 import { requireRegistrationAccess } from "@/lib/auth"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
@@ -78,20 +77,7 @@ export default async function RegistrationDeskPage(props: PageProps<"/registrati
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Conference Registrations"
-        description="All conference attendance registrations."
-        actions={
-          <>
-            <Link href="/registration-desk/export?format=csv" className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>
-              Download CSV
-            </Link>
-            <Link href="/registration-desk/export?format=xlsx" className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>
-              Download XLSX
-            </Link>
-          </>
-        }
-      />
+      <PageHeader title="Conference Registrations" description="All conference attendance registrations." />
 
       <StatGrid>
         {summary.map((s) => (
@@ -120,6 +106,8 @@ export default async function RegistrationDeskPage(props: PageProps<"/registrati
           </SelectContent>
         </Select>
       </form>
+
+      <RegistrationExportForm />
 
       <Card>
         <CardHeader>

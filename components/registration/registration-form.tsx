@@ -28,10 +28,36 @@ const period = currentRegistrationPeriod()
 // was too big.
 const MAX_FILE_MB = 1
 const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024
+// Floor for a badge-print-usable headshot -- well below what any real phone
+// camera photo produces, but enough to reject a tiny icon-sized image or a
+// screenshot cropped down to almost nothing.
+const PHOTO_MIN_DIMENSION = 400
 
 function formatBytes(bytes: number) {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
+// Reads an image file's pixel dimensions in the browser, for the minDimension
+// check below -- there's no server-side equivalent of this (no image library
+// in this project), so a badge-quality floor is enforced here only. That's an
+// acceptable gap for a human-facing registration form: nobody is attacking
+// this field, they're just picking a photo, so a client-side check is enough
+// to actually stop the blurry/tiny uploads it's meant to catch.
+function readImageDimensions(file: File): Promise<{ width: number; height: number } | null> {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file)
+    const img = new Image()
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      resolve({ width: img.naturalWidth, height: img.naturalHeight })
+    }
+    img.onerror = () => {
+      URL.revokeObjectURL(url)
+      resolve(null)
+    }
+    img.src = url
+  })
 }
 
 function FileUploadField({
@@ -39,6 +65,7 @@ function FileUploadField({
   hint,
   accept,
   allowedTypes,
+  minDimension,
   file,
   onChange,
   error,
@@ -48,6 +75,7 @@ function FileUploadField({
   hint: string
   accept: string
   allowedTypes: string[]
+  minDimension?: number
   file: File | null
   onChange: (file: File | null) => void
   error: string | null
@@ -55,7 +83,7 @@ function FileUploadField({
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
 
-  function handleSelected(selected: File | null) {
+  async function handleSelected(selected: File | null) {
     if (!selected) {
       onChange(null)
       return
@@ -74,6 +102,17 @@ function FileUploadField({
       onChange(null)
       if (inputRef.current) inputRef.current.value = ""
       return
+    }
+    if (minDimension) {
+      const dims = await readImageDimensions(selected)
+      if (dims && (dims.width < minDimension || dims.height < minDimension)) {
+        setError(
+          `That photo is only ${dims.width}×${dims.height}px -- too small to print clearly on a badge. Please use a photo at least ${minDimension}×${minDimension}px (most phone camera photos are fine; a tiny thumbnail or heavily cropped screenshot usually isn't).`
+        )
+        onChange(null)
+        if (inputRef.current) inputRef.current.value = ""
+        return
+      }
     }
     setError(null)
     onChange(selected)
@@ -380,9 +419,10 @@ export function RegistrationForm() {
 
         <FileUploadField
           label="Passport photograph"
-          hint={`A clear, front-facing photo of yourself, used for your participation pack and badge. JPG or PNG, up to ${MAX_FILE_MB}MB.`}
+          hint={`A clear, recent, front-facing photo of just you -- face clearly visible, good lighting, no sunglasses, no group photos or screenshots of a printed ID. This is what prints on your conference badge. JPG or PNG, up to ${MAX_FILE_MB}MB, at least ${PHOTO_MIN_DIMENSION}×${PHOTO_MIN_DIMENSION}px.`}
           accept=".jpg,.jpeg,.png"
           allowedTypes={["jpg", "jpeg", "png"]}
+          minDimension={PHOTO_MIN_DIMENSION}
           file={photoFile}
           onChange={setPhotoFile}
           error={photoError}
