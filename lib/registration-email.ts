@@ -52,3 +52,18 @@ export function registrationRejectedHtml(params: {
     <p>— ASM Nigeria 2026 Finance &amp; Budget Committee and Admin</p>
   `
 }
+
+export function whatsappGroupInviteHtml(params: { fullName: string; groupLink: string }) {
+  const firstName = params.fullName.trim().split(/\s+/)[0] || params.fullName
+  return `
+    <h2>Join the ASM Nigeria 2026 WhatsApp Group</h2>
+    <p>Dear ${escapeHtml(firstName)},</p>
+    <p>Thanks for registering for the First ASM Nigeria Conference 2026, One Health in Action, holding 22 to 25 November in Abuja.</p>
+    <p>We've set up a WhatsApp group for the conference so you can get programme updates, last minute announcements, and connect with other participants ahead of time. Join here:</p>
+    <p><a href="${escapeHtml(params.groupLink)}">${escapeHtml(params.groupLink)}</a></p>
+    <p>A couple of things before you join. Your phone number will be visible to other members, same as any WhatsApp group. Please keep discussions on topic and respectful.</p>
+    <p>If you have questions before the conference, reach us at asmnigeriaonehealth@gmail.com.</p>
+    <p>See you in Abuja.</p>
+    <p>ASM Nigeria 2026 Secretariat</p>
+  `
+}

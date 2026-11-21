@@ -32,7 +32,23 @@ function getTransporter() {
 // inbox, exactly as happened repeatedly before this guard existed.
 export const TEST_RECIPIENT_PATTERN =/smoke|@example\.com$|test-fixture/i
 
-export async function sendMail(options: { to: string; subject: string; html: string }) {
+// A bare HTML part with no plain-text alternative is one of the signals
+// spam filters weigh -- a real mail client always offers both. This is a
+// deliberately dumb fallback (strip tags, collapse whitespace) rather than
+// a proper HTML-to-text library: good enough to not be empty, not meant to
+// be pretty.
+function htmlToPlainText(html: string): string {
+  return html
+    .replace(/<(br|\/p|\/div|\/h[1-6])\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&nbsp;/g, " ")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+}
+
+export async function sendMail(options: { to: string; subject: string; html: string; text?: string }) {
   if (TEST_RECIPIENT_PATTERN.test(options.to)) {
     console.log(`[sendMail] Skipping send to test-pattern address: ${options.to} (${options.subject})`)
     return
@@ -47,5 +63,6 @@ export async function sendMail(options: { to: string; subject: string; html: str
     to: options.to,
     subject: options.subject,
     html: options.html,
+    text: options.text ?? htmlToPlainText(options.html),
   })
 }
