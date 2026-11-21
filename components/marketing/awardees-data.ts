@@ -27,7 +27,7 @@ export const AWARDEES: Awardee[] = [
   {
     accent: "var(--gold)",
     initials: "SA",
-    image: "",
+    image: "/speakers/sa-ado.jpg",
     chip: "chip-gold",
     chipLabel: "Distinguished Leadership and Service to Microbiology Award",
     name: "Professor S. A. Ado",
