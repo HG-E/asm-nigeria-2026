@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -324,6 +325,32 @@ export function ConferenceSettingsForm({
                     {...field}
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <Separator />
+
+        <div className="space-y-4">
+          <FormField
+            control={form.control}
+            name="presentationUploadFormUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Presentation slides upload form (Google Form link)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="url"
+                    placeholder="https://forms.gle/..."
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Shown to accepted oral presenters on their submission page as a link to upload their slide
+                  deck. Uploads go to the form&apos;s own Google Drive, not this site&apos;s storage.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

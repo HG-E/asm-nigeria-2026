@@ -98,6 +98,7 @@ export type Database = {
           submission_fee_ngn: number | null
           submission_fee_usd: number | null
           payment_account_details: string | null
+          presentation_upload_form_url: string | null
           created_at: string
           updated_at: string
         }
@@ -130,6 +131,7 @@ export type Database = {
           submission_fee_ngn?: number | null
           submission_fee_usd?: number | null
           payment_account_details?: string | null
+          presentation_upload_form_url?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -162,6 +164,7 @@ export type Database = {
           submission_fee_ngn?: number | null
           submission_fee_usd?: number | null
           payment_account_details?: string | null
+          presentation_upload_form_url?: string | null
           created_at?: string
           updated_at?: string
         }

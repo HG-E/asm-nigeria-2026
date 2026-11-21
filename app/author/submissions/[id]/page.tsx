@@ -183,7 +183,8 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
   if (submission.status !== "draft") {
     const submitted = searchParams.submitted === "1"
     const paymentRejected = submission.payment_status === "rejected"
-    const conference = paymentRejected ? await getActiveConference() : null
+    const isOralPresenter = submission.status === "accepted_oral"
+    const conference = paymentRejected || isOralPresenter ? await getActiveConference() : null
 
     const DECIDED_STATUSES = ["accepted", "accepted_oral", "accepted_poster", "rejected"]
     const { data: finalDecision } = DECIDED_STATUSES.includes(submission.status)
@@ -315,6 +316,26 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
                 defaultSections={sectionsFromVersion(acceptedStructured ? acceptedVersion : null)}
                 legacyText={acceptedStructured ? undefined : acceptedVersion.abstract_text?.trim() || undefined}
               />
+            </div>
+          )}
+
+          {isOralPresenter && conference?.presentation_upload_form_url && (
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="font-medium">Submit Your Presentation Slides</h3>
+              <Alert>
+                <AlertDescription>
+                  Upload your slide deck (PowerPoint or PDF) for your oral presentation -- this applies whether
+                  you&apos;re presenting in person or virtually. Open now through the last day of the conference.
+                </AlertDescription>
+              </Alert>
+              <Link
+                href={conference.presentation_upload_form_url}
+                target="_blank"
+                rel="noreferrer"
+                className={buttonVariants({})}
+              >
+                Upload Presentation Slides
+              </Link>
             </div>
           )}
 
