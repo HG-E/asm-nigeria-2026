@@ -9,8 +9,55 @@ export type Awardee = {
   chip: string
   chipLabel: string // the award/category, e.g. "Lifetime Achievement Award"
   name: string
+  title: string
 }
 
 // Add an entry here only once an award is actually confirmed, never as a
-// placeholder -- empty on purpose until the real list is provided.
-export const AWARDEES: Awardee[] = []
+// placeholder.
+export const AWARDEES: Awardee[] = [
+  {
+    accent: "var(--red)",
+    initials: "AM",
+    image: "",
+    chip: "chip-red",
+    chipLabel: "Excellence in Scientific Leadership and Innovation Award",
+    name: "Professor Abdullahi Mustapha",
+    title: "Director-General/CEO, National Biotechnology Research and Development Agency (NBRDA), Abuja",
+  },
+  {
+    accent: "var(--gold)",
+    initials: "SA",
+    image: "",
+    chip: "chip-gold",
+    chipLabel: "Distinguished Leadership and Service to Microbiology Award",
+    name: "Professor S. A. Ado",
+    title: "President, Nigerian Society for Microbiology (NSM)",
+  },
+  {
+    accent: "var(--gold)",
+    initials: "BO",
+    image: "/speakers/bethrand-odume.jpg",
+    chip: "chip-gold",
+    chipLabel: "Excellence in Academic and Clinical Leadership Award",
+    name: "Professor Bethrand Brian Odume",
+    title: "Executive Director, KNCV Nigeria, Abuja",
+  },
+  {
+    accent: "var(--blue)",
+    initials: "RM",
+    image: "",
+    chip: "chip-blue",
+    chipLabel: "Distinguished Award for Translational Microbiology and One Health Impact",
+    name: "Professor Robert Metcalf",
+    title: "Professor Emeritus, Biological Sciences, California State University, Sacramento",
+  },
+  {
+    accent: "var(--red)",
+    initials: "CE",
+    image: "",
+    chip: "chip-red",
+    chipLabel: "Excellence in Academic Leadership and Mentorship Award",
+    name: "Prof. Christopher Chiedozie Eze",
+    title: "Pioneer Acting Vice Chancellor, University of Agriculture and Environmental Sciences, Umuagwo, Imo State",
+  },
+]

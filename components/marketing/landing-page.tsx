@@ -1355,6 +1355,7 @@ export function LandingPage() {
                       <div className="sp-info">
                         <div className="sp-chip"><span className={`chip ${a.chip}`}>{a.chipLabel}</span></div>
                         <div className="sp-name" style={{ color: "#fff" }}>{a.name}</div>
+                        <div className="sp-title" style={{ color: "rgba(255,255,255,.7)" }}>{a.title}</div>
                       </div>
                     </div>
                   </Reveal>

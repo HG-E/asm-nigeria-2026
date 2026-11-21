@@ -48,6 +48,7 @@ export function AwardeesPage() {
                     <div className="sp-info">
                       <div className="sp-chip"><span className={`chip ${a.chip}`}>{a.chipLabel}</span></div>
                       <div className="sp-name">{a.name}</div>
+                      <div className="sp-title">{a.title}</div>
                     </div>
                   </div>
                 </Reveal>

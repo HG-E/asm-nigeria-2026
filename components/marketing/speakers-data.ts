@@ -114,18 +114,6 @@ const SPEAKER_LIST: Speaker[] = [
     bio: "Professor Andrew Pekosz is Professor and Vice Chair of the W. Harry Feinstone Department of Molecular Microbiology and Immunology at the Johns Hopkins Bloomberg School of Public Health in Baltimore, Maryland. He directs the Johns Hopkins Center for Excellence in Influenza Research and Response (JH-CEIRR) and the Center for Emerging Viral Infectious Diseases (CEVID). His laboratory studies the basic biology of influenza, coronaviruses and other emerging and zoonotic virus infections. He has authored more than 250 publications, serves on the editorial boards of several scientific journals, and has served on National Institutes of Health scientific and policy review boards focused on biosafety and biocontainment. A frequent expert voice in the public conversation on COVID-19, influenza, vaccines, biosafety, emerging infectious diseases and pandemic preparedness, he has been interviewed by national and international news organisations including National Public Radio, the Associated Press, the New York Times, the Washington Post, CNN, C-SPAN, the BBC and Bloomberg Television, as well as numerous local radio and television stations.",
   },
   {
-    accent: "var(--gold)",
-    initials: "BO",
-    image: "/speakers/bethrand-odume.jpg",
-    chip: "chip-gold",
-    chipLabel: "Special Guest",
-    name: "Prof. Bethrand Brian Odume",
-    title: "Executive Director, KNCV Nigeria",
-    sub: null,
-    subthemeIndex: null,
-    bio: "Professor Bethrand Brian Odume (MBBS, MWACP, MCGP, MPH, EMBA, PhD) is a physician, public health expert, researcher, and health systems leader with extensive experience in tuberculosis, TB/HIV, implementation science, and diagnostic innovation. He is the pioneer Executive Director of KNCV Nigeria, where he has championed innovative, evidence-based approaches to disease control and health systems strengthening. Previously with the U.S. CDC and Nigeria's National TB Programme, he has led major health initiatives supported by USAID, the Global Fund, and the Gates Foundation. He founded the KNCV Nigeria Centre for Research and Innovation in Disease Control (CRID), has authored over 45 scientific publications, and serves on several national and international boards, including The Union. He is also a Visiting Professor of Public Health Practice at Nnamdi Azikiwe University, Awka, Nigeria.",
-  },
-  {
     accent: "var(--red)",
     initials: "CL",
     image: "/speakers/christopher-leboa.jpg",
