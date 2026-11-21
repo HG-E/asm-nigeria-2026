@@ -1,5 +1,6 @@
 import Link from "next/link"
 
+import { EXHIBITORS } from "@/components/marketing/exhibitors-data"
 import { Reveal } from "@/components/marketing/reveal"
 import { SiteHeader } from "@/components/marketing/site-header"
 import { PARTNERS, type Partner } from "@/components/marketing/partners-data"
@@ -18,12 +19,12 @@ export function PartnersPage({ partners = PARTNERS }: { partners?: Partner[] } =
           <Reveal>
             <span className="caption eyebrow" style={{ color: "var(--gold)" }}>Partner With Us</span>
             <h1 className="headline" style={{ color: "#fff" }}>
-              Our Partners
+              Partners &amp; Exhibitors
             </h1>
             <div className="rule" />
             <p className="body-lg" style={{ color: "rgba(255,255,255,.85)", maxWidth: 640 }}>
-              The organizations collaborating with ASM Nigeria 2026 to advance One Health
-              microbiology across Nigeria. Read about them below, or{" "}
+              The organizations collaborating with and exhibiting at ASM Nigeria 2026 to advance One
+              Health microbiology across Nigeria. Read about them below, or{" "}
               <Link href="/#partners" style={{ color: "var(--gold)" }}>
                 see how to become one
               </Link>
@@ -59,6 +60,47 @@ export function PartnersPage({ partners = PARTNERS }: { partners?: Partner[] } =
           )}
         </div>
       </section>
+
+      {EXHIBITORS.length > 0 && (
+        <section className="section" style={{ background: "var(--surface-alt, #f7f8fa)" }}>
+          <div className="wrap">
+            <Reveal>
+              <span className="caption eyebrow" style={{ color: "var(--blue)" }}>Exhibiting</span>
+              <h2 className="headline" style={{ marginBottom: 32 }}>Exhibitors</h2>
+            </Reveal>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 340px))",
+                gap: 32,
+                justifyContent: "center",
+              }}
+            >
+              {EXHIBITORS.map((e, i) => (
+                <Reveal key={e.name} delay={(i % 3) * 80} className="partner-full-card">
+                  <a href={e.url} target="_blank" rel="noopener noreferrer">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={e.image}
+                      alt={e.name}
+                      style={{ width: "100%", borderRadius: 12, display: "block", marginBottom: 16 }}
+                    />
+                  </a>
+                  <h3 className="pfc-name">{e.name}</h3>
+                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 12 }}>
+                    <a href={e.url} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+                      Visit Website ↗
+                    </a>
+                    <a href={`tel:${e.phone}`} className="btn btn-secondary">
+                      Call Us
+                    </a>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="section-dark sp-closing">
         <div className="wrap">

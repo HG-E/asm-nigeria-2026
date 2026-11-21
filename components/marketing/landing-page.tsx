@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 
 import { submitContactMessageAction } from "@/app/contact-actions"
+import { EXHIBITORS } from "@/components/marketing/exhibitors-data"
 import { PARTNERS } from "@/components/marketing/partners-data"
 import { Reveal } from "@/components/marketing/reveal"
 import { SiteHeader } from "@/components/marketing/site-header"
@@ -1880,6 +1881,54 @@ export function LandingPage() {
             </Reveal>
           </div>
         </section>
+
+        {EXHIBITORS.length > 0 && (
+          <section id="exhibitors" className="section" aria-labelledby="exhibitors-heading">
+            <div className="wrap">
+              <Reveal>
+                <span className="caption eyebrow" style={{ color: "var(--blue)" }}>Exhibiting</span>
+                <h2 className="headline" id="exhibitors-heading">Exhibitors</h2>
+                <div className="rule" />
+              </Reveal>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 340px))",
+                  gap: 32,
+                  justifyContent: "center",
+                  marginTop: 32,
+                }}
+              >
+                {EXHIBITORS.map((e, i) => (
+                  <Reveal key={e.name} delay={(i % 3) * 80} className="partner-full-card">
+                    <a href={e.url} target="_blank" rel="noopener noreferrer">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={e.image}
+                        alt={e.name}
+                        style={{ width: "100%", borderRadius: 12, display: "block", marginBottom: 16 }}
+                      />
+                    </a>
+                    <h3 className="pfc-name">{e.name}</h3>
+                    <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 12 }}>
+                      <a href={e.url} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+                        Visit Website ↗
+                      </a>
+                      <a href={`tel:${e.phone}`} className="btn btn-secondary">
+                        Call Us
+                      </a>
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
+              <Reveal delay={120} style={{ textAlign: "center", marginTop: 32 }}>
+                <Link href="/partners" className="btn btn-secondary">
+                  View All Partners &amp; Exhibitors →
+                </Link>
+              </Reveal>
+            </div>
+          </section>
+        )}
       </main>
 
       {/* ═══ FOOTER ═══ */}
