@@ -63,7 +63,7 @@ export const AWARDEES: Awardee[] = [
   {
     accent: "var(--blue)",
     initials: "UU",
-    image: "",
+    image: "/speakers/uduma-oji-uduma.jpg",
     chip: "chip-blue",
     chipLabel: "Excellence in Academic Leadership and Mentorship Award",
     name: "Prof. Uduma Oji Uduma",
