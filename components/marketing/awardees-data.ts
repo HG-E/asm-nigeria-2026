@@ -18,7 +18,7 @@ export const AWARDEES: Awardee[] = [
   {
     accent: "var(--red)",
     initials: "AM",
-    image: "",
+    image: "/speakers/abdullahi-mustapha.jpg",
     chip: "chip-red",
     chipLabel: "Excellence in Scientific Leadership and Innovation Award",
     name: "Professor Abdullahi Mustapha",
