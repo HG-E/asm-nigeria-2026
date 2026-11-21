@@ -78,4 +78,13 @@ export const AWARDEES: Awardee[] = [
     name: "Prof. Ikechukwu Nosike Simplicius Dozie",
     title: "Vice-Chancellor, Federal University of Technology, Owerri (FUTO)",
   },
+  {
+    accent: "var(--red)",
+    initials: "KU",
+    image: "/speakers/kingsley-udeh.jpg",
+    chip: "chip-red",
+    chipLabel: "Excellence in Public Service Award",
+    name: "Dr. Kingsley Tochukwu Udeh, SAN",
+    title: "Minister of Innovation, Science & Technology",
+  },
 ]
