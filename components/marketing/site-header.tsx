@@ -60,6 +60,7 @@ const NAV_LINKS = [
   { href: "/#why", label: "Why Attend" },
   { href: "https://asm.org/membership", label: "Become a Member", external: true },
   { href: "/speakers", label: "Speakers" },
+  { href: "/awardees", label: "Awardees" },
   { href: "/#themes", label: "Themes" },
   { href: "/#planning-committee", label: "Committee" },
   { href: "/#abstract", label: "Abstract" },
@@ -71,7 +72,7 @@ const NAV_LINKS = [
 ]
 
 const DESKTOP_NAV_LINKS = NAV_LINKS.filter((link) =>
-  ["Become a Member", "Speakers", "Accommodation", "Contact", "Partners"].includes(link.label)
+  ["Become a Member", "Speakers", "Awardees", "Accommodation", "Contact", "Partners"].includes(link.label)
 )
 
 // The persistent bottom tab bar (mobile only) deliberately surfaces just the

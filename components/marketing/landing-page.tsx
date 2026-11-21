@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 
 import { submitContactMessageAction } from "@/app/contact-actions"
+import { AWARDEES } from "@/components/marketing/awardees-data"
 import { EXHIBITORS } from "@/components/marketing/exhibitors-data"
 import { PARTNERS } from "@/components/marketing/partners-data"
 import { Reveal } from "@/components/marketing/reveal"
@@ -1327,6 +1328,47 @@ export function LandingPage() {
           </div>
         </section>
 
+        {/* ═══ AWARDEES ═══ */}
+        {AWARDEES.length > 0 && (
+          <section id="awardees" className="section-dark" aria-labelledby="awardees-heading">
+            <div className="wrap">
+              <Reveal>
+                <span className="caption eyebrow" style={{ color: "var(--gold)" }}>Honoring Excellence</span>
+                <h2 className="headline" id="awardees-heading" style={{ color: "#fff" }}>Conference Awardees</h2>
+                <div className="rule" />
+              </Reveal>
+              <div className="speakers-row">
+                {AWARDEES.map((a, i) => (
+                  <Reveal
+                    key={a.name}
+                    delay={i * 80}
+                    className="speaker-card open"
+                    style={{ "--accent": a.accent } as React.CSSProperties}
+                  >
+                    <div className="sp-header">
+                      {a.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={a.image} alt={a.name} className="sp-avatar sp-avatar-img" />
+                      ) : (
+                        <div className="sp-avatar">{a.initials}</div>
+                      )}
+                      <div className="sp-info">
+                        <div className="sp-chip"><span className={`chip ${a.chip}`}>{a.chipLabel}</span></div>
+                        <div className="sp-name" style={{ color: "#fff" }}>{a.name}</div>
+                      </div>
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
+              <Reveal className="speakers-cta">
+                <Link href="/awardees" className="btn btn-secondary">
+                  See All Awardees →
+                </Link>
+              </Reveal>
+            </div>
+          </section>
+        )}
+
         {/* ═══ THEMES ═══ */}
         <section id="themes" className="section" aria-labelledby="themes-heading">
           <div className="wrap">
@@ -1959,6 +2001,7 @@ export function LandingPage() {
                     <li><a href="#themes">Sub-Themes</a></li>
                     <li><a href="#programme">Programme</a></li>
                     <li><Link href="/speakers">Speakers</Link></li>
+                    <li><Link href="/awardees">Awardees</Link></li>
                     <li><Link href="/partners">Partners</Link></li>
                     <li><a href="#planning-committee">Planning Committee</a></li>
                   </ul>
