@@ -326,6 +326,9 @@ export default async function SubmissionDetailPage(props: PageProps<"/author/sub
                 <AlertDescription>
                   Upload your slide deck (PowerPoint or PDF) for your oral presentation -- this applies whether
                   you&apos;re presenting in person or virtually. Open now through the last day of the conference.
+                  You&apos;ll be asked to sign in with a Google account to upload (any Google account works, not
+                  necessarily the email you registered with) -- that&apos;s a Google Forms requirement for file
+                  uploads, not something specific to this site.
                 </AlertDescription>
               </Alert>
               <Link
