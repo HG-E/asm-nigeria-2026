@@ -56,6 +56,7 @@ export default async function AdminConferencePage() {
               submissionFeeUsd: conference.submission_fee_usd ?? undefined,
               paymentAccountDetails: conference.payment_account_details ?? "",
               presentationUploadFormUrl: conference.presentation_upload_form_url ?? "",
+              presentationTrackingCsvUrl: conference.presentation_tracking_csv_url ?? "",
             }}
             onSave={updateConferenceAction.bind(null, conference.id)}
           />

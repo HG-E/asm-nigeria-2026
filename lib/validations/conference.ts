@@ -21,5 +21,6 @@ export const conferenceSettingsSchema = z.object({
   submissionFeeUsd: z.number().min(0).optional(),
   paymentAccountDetails: z.string().trim().optional().or(z.literal("")),
   presentationUploadFormUrl: z.url("Enter a valid URL").optional().or(z.literal("")),
+  presentationTrackingCsvUrl: z.url("Enter a valid URL").optional().or(z.literal("")),
 })
 export type ConferenceSettingsInput = z.infer<typeof conferenceSettingsSchema>

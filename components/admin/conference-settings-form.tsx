@@ -355,6 +355,27 @@ export function ConferenceSettingsForm({
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="presentationTrackingCsvUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Presentation tracking sheet (published CSV link)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="url"
+                    placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv"
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  From the Google Sheet the form above feeds: File &rarr; Share &rarr; Publish to web &rarr;
+                  CSV. Lets the Presentations page below show who has and hasn&apos;t submitted yet.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         <Separator />

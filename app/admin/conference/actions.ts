@@ -46,6 +46,7 @@ export async function updateConferenceAction(
       submission_fee_usd: data.submissionFeeUsd ?? null,
       payment_account_details: data.paymentAccountDetails || null,
       presentation_upload_form_url: data.presentationUploadFormUrl || null,
+      presentation_tracking_csv_url: data.presentationTrackingCsvUrl || null,
     })
     .eq("id", id)
 

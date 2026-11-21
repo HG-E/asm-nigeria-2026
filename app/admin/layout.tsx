@@ -7,6 +7,7 @@ import {
   IdCard,
   LayoutDashboard,
   Layers,
+  Presentation,
   ScanLine,
   ScrollText,
   Settings,
@@ -25,6 +26,7 @@ export const metadata: Metadata = {
 const NAV: DashboardNavItem[] = [
   { href: "/admin/dashboard", label: "Dashboard", icon: <LayoutDashboard /> },
   { href: "/admin/submissions", label: "Submissions", icon: <FileText /> },
+  { href: "/admin/presentations", label: "Presentations", icon: <Presentation /> },
   { href: "/admin/registrations", label: "Registrations", icon: <ClipboardList /> },
   { href: "/admin/registrations/scan", label: "Scan Check-in", icon: <ScanLine /> },
   { href: "/admin/registrations/badges", label: "Print Badges", icon: <Sticker /> },
