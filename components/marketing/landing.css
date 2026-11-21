@@ -1405,6 +1405,101 @@
     font-size: 13.5px;
   }
 }
+/* ════ AWARDEE CARDS (homepage teaser + dedicated /awardees page) ════
+   Deliberately its own component rather than a reskinned .speaker-card:
+   an awardee entry has no bio to expand, so the left-aligned
+   photo+text-column layout built for a bio-bearing card just reads as a
+   half-empty box. This is a compact, centered "plaque" layout instead,
+   sized for what an awardee entry actually holds -- photo, the award
+   itself, name, role -- nothing more. Award titles are full phrases, not
+   short 2-3 word labels like a speaker's chip, so they're set as a plain
+   centered label rather than forced into a pill that would wrap badly. */
+.asm-landing .awardee-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 28px;
+}
+.asm-landing .awardee-card {
+  background: #fff;
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+  padding: 36px 26px 28px;
+  text-align: center;
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.asm-landing .awardee-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 5px;
+  background: var(--accent, var(--gold));
+}
+.asm-landing .awardee-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-3px);
+}
+.asm-landing .awardee-photo {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--accent, var(--gold));
+  flex-shrink: 0;
+}
+.asm-landing .awardee-photo img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: top center;
+  border: 3px solid var(--accent, var(--gold));
+}
+.asm-landing .awardee-award {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--accent-ink, var(--gold-d));
+  line-height: 1.45;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+.asm-landing .awardee-name {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+.asm-landing .awardee-title {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+@media (max-width: 640px) {
+  .asm-landing .awardee-card {
+    padding: 28px 20px 24px;
+  }
+  .asm-landing .awardee-photo {
+    width: 84px;
+    height: 84px;
+    font-size: 24px;
+  }
+  .asm-landing .awardee-name {
+    font-size: 16px;
+  }
+}
 
 /* ════ DEDICATED /speakers PAGE ════ */
 .asm-landing.speakers-page .sp-hero {

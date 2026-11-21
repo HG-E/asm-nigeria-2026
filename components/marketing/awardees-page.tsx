@@ -30,27 +30,25 @@ export function AwardeesPage() {
       <section className="section">
         <div className="wrap">
           {AWARDEES.length > 0 ? (
-            <div className="speakers-row speakers-row-full">
+            <div className="awardee-grid">
               {AWARDEES.map((a, i) => (
                 <Reveal
                   key={a.name}
-                  delay={(i % 3) * 80}
-                  className="speaker-card open"
+                  delay={(i % 4) * 80}
+                  className="awardee-card"
                   style={{ "--accent": a.accent } as React.CSSProperties}
                 >
-                  <div className="sp-header">
+                  <div className="awardee-photo">
                     {a.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={a.image} alt={a.name} className="sp-avatar sp-avatar-img" />
+                      <img src={a.image} alt={a.name} />
                     ) : (
-                      <div className="sp-avatar">{a.initials}</div>
+                      a.initials
                     )}
-                    <div className="sp-info">
-                      <div className="sp-chip"><span className={`chip ${a.chip}`}>{a.chipLabel}</span></div>
-                      <div className="sp-name">{a.name}</div>
-                      <div className="sp-title">{a.title}</div>
-                    </div>
                   </div>
+                  <div className="awardee-award">{a.chipLabel}</div>
+                  <div className="awardee-name">{a.name}</div>
+                  <div className="awardee-title">{a.title}</div>
                 </Reveal>
               ))}
             </div>

@@ -1337,27 +1337,25 @@ export function LandingPage() {
                 <h2 className="headline" id="awardees-heading" style={{ color: "#fff" }}>Conference Awardees</h2>
                 <div className="rule" />
               </Reveal>
-              <div className="speakers-row">
+              <div className="awardee-grid">
                 {AWARDEES.map((a, i) => (
                   <Reveal
                     key={a.name}
-                    delay={i * 80}
-                    className="speaker-card open"
+                    delay={(i % 4) * 80}
+                    className="awardee-card"
                     style={{ "--accent": a.accent } as React.CSSProperties}
                   >
-                    <div className="sp-header">
+                    <div className="awardee-photo">
                       {a.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={a.image} alt={a.name} className="sp-avatar sp-avatar-img" />
+                        <img src={a.image} alt={a.name} />
                       ) : (
-                        <div className="sp-avatar">{a.initials}</div>
+                        a.initials
                       )}
-                      <div className="sp-info">
-                        <div className="sp-chip"><span className={`chip ${a.chip}`}>{a.chipLabel}</span></div>
-                        <div className="sp-name" style={{ color: "#fff" }}>{a.name}</div>
-                        <div className="sp-title" style={{ color: "rgba(255,255,255,.7)" }}>{a.title}</div>
-                      </div>
                     </div>
+                    <div className="awardee-award">{a.chipLabel}</div>
+                    <div className="awardee-name">{a.name}</div>
+                    <div className="awardee-title">{a.title}</div>
                   </Reveal>
                 ))}
               </div>
