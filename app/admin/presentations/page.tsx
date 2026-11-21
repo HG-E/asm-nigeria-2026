@@ -13,11 +13,24 @@ import { createClient } from "@/lib/supabase/server"
 import { RichText } from "@/components/submission/rich-text"
 import { cn } from "@/lib/utils"
 
-// Reference numbers are typed by hand into the Google Form, so matching has
-// to tolerate whitespace and case differences a human would introduce --
-// normalize both sides the same way before comparing.
+// Reference numbers are typed by hand into the Google Form -- phones
+// autocorrect "-" to an en-dash, copy-paste from a confirmation email often
+// drags in a stray space, and a leading zero ("004" vs "4") is an easy slip.
+// None of those are the presenter doing anything wrong, so all of them need
+// to still match: collapse every separator variant to "-", then drop
+// leading zeros from each numeric run before comparing.
 function normalizeRef(ref: string): string {
-  return ref.trim().toUpperCase()
+  return ref
+    .trim()
+    .toUpperCase()
+    .replace(/[‐-―_]/g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/\d+/g, (m) => String(parseInt(m, 10)))
+}
+
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase()
 }
 
 type SubmissionRecord = {
@@ -25,11 +38,19 @@ type SubmissionRecord = {
   fileLink: string | null
 }
 
-async function fetchTrackingData(csvUrl: string): Promise<Map<string, SubmissionRecord> | { error: string }> {
+type TrackingData = { byRef: Map<string, SubmissionRecord>; byEmail: Map<string, SubmissionRecord> }
+
+async function fetchTrackingData(csvUrl: string): Promise<TrackingData | { error: string }> {
   let response: Response
   try {
-    response = await fetch(csvUrl, { cache: "no-store" })
-  } catch {
+    // A hung request would otherwise hold this page open indefinitely --
+    // Google's own infrastructure is reliable, but there's no reason to
+    // trust an external fetch to always come back promptly.
+    response = await fetch(csvUrl, { cache: "no-store", signal: AbortSignal.timeout(10_000) })
+  } catch (err) {
+    if (err instanceof Error && err.name === "TimeoutError") {
+      return { error: "The tracking sheet took too long to respond. Try again in a moment." }
+    }
     return { error: "Could not reach that URL. Check it's the published CSV link, not the normal sheet link." }
   }
   if (!response.ok) {
@@ -38,24 +59,46 @@ async function fetchTrackingData(csvUrl: string): Promise<Map<string, Submission
 
   const text = await response.text()
   const records = parseCsvRecords(text)
-  const map = new Map<string, SubmissionRecord>()
+  const byRef = new Map<string, SubmissionRecord>()
+  const byEmail = new Map<string, SubmissionRecord>()
 
   for (const record of records) {
-    const refColumn = findColumn(record, ["reference"])
-    if (!refColumn) continue
-    const ref = normalizeRef(record[refColumn])
-    if (!ref) continue
-
     const fileColumn = findColumn(record, ["file", "drive", "presentation", "upload"])
     const timestampColumn = findColumn(record, ["timestamp"])
-
-    map.set(ref, {
+    const entry: SubmissionRecord = {
       timestamp: timestampColumn ? record[timestampColumn] || null : null,
       fileLink: fileColumn ? record[fileColumn] || null : null,
-    })
+    }
+
+    const refColumn = findColumn(record, ["reference"])
+    const ref = refColumn ? normalizeRef(record[refColumn]) : ""
+    if (ref) byRef.set(ref, entry)
+
+    // Fallback key: if the reference number is garbled beyond what
+    // normalizeRef can recover (or left blank), a matching email still
+    // surfaces the submission instead of it silently reading as missing.
+    const emailColumn = findColumn(record, ["email"])
+    const email = emailColumn ? normalizeEmail(record[emailColumn]) : ""
+    if (email) byEmail.set(email, entry)
   }
 
-  return map
+  return { byRef, byEmail }
+}
+
+function lookupSubmission(
+  tracking: TrackingData,
+  referenceNumber: string | null,
+  email: string | undefined
+): SubmissionRecord | null {
+  if (referenceNumber) {
+    const byRef = tracking.byRef.get(normalizeRef(referenceNumber))
+    if (byRef) return byRef
+  }
+  if (email) {
+    const byEmail = tracking.byEmail.get(normalizeEmail(email))
+    if (byEmail) return byEmail
+  }
+  return null
 }
 
 export default async function AdminPresentationsPage() {
@@ -76,11 +119,11 @@ export default async function AdminPresentationsPage() {
   const tracking = conference?.presentation_tracking_csv_url
     ? await fetchTrackingData(conference.presentation_tracking_csv_url)
     : null
-  const trackingMap = tracking && !("error" in tracking) ? tracking : null
+  const trackingData = tracking && !("error" in tracking) ? tracking : null
   const trackingError = tracking && "error" in tracking ? tracking.error : null
 
-  const submittedCount = trackingMap
-    ? presenters.filter((p) => p.reference_number && trackingMap.has(normalizeRef(p.reference_number))).length
+  const submittedCount = trackingData
+    ? presenters.filter((p) => lookupSubmission(trackingData, p.reference_number, p.user_profiles?.email)).length
     : 0
 
   return (
@@ -121,7 +164,7 @@ export default async function AdminPresentationsPage() {
         </Alert>
       )}
 
-      {trackingMap && (
+      {trackingData && (
         <p className="text-muted-foreground text-sm">
           {submittedCount} of {presenters.length} oral presenters have submitted their slides.
         </p>
@@ -150,7 +193,7 @@ export default async function AdminPresentationsPage() {
               </TableHeader>
               <TableBody>
                 {presenters.map((p) => {
-                  const record = p.reference_number && trackingMap ? trackingMap.get(normalizeRef(p.reference_number)) : null
+                  const record = trackingData ? lookupSubmission(trackingData, p.reference_number, p.user_profiles?.email) : null
                   const submitted = Boolean(record)
                   return (
                     <TableRow key={p.id}>
@@ -165,7 +208,7 @@ export default async function AdminPresentationsPage() {
                         <div className="text-muted-foreground text-xs">{p.user_profiles?.email}</div>
                       </TableCell>
                       <TableCell>
-                        {trackingMap ? (
+                        {trackingData ? (
                           <Badge variant={submitted ? "gold" : "secondary"}>
                             {submitted ? "Submitted" : "Not yet"}
                           </Badge>
