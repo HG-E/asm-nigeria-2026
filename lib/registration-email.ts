@@ -67,3 +67,22 @@ export function whatsappGroupInviteHtml(params: { fullName: string; groupLink: s
     <p>ASM Nigeria 2026 Secretariat</p>
   `
 }
+
+export function workshopInviteHtml(params: { fullName: string; referenceNumber: string; zoomRegistrationLink: string }) {
+  const firstName = params.fullName.trim().split(/\s+/)[0] || params.fullName
+  return `
+    <h2>Your Pre-Conference Workshop on 22 November</h2>
+    <p>Dear ${escapeHtml(firstName)},</p>
+    <p>Thanks for signing up for the pre-conference workshop ahead of the First ASM Nigeria Conference 2026, One Health in Action.</p>
+    <p>The workshop will be held virtually on Zoom.</p>
+    <p><strong>Date:</strong> Sunday, 22 November 2026<br>
+    <strong>Time:</strong> 10:15am (West Africa Time)</p>
+    <p>Please register for the Zoom session in advance using this link:</p>
+    <p><a href="${escapeHtml(params.zoomRegistrationLink)}">${escapeHtml(params.zoomRegistrationLink)}</a></p>
+    <p>After registering, Zoom will send you a confirmation email with the details to join on the day.</p>
+    <p>Your reference number is <strong>${escapeHtml(params.referenceNumber)}</strong>. Please keep it for your records.</p>
+    <p>If you have any questions, reach us at asmnigeriaonehealth@gmail.com.</p>
+    <p>See you there.</p>
+    <p>ASM Nigeria 2026 Secretariat</p>
+  `
+}
