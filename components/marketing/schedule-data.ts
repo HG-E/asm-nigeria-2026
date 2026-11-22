@@ -9,6 +9,145 @@ export type ScheduleEntry = {
   presenter: string
 }
 
+export type WorkshopSession = {
+  time: string
+  duration: string
+  session: string
+  facilitators: string
+  focus: string
+}
+
+export type WorkshopProgram = {
+  heading: string
+  theme: string
+  date: string
+  sessions: WorkshopSession[]
+}
+
+// Source: "ASM 2026 Pre-Conference and Post-Conference Hands-On Program of
+// Events" (committee doc). Session times are the committee's actual,
+// current schedule -- supersedes the generic Zoom-invite time sent to
+// workshop registrants earlier.
+export const PRE_CONFERENCE_WORKSHOP: WorkshopProgram = {
+  heading: "Pre-Conference Hands-On Workshop",
+  theme: "Empowering Early-Career Microbiologists: Funding, Publishing, and Digital Visibility",
+  date: "Sunday, 22 November 2026",
+  sessions: [
+    {
+      time: "12:20 – 12:50",
+      duration: "30 mins",
+      session: "Arrival, Registration and Technical Setup",
+      facilitators: "Secretariat / Tech Team",
+      focus: "Participant check-in, Wi-Fi connection, and laptop or device readiness check.",
+    },
+    {
+      time: "12:50 – 13:00",
+      duration: "10 mins",
+      session: "Settling In",
+      facilitators: "Secretariat",
+      focus: "Seating and final preparations.",
+    },
+    {
+      time: "13:00 – 13:15",
+      duration: "15 mins",
+      session: "Welcome and Workshop Overview",
+      facilitators: "Organizing Committee",
+      focus: "Opening remarks, workshop objectives, and ground rules for interactive participation.",
+    },
+    {
+      time: "13:15 – 14:15",
+      duration: "60 mins",
+      session: "Session 1: Grant Proposal Writing and Fellowship Opportunities",
+      facilitators: "Prof. Chijioke Nsofor",
+      focus: "35 mins: Identifying global fellowships and structuring winning grant narratives. 25 mins: Live proposal clinic, critiquing sample problem statements and Q&A.",
+    },
+    {
+      time: "14:15 – 14:30",
+      duration: "15 mins",
+      session: "Tea/Coffee and Networking Break",
+      facilitators: "All Participants",
+      focus: "Informal peer-to-peer networking.",
+    },
+    {
+      time: "14:30 – 15:30",
+      duration: "60 mins",
+      session: "Session 2: From Bench to the Reviewer's Desk: Mastering the Rigors of Scientific Communication for Early-Career Microbiologists",
+      facilitators: "Dr. Ndidiamaka Ugo-Nkwoala",
+      focus: "35 mins: Translating raw lab data into cohesive manuscripts and navigating peer review. 25 mins: Hands-on exercise, deconstructing reviewer comments and drafting effective responses.",
+    },
+    {
+      time: "15:30 – 16:30",
+      duration: "60 mins",
+      session: "Session 3: Be Found: Build Your Digital Research Visibility in 60 Minutes",
+      facilitators: "Ekene Hillary",
+      focus: "20 mins: Strategic academic branding across ORCID, Google Scholar, ResearchGate, and LinkedIn. 40 mins: Live profile audit and real-time optimization sprint on participants' devices.",
+    },
+    {
+      time: "16:30 – 16:50",
+      duration: "20 mins",
+      session: "Plenary Panel and Action-Plan Synthesis",
+      facilitators: "All Facilitators",
+      focus: "Cross-cutting Q&A and participant commitments on next career milestones.",
+    },
+    {
+      time: "16:50 – 17:00",
+      duration: "10 mins",
+      session: "Closing Remarks and Group Photograph",
+      facilitators: "Organizing Committee",
+      focus: "Vote of thanks, closing remarks, and group photograph.",
+    },
+  ],
+}
+
+export const POST_CONFERENCE_WORKSHOP: WorkshopProgram = {
+  heading: "Post-Conference Hands-On Workshop",
+  theme: "Applications of DNA Extraction in Microbiology Research",
+  date: "Wednesday, 25 November 2026, 4:00–6:00 PM (venue to be confirmed)",
+  sessions: [
+    {
+      time: "16:00 – 16:10",
+      duration: "10 mins",
+      session: "Welcome and Workshop Overview",
+      facilitators: "Organizing Committee",
+      focus: "Opening remarks, introduction of facilitators, and workshop objectives.",
+    },
+    {
+      time: "16:10 – 16:40",
+      duration: "30 mins",
+      session: "Applications of DNA Extraction in Microbiology Research",
+      facilitators: "Dr. Okoli Ekeremma and Prof. Nwadiuto Esiobu",
+      focus: "Principles of DNA extraction and its applications across microbiology research.",
+    },
+    {
+      time: "16:40 – 17:40",
+      duration: "60 mins",
+      session: "Hands-On Practical: DNA Extraction",
+      facilitators: "Dr. Okoli Ekeremma and Prof. Nwadiuto Esiobu",
+      focus: "Guided bench demonstration and participant practice of DNA extraction.",
+    },
+    {
+      time: "17:40 – 17:50",
+      duration: "10 mins",
+      session: "Discussion, Troubleshooting and Q&A",
+      facilitators: "Dr. Okoli Ekeremma and Prof. Nwadiuto Esiobu",
+      focus: "Quality checks on extracted DNA, common pitfalls, and open questions.",
+    },
+    {
+      time: "17:50 – 18:00",
+      duration: "10 mins",
+      session: "Closing Remarks and Group Photograph",
+      facilitators: "Organizing Committee",
+      focus: "Vote of thanks, closing remarks, and group photograph.",
+    },
+  ],
+}
+
+export const WORKSHOP_PREP_CHECKLIST = [
+  "Laptop or Tablet. Required for live digital profile updates and drafting exercises.",
+  "Draft Abstract or Research Concept. A one-paragraph summary of a current project, for use in the grant and manuscript clinics.",
+  "Existing Profile Links. Login credentials for ORCID, Google Scholar, ResearchGate, and LinkedIn.",
+]
+
 export const ORAL_SCHEDULE: ScheduleEntry[] = [
   { day: "Monday, 23 November 2026", time: "15:10–15:18", abstractNumber: "ASM-ABJ-2026-AMR-004", presenter: "Ebipade Kereakede" },
   { day: "Monday, 23 November 2026", time: "15:18–15:26", abstractNumber: "ASM-ABJ-2026-AMR-046", presenter: "Onyekachi Igwe" },

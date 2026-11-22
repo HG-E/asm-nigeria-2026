@@ -3,13 +3,70 @@
 import Link from "next/link"
 import { useMemo, useState } from "react"
 
-import { ORAL_SCHEDULE, POSTER_SCHEDULE, type ScheduleEntry } from "@/components/marketing/schedule-data"
+import {
+  ORAL_SCHEDULE,
+  POST_CONFERENCE_WORKSHOP,
+  POSTER_SCHEDULE,
+  PRE_CONFERENCE_WORKSHOP,
+  WORKSHOP_PREP_CHECKLIST,
+  type ScheduleEntry,
+  type WorkshopProgram,
+} from "@/components/marketing/schedule-data"
 import { Reveal } from "@/components/marketing/reveal"
 import { SiteHeader } from "@/components/marketing/site-header"
 
 import "./landing.css"
 
-type Track = "oral" | "poster"
+type Track = "oral" | "poster" | "pre-workshop" | "post-workshop"
+
+function WorkshopTable({ program, showChecklist }: { program: WorkshopProgram; showChecklist?: boolean }) {
+  return (
+    <div className="schedule-day-group">
+      <h3 className="schedule-day-heading">{program.date}</h3>
+      <p className="body-lg" style={{ marginBottom: 20 }}>
+        <strong>Theme:</strong> {program.theme}
+      </p>
+      <div className="table-wrap">
+        <table className="schedule-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Duration</th>
+              <th>Session / Activity</th>
+              <th>Facilitator(s)</th>
+              <th>Format and Focus</th>
+            </tr>
+          </thead>
+          <tbody>
+            {program.sessions.map((s) => (
+              <tr key={s.time}>
+                <td>{s.time}</td>
+                <td>{s.duration}</td>
+                <td>{s.session}</td>
+                <td>{s.facilitators}</td>
+                <td>{s.focus}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {showChecklist && (
+        <div className="schedule-howitworks-card" style={{ marginTop: 28 }}>
+          <h3>Come Prepared</h3>
+          <p className="schedule-howitworks-meta">
+            To maximize the hands-on segments, pre-conference attendees are asked to come prepared
+            with the following.
+          </p>
+          <ul>
+            {WORKSHOP_PREP_CHECKLIST.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
+}
 
 function groupByDay(entries: ScheduleEntry[]) {
   const groups = new Map<string, ScheduleEntry[]>()
@@ -49,10 +106,9 @@ export function SchedulePage() {
             <div className="rule" />
             <p className="body-lg" style={{ color: "rgba(255,255,255,.85)", maxWidth: 640 }}>
               The full oral and poster presentation timetable for ASM Nigeria 2026, 22–25
-              November in Abuja. Each presenter gets a fixed slot: 8 minutes for oral
-              presentations (6 minutes to present, 2 for questions), and a short pitch-and-question
-              slot for posters. Find your abstract number below, or download the full schedule to
-              keep offline.
+              November in Abuja, plus the hands-on pre-conference and post-conference workshop
+              programs with facilitators. Find your abstract number below, or download the full
+              schedule to keep offline.
             </p>
             <div className="hero-actions">
               <a href="/schedule/ASM-Nigeria-2026-Schedule.pdf" className="btn btn-primary btn-lg" download>
@@ -106,47 +162,72 @@ export function SchedulePage() {
               >
                 Poster Presentations ({POSTER_SCHEDULE.length})
               </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={track === "pre-workshop"}
+                className={track === "pre-workshop" ? "schedule-tab active" : "schedule-tab"}
+                onClick={() => setTrack("pre-workshop")}
+              >
+                Pre-Conference Workshop
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={track === "post-workshop"}
+                className={track === "post-workshop" ? "schedule-tab active" : "schedule-tab"}
+                onClick={() => setTrack("post-workshop")}
+              >
+                Post-Conference Workshop
+              </button>
             </div>
-            <input
-              type="search"
-              className="schedule-search"
-              placeholder="Search by presenter name or abstract number…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              aria-label="Search the schedule"
-            />
+            {(track === "oral" || track === "poster") && (
+              <input
+                type="search"
+                className="schedule-search"
+                placeholder="Search by presenter name or abstract number…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                aria-label="Search the schedule"
+              />
+            )}
           </div>
 
-          {grouped.size > 0 ? (
-            Array.from(grouped.entries()).map(([day, dayEntries]) => (
-              <div key={day} className="schedule-day-group">
-                <h3 className="schedule-day-heading">{day}</h3>
-                <div className="table-wrap">
-                  <table className="schedule-table">
-                    <thead>
-                      <tr>
-                        <th>Time</th>
-                        <th>Abstract Number</th>
-                        <th>Presenter</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dayEntries.map((e) => (
-                        <tr key={`${e.abstractNumber}-${e.time}`}>
-                          <td>{e.time}</td>
-                          <td className="schedule-abstract-no">{e.abstractNumber}</td>
-                          <td>{e.presenter}</td>
+          {track === "pre-workshop" && <WorkshopTable program={PRE_CONFERENCE_WORKSHOP} showChecklist />}
+          {track === "post-workshop" && <WorkshopTable program={POST_CONFERENCE_WORKSHOP} />}
+
+          {(track === "oral" || track === "poster") && (
+            grouped.size > 0 ? (
+              Array.from(grouped.entries()).map(([day, dayEntries]) => (
+                <div key={day} className="schedule-day-group">
+                  <h3 className="schedule-day-heading">{day}</h3>
+                  <div className="table-wrap">
+                    <table className="schedule-table">
+                      <thead>
+                        <tr>
+                          <th>Time</th>
+                          <th>Abstract Number</th>
+                          <th>Presenter</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {dayEntries.map((e) => (
+                          <tr key={`${e.abstractNumber}-${e.time}`}>
+                            <td>{e.time}</td>
+                            <td className="schedule-abstract-no">{e.abstractNumber}</td>
+                            <td>{e.presenter}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <p className="body-lg" style={{ textAlign: "center", color: "#44506b" }}>
-              No presentations match &ldquo;{query}&rdquo;. Try a different name or abstract number.
-            </p>
+              ))
+            ) : (
+              <p className="body-lg" style={{ textAlign: "center", color: "#44506b" }}>
+                No presentations match &ldquo;{query}&rdquo;. Try a different name or abstract number.
+              </p>
+            )
           )}
         </div>
       </section>
