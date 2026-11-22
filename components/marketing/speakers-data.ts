@@ -96,10 +96,10 @@ const SPEAKER_LIST: Speaker[] = [
     chip: "chip-blue",
     chipLabel: "Pre-Conference Workshop Facilitator",
     name: "Goodness Ekene Hillary",
-    title: "Founder, Researchvy.com",
+    title: "Founder, Research Visibility Intelligence (Researchvy.com)",
     sub: "Founder, Healths.ng Media Ltd · Founder, ALTDAP Research · PhD Researcher, Sustainable Social Development (FUTO)",
     subthemeIndex: null,
-    bio: "Goodness Ekene Hillary, known as Ekene, is the founder of Researchvy.com, which helps researchers, lecturers and academics build a digital presence that keeps them findable online by their field, interests and expertise, with a target of training over one million of them by 2030. He also founded Healths.ng Media Ltd, a Nigerian health media and professional visibility platform that grew out of his COVID-era work at Uloogwu Health, where he built the system that helped patients and health professionals reach each other faster. Ekene also founded ALTDAP, an adolescent drug abuse prevention platform that began as his M.Sc. research at the Federal University of Technology, Owerri (FUTO), where he is now a PhD researcher in Sustainable Social Development. After more than 20 years in technology and over a decade in digital health, he runs digital visibility clinics for academic and professional institutions.",
+    bio: "Goodness Ekene Hillary, known as Ekene, is the founder of Research Visibility Intelligence via Researchvy.com, which helps researchers, lecturers and academics build a digital presence that keeps them findable online by their field, interests and expertise, with a target of training over one million of them by 2030. He also founded Healths.ng Media Ltd, a Nigerian health media and professional visibility platform that grew out of his COVID-era work at Uloogwu Health, where he built the system that helped patients and health professionals reach each other faster. Ekene also founded ALTDAP, an adolescent drug abuse prevention platform that began as his M.Sc. research at the Federal University of Technology, Owerri (FUTO), where he is now a PhD researcher in Sustainable Social Development. After more than 20 years in technology and over a decade in digital health, he runs digital visibility clinics for academic and professional institutions.",
   },
   {
     accent: "var(--blue)",
