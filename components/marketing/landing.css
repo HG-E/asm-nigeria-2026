@@ -1669,9 +1669,18 @@
   border-radius: var(--r-lg);
 }
 .asm-landing.schedule-page .schedule-table {
+  /* Without a min-width, a browser with no explicit column widths shrinks
+     an auto-layout table to fit its container instead of overflowing it --
+     so on a narrow phone the wrapper's overflow:auto never triggers and
+     every cell just gets squeezed into unreadably narrow columns. A
+     min-width forces genuine horizontal scroll instead. */
   width: 100%;
+  min-width: 560px;
   border-collapse: collapse;
   font-size: 14px;
+}
+.asm-landing.schedule-page .schedule-table.schedule-table--workshop {
+  min-width: 860px;
 }
 .asm-landing.schedule-page .schedule-table th {
   position: sticky;

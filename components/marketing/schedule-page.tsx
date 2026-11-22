@@ -27,7 +27,7 @@ function WorkshopTable({ program, showChecklist }: { program: WorkshopProgram; s
         <strong>Theme:</strong> {program.theme}
       </p>
       <div className="table-wrap">
-        <table className="schedule-table">
+        <table className="schedule-table schedule-table--workshop">
           <thead>
             <tr>
               <th>Time</th>
