@@ -1582,7 +1582,7 @@
 }
 .asm-landing.schedule-page .schedule-howitworks-meta {
   font-size: 13.5px;
-  color: var(--muted);
+  color: #44506b;
   margin-bottom: 14px;
   line-height: 1.5;
 }
@@ -1694,7 +1694,7 @@
 .asm-landing.schedule-page .schedule-abstract-no {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  color: var(--muted);
+  color: #44506b;
 }
 @media (max-width: 640px) {
   .asm-landing.schedule-page .schedule-toolbar {

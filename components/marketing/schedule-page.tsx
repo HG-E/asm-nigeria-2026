@@ -144,7 +144,7 @@ export function SchedulePage() {
               </div>
             ))
           ) : (
-            <p className="body-lg" style={{ textAlign: "center", color: "var(--muted)" }}>
+            <p className="body-lg" style={{ textAlign: "center", color: "#44506b" }}>
               No presentations match &ldquo;{query}&rdquo;. Try a different name or abstract number.
             </p>
           )}
