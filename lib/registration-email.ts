@@ -68,6 +68,21 @@ export function whatsappGroupInviteHtml(params: { fullName: string; groupLink: s
   `
 }
 
+export function workshopWhatsappGroupInviteHtml(params: { fullName: string; groupLink: string }) {
+  const firstName = params.fullName.trim().split(/\s+/)[0] || params.fullName
+  return `
+    <h2>Join the ASM Nigeria 2026 Workshop WhatsApp Group</h2>
+    <p>Dear ${escapeHtml(firstName)},</p>
+    <p>Thanks for signing up for the Pre &amp; Post-Conference Hands-On Workshop at the First ASM Nigeria Conference 2026, One Health in Action.</p>
+    <p>We've set up a WhatsApp group just for workshop participants, for session reminders, updates, and materials from the facilitators. Join here:</p>
+    <p><a href="${escapeHtml(params.groupLink)}">${escapeHtml(params.groupLink)}</a></p>
+    <p>This group is reserved for registered workshop participants only. Your phone number will be visible to other members, same as any WhatsApp group.</p>
+    <p>See the <a href="https://www.asmnigeriaconference.com.ng/schedule">workshop schedule</a> for facilitators and session times.</p>
+    <p>If you have questions, reach us at asmnigeriaonehealth@gmail.com.</p>
+    <p>ASM Nigeria 2026 Secretariat</p>
+  `
+}
+
 export function workshopInviteHtml(params: { fullName: string; referenceNumber: string; zoomRegistrationLink: string }) {
   const firstName = params.fullName.trim().split(/\s+/)[0] || params.fullName
   return `
