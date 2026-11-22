@@ -1561,6 +1561,49 @@
 }
 
 /* ════ DEDICATED /schedule PAGE ════ */
+.asm-landing.schedule-page .schedule-howitworks {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 48px;
+}
+.asm-landing.schedule-page .schedule-howitworks-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 28px 30px;
+  box-shadow: var(--shadow);
+}
+.asm-landing.schedule-page .schedule-howitworks-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.asm-landing.schedule-page .schedule-howitworks-meta {
+  font-size: 13.5px;
+  color: var(--muted);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+.asm-landing.schedule-page .schedule-howitworks-card ul {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.asm-landing.schedule-page .schedule-howitworks-card li {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+@media (max-width: 768px) {
+  .asm-landing.schedule-page .schedule-howitworks {
+    grid-template-columns: 1fr;
+  }
+}
+
 .asm-landing.schedule-page .schedule-toolbar {
   display: flex;
   flex-wrap: wrap;

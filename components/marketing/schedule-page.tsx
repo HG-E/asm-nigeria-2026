@@ -65,6 +65,27 @@ export function SchedulePage() {
 
       <section className="section">
         <div className="wrap">
+          <h2 className="headline" style={{ textAlign: "center", marginBottom: 28 }}>How It Works</h2>
+          <div className="schedule-howitworks">
+            <div className="schedule-howitworks-card">
+              <h3>Oral Presentations</h3>
+              <p className="schedule-howitworks-meta">198 accepted presentations &middot; 5 parallel rooms &middot; 8 minutes per presenter (6 to present, 2 for questions)</p>
+              <ul>
+                <li><strong>Monday 23 November:</strong> afternoon only, 15:10&ndash;17:30</li>
+                <li><strong>Tuesday 24 November:</strong> morning 11:25&ndash;13:00, afternoon 13:20&ndash;14:20</li>
+                <li><strong>Wednesday 25 November:</strong> morning only, 10:30&ndash;12:00, ending before the 12:00 mentorship activity</li>
+              </ul>
+            </div>
+            <div className="schedule-howitworks-card">
+              <h3>Poster Presentations</h3>
+              <p className="schedule-howitworks-meta">89 accepted presentations &middot; 5 poster zones &middot; 3 minutes per presenter (2-minute pitch, 1-minute questions)</p>
+              <ul>
+                <li><strong>Tuesday 24 November:</strong> four rounds, 14:30&ndash;14:45, 14:50&ndash;15:05, 15:10&ndash;15:25, and 15:30&ndash;15:45, with a 5-minute gap between rounds to move between zones</li>
+                <li><strong>Open viewing &amp; judging:</strong> 15:50&ndash;16:20, ahead of the 16:30 policy dialogue</li>
+              </ul>
+            </div>
+          </div>
+
           <div className="schedule-toolbar">
             <div className="schedule-tabs" role="tablist" aria-label="Presentation track">
               <button
