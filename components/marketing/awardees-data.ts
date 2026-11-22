@@ -61,6 +61,15 @@ export const AWARDEES: Awardee[] = [
     title: "Director-General/CEO, National Biotechnology Research and Development Agency (NBRDA), Abuja",
   },
   {
+    accent: "var(--blue)",
+    initials: "EE",
+    image: "",
+    chip: "chip-blue",
+    chipLabel: "Excellence in Clinical Practice (Lab to Landscape) Leadership",
+    name: "Dr. Emeka Elom",
+    title: "Director, Medical Laboratory Services, Department of Hospital Services, Federal Ministry of Health and Social Welfare",
+  },
+  {
     accent: "var(--gold)",
     initials: "SA",
     image: "/speakers/sa-ado.jpg",
