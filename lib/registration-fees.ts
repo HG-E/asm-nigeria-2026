@@ -43,7 +43,9 @@ export const REGISTRATION_FEES: Record<ParticipantCategory, FeeRow> = {
 }
 
 // Flat rate -- no early/late split for the workshop (unlike the main
-// attendance fees above).
+// attendance fees above). One fee covers both the Pre-Conference and
+// Post-Conference hands-on workshops -- there is no separate Post-Conference
+// add-on; only those who paid this covers both sessions.
 export const WORKSHOP_FEE = { early: "₦8,000", late: "₦8,000" }
 
 export function currentRegistrationPeriod(): "early" | "late" {

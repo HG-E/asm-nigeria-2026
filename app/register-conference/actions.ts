@@ -169,7 +169,7 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
   const category = parsed.data.participantCategory as ParticipantCategory
   const fee = feeFor(category, period)
   const amountExpected = parsed.data.includeWorkshop
-    ? `${fee} + ${WORKSHOP_FEE[period]} (pre-conference workshop)`
+    ? `${fee} + ${WORKSHOP_FEE[period]} (pre & post-conference workshop)`
     : fee
   const currency = fee.trim().startsWith("$") ? "USD" : "NGN"
 

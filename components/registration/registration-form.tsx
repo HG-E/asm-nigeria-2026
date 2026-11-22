@@ -490,8 +490,15 @@ export function RegistrationForm({
               </FormControl>
               <div className="space-y-1 leading-none">
                 <FormLabel className="font-normal">
-                  Add the pre-conference hands-on workshop ({WORKSHOP_FEE[period]})
+                  Add the Pre &amp; Post-Conference hands-on workshops ({WORKSHOP_FEE[period]})
                 </FormLabel>
+                <p className="text-muted-foreground text-sm">
+                  One fee covers both sessions. See the{" "}
+                  <a href="/schedule" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
+                    workshop schedule
+                  </a>{" "}
+                  for facilitators and times.
+                </p>
               </div>
             </FormItem>
           )}
@@ -501,7 +508,7 @@ export function RegistrationForm({
           <p className="text-sm">
             <span className="font-medium">Amount due: </span>
             {fee}
-            {includeWorkshop && <> + {WORKSHOP_FEE[period]} workshop fee</>}
+            {includeWorkshop && <> + {WORKSHOP_FEE[period]} (Pre &amp; Post-Conference workshops)</>}
           </p>
         )}
 

@@ -76,7 +76,7 @@ const WHY_CARDS = [
   { icon: "🔬", accent: "wi-red", title: "World-Class Science", desc: "Keynote lectures, plenary sessions, oral and poster presentations delivering cutting-edge microbiology research." },
   { icon: "🤝", accent: "wi-blue", title: "Network Across Sectors", desc: "Connect with microbiologists, clinicians, vets, environmental scientists, policymakers and industry leaders under one roof." },
   { icon: "🌍", accent: "wi-gold", title: "One Health Framework", desc: "Experience Africa's first conference fully built around the One Health paradigm: human, animal, and environment together." },
-  { icon: "🎓", accent: "wi-red", title: "Student & ECR Focus", desc: "Dedicated mentorship sessions, early-career researcher support, and a pre-conference hands-on workshop for skills development." },
+  { icon: "🎓", accent: "wi-red", title: "Student & ECR Focus", desc: "Dedicated mentorship sessions, early-career researcher support, and pre- and post-conference hands-on workshops for skills development." },
   { icon: "📢", accent: "wi-blue", title: "Policy Dialogue", desc: "Shape Nigeria's science policy through evidence-based discussions with government stakeholders and industry leaders." },
   { icon: "💡", accent: "wi-gold", title: "AI & Innovation", desc: "Explore how biotechnology and artificial intelligence are revolutionising sustainable microbiology in Africa and beyond." },
 ]
@@ -165,7 +165,7 @@ const THEMES = [
 
 const PROGRAMME_DAYS = [
   { header: "pd-h-blue", label: "Day 1", date: "Nov 22", items: [
-    { time: "Morning", text: "Pre-Conference Hands-On Workshop (₦8,000)" },
+    { time: "Morning", text: "Pre-Conference Hands-On Workshop (₦8,000, also covers the Post-Conference workshop)" },
     { time: "Afternoon", text: "Conference Registration & Welcome" },
   ], note: "Sunday: no plenary or scientific sessions. Only the pre-conference workshop and early registration desk are open; other attendees should plan to arrive from Nov 23." },
   { header: "pd-h-red", label: "Day 2", date: "Nov 23", items: [
@@ -182,6 +182,7 @@ const PROGRAMME_DAYS = [
   { header: "pd-h-dark", label: "Day 4", date: "Nov 25", items: [
     { time: "Morning", text: "Next-Gen Scientists Forum & Mentorship" },
     { time: "Afternoon", text: "Closing Plenary & Resolutions" },
+    { time: "Late Afternoon", text: "Post-Conference Hands-On Workshop (included with the workshop add-on)" },
     { time: "Evening", text: "Closing Ceremony" },
   ] },
 ]
@@ -196,7 +197,7 @@ const EARLY_FEES = [
   { cat: "Online Participants (Foreign)", amt: "$25 USD" },
   { cat: "Foreign Corporate Bodies", amt: "$150 USD" },
   { cat: "Abstract Submission Fee", amt: "₦3,000", accent: true },
-  { cat: "Pre-Conference Hands-On Workshop", amt: "₦8,000" },
+  { cat: "Pre & Post-Conference Hands-On Workshops", amt: "₦8,000" },
 ]
 
 const LATE_FEES = [
@@ -208,7 +209,7 @@ const LATE_FEES = [
   { cat: "Online Participants (Local)", amt: "₦30,000" },
   { cat: "Online Participants (Foreign)", amt: "$30 USD" },
   { cat: "Foreign Corporate Bodies", amt: "$155 USD" },
-  { cat: "Pre-Conference Hands-On Workshop", amt: "₦8,000", accent: true },
+  { cat: "Pre & Post-Conference Hands-On Workshops", amt: "₦8,000", accent: true },
 ]
 
 const ACCOMMODATIONS = [
@@ -251,7 +252,7 @@ const FAQS = [
   { q: "Can I attend online?", a: "Yes! The conference is hybrid. Local online participants pay ₦25,000 (early rate) and foreign online participants pay $25 USD. You'll receive a link to the virtual platform after registration is confirmed." },
   { q: "What is the abstract submission fee and what does it cover?", a: <>The abstract processing fee is ₦3,000 (or $5 USD). This is separate from your conference registration fee. Payment should be made to the ASM Nigeria account at First Bank (2047664724) before or alongside your abstract submission via the <Link href="/register">official portal</Link>.</> },
   { q: "What is the difference between Early and Late registration?", a: "Early/Regular registration ran until October 22, 2026 at a lower rate (e.g., ASM Members ₦25,000 vs ₦30,000 late). After that date, Late registration rates apply right up to the conference." },
-  { q: "What is the Pre-Conference Hands-On Workshop?", a: "The pre-conference workshop on November 22 is an additional paid session (₦8,000) offering practical, skills-based training. It is particularly valuable for students and early-career researchers and requires separate registration." },
+  { q: "What are the Pre and Post-Conference Hands-On Workshops?", a: "These are additional paid sessions (₦8,000, one fee covers both) offering practical, skills-based training, particularly valuable for students and early-career researchers. The Pre-Conference Workshop runs November 22 and the Post-Conference Workshop runs November 25. Add them by ticking the workshop box on the conference registration form, no separate registration needed." },
   { q: "How do I confirm my payment was received?", a: <>After making your bank transfer to First Bank (Acc: 2047664724, ASM Nigeria), attach your receipt when you register or submit your abstract. No separate email is needed. The admin confirms it from your account within 2–3 working days.</> },
   { q: "Can I submit more than one abstract?", a: "Yes, you may submit multiple abstracts. Each abstract requires a separate processing fee of ₦3,000. Each submission must meet all guidelines and address one or two of the five stated sub-themes." },
 ]
