@@ -96,6 +96,14 @@ export function SchedulePage() {
     <div className="asm-landing speakers-page schedule-page">
       <SiteHeader />
 
+      {/* Sibling of header, child of main -- .asm-landing > main has
+          overflow-x: hidden (see landing.css), which is what actually
+          contains this page's wide, intentionally-scrollable regions
+          (the tab strip, the schedule tables) to their own elements
+          instead of the whole page scrolling sideways. Every other
+          marketing page below the homepage was missing this wrapper too,
+          but only this page has content wide enough for the gap to show. */}
+      <main>
       <section className="section-dark sp-hero">
         <div className="wrap">
           <Reveal>
@@ -249,6 +257,7 @@ export function SchedulePage() {
           </Reveal>
         </div>
       </section>
+      </main>
 
       <footer role="contentinfo">
         <div className="footer-top">

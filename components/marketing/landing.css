@@ -1722,28 +1722,32 @@
     align-items: stretch;
     gap: 10px;
   }
-  .asm-landing.schedule-page .schedule-search {
-    max-width: none;
-    min-width: 0;
-  }
-  /* Four pills easily wrap into three stacked rows at phone width, which
-     reads as a wall of buttons before any schedule content shows. A
-     single horizontally-scrollable strip keeps this to one compact row
-     instead -- same "swipeable chip row" pattern used for filters
-     elsewhere, not a new interaction for this site. */
+  /* A fixed 2x2 grid -- Oral/Poster on row one, Pre/Post-Conference on row
+     two -- reads as a normal mobile tab menu. A wrapping flex row left
+     this to the browser's whim (sometimes 3 stacked rows), and a
+     horizontally-scrolling strip hid tabs off-screen with no visible
+     affordance that there was more to scroll to; a visible 2x2 grid has
+     neither problem. */
   .asm-landing.schedule-page .schedule-tabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 2px;
-    margin: 0 -4px;
-    padding-left: 4px;
-    padding-right: 4px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
   .asm-landing.schedule-page .schedule-tab {
-    flex: 0 0 auto;
-    padding: 8px 14px;
+    width: 100%;
+    white-space: normal;
+    text-align: center;
+    padding: 10px 8px;
     font-size: 13px;
+    line-height: 1.25;
+  }
+  /* Matches the width of the tab grid above it exactly, left edge to
+     right edge, rather than the desktop layout's narrower, right-aligned
+     search box. */
+  .asm-landing.schedule-page .schedule-search {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
   }
 }
 
