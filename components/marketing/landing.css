@@ -1638,11 +1638,22 @@
   color: #fff;
 }
 .asm-landing.schedule-page .schedule-search {
+  /* type="search" gets its own native UA styling on mobile (notably
+     Android Chrome), which this hand-rolled stylesheet never resets the
+     way Tailwind's preflight does elsewhere on the site -- left alone, a
+     phone renders this several times taller than the padding below would
+     suggest. appearance: none neutralizes that native chrome so the
+     declared padding/line-height are what actually render. */
+  appearance: none;
+  -webkit-appearance: none;
   font: inherit;
   font-size: 14px;
+  line-height: 1.4;
   padding: 10px 16px;
   border-radius: var(--r-lg);
   border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
   min-width: 280px;
   flex: 1 1 280px;
   max-width: 420px;
@@ -1709,9 +1720,30 @@
   .asm-landing.schedule-page .schedule-toolbar {
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
   }
   .asm-landing.schedule-page .schedule-search {
     max-width: none;
+    min-width: 0;
+  }
+  /* Four pills easily wrap into three stacked rows at phone width, which
+     reads as a wall of buttons before any schedule content shows. A
+     single horizontally-scrollable strip keeps this to one compact row
+     instead -- same "swipeable chip row" pattern used for filters
+     elsewhere, not a new interaction for this site. */
+  .asm-landing.schedule-page .schedule-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+    margin: 0 -4px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  .asm-landing.schedule-page .schedule-tab {
+    flex: 0 0 auto;
+    padding: 8px 14px;
+    font-size: 13px;
   }
 }
 

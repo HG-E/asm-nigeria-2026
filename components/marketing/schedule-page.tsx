@@ -183,7 +183,7 @@ export function SchedulePage() {
             </div>
             {(track === "oral" || track === "poster") && (
               <input
-                type="search"
+                type="text"
                 className="schedule-search"
                 placeholder="Search by presenter name or abstract number…"
                 value={query}
