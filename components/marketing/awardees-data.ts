@@ -63,7 +63,7 @@ export const AWARDEES: Awardee[] = [
   {
     accent: "var(--blue)",
     initials: "EE",
-    image: "",
+    image: "/speakers/emeka-elom.jpg",
     chip: "chip-blue",
     chipLabel: "Excellence in Clinical Practice (Lab to Landscape) Leadership",
     name: "Dr. Emeka Elom",
