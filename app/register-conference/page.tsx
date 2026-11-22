@@ -19,7 +19,16 @@ export const metadata = {
   alternates: { canonical: "/register-conference" },
 }
 
-export default function RegisterConferencePage() {
+export default async function RegisterConferencePage(props: PageProps<"/register-conference">) {
+  const searchParams = await props.searchParams
+  const committeeParam = typeof searchParams.committee === "string" ? searchParams.committee : ""
+  // Compared server-side only -- the secret itself never reaches client
+  // JS unless the correct one was already supplied in the URL, and the
+  // submit action independently re-checks it, so this page-level check is
+  // just what decides whether to show the free category in the UI.
+  const expectedToken = process.env.COMMITTEE_REGISTRATION_TOKEN
+  const isCommitteeLink = Boolean(expectedToken) && committeeParam === expectedToken
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted/30 px-4 py-12">
       <Card className="w-full max-w-lg">
@@ -33,7 +42,7 @@ export default function RegisterConferencePage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <RegistrationForm />
+          <RegistrationForm isCommitteeLink={isCommitteeLink} committeeToken={isCommitteeLink ? committeeParam : ""} />
           <p className="text-muted-foreground mt-6 text-center text-sm">
             <Link href="/" className="underline underline-offset-4">
               ← Back to homepage

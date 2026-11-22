@@ -289,7 +289,7 @@ export const EXPORT_DATASETS: ExportDataset[] = [
       const { data } = await supabase
         .from("conference_registrations")
         .select(
-          "reference_number, full_name, email, phone, institution, participant_category, attendance_mode, payment_status, attended, created_at"
+          "reference_number, full_name, email, phone, institution, participant_category, subcommittee, attendance_mode, payment_status, attended, created_at"
         )
         .order("created_at")
       const headers = [
@@ -299,6 +299,7 @@ export const EXPORT_DATASETS: ExportDataset[] = [
         "Phone",
         "Institution",
         "Participant Category",
+        "Subcommittee",
         "Attendance Mode",
         "Payment Status",
         "Attended",
@@ -311,6 +312,7 @@ export const EXPORT_DATASETS: ExportDataset[] = [
         r.phone,
         r.institution,
         r.participant_category,
+        r.subcommittee,
         r.attendance_mode,
         r.payment_status,
         r.attended ? "Yes" : "No",

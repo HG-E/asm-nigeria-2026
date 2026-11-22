@@ -45,7 +45,11 @@ function numericPrice(raw: string): string {
 // programme sections (components/marketing/landing-page.tsx).
 export function ConferenceEventJsonLd() {
   const period = currentRegistrationPeriod()
-  const offers = PARTICIPANT_CATEGORIES.map((category) => {
+  // "Committee Member" is a free, unlisted category reachable only via a
+  // private registration link (see lib/registration-fees.ts) -- it has no
+  // real numeric price and isn't a public offer, so it's excluded from this
+  // page's public schema.org markup.
+  const offers = PARTICIPANT_CATEGORIES.filter((category) => category !== "Committee Member").map((category) => {
     const fee = REGISTRATION_FEES[category]
     const offer: Record<string, string> = {
       "@type": "Offer",

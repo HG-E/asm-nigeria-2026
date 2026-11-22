@@ -61,6 +61,7 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
     participantCategory: formData.get("participantCategory"),
     attendanceMode: formData.get("attendanceMode"),
     includeWorkshop: formData.get("includeWorkshop") === "true",
+    subcommittee: formData.get("subcommittee") || undefined,
     company: formData.get("company"),
   })
 
@@ -73,13 +74,37 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
     return { success: true, referenceNumber: "REG-0000" }
   }
 
+  // Committee members register for free (no payment, so no receipt to
+  // upload) -- this category isn't offered in the public dropdown, only
+  // via a link shared directly with committee members, and every
+  // registration still goes through the same manual admin verification.
+  //
+  // The category name alone is never enough to grant this: the client is
+  // untrusted (someone could POST participantCategory=Committee Member
+  // directly, skipping the UI entirely), so this independently re-checks
+  // the secret token against COMMITTEE_REGISTRATION_TOKEN server-side --
+  // the same thing app/register-conference/page.tsx already checked to
+  // decide whether to show the category at all, re-verified here because
+  // that page-level check only ever controlled what the UI displayed.
+  const isCommitteeMember = parsed.data.participantCategory === "Committee Member"
+  if (isCommitteeMember) {
+    const expectedToken = process.env.COMMITTEE_REGISTRATION_TOKEN
+    const submittedToken = formData.get("committeeToken")
+    if (!expectedToken || submittedToken !== expectedToken) {
+      return { error: "That registration link is invalid or has expired. Please use the link shared with you directly, or contact the Admin." }
+    }
+    if (!parsed.data.subcommittee) {
+      return { error: "Select at least one subcommittee." }
+    }
+  }
+
   const receiptCheck = validateFile(formData.get("receipt"), {
-    required: true,
+    required: !isCommitteeMember,
     allowedTypes: DOCUMENT_TYPES,
     label: "payment receipt or screenshot",
   })
   if ("error" in receiptCheck) return receiptCheck
-  const receiptFile = receiptCheck.file!
+  const receiptFile = receiptCheck.file
 
   const photoCheck = validateFile(formData.get("photo"), {
     required: true,
@@ -169,12 +194,12 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
   // after pressing Submit. (uploadedPaths is still collected for cleanup if
   // any one of them fails.)
   const [receiptPath, photoPath, certificatePath] = await Promise.all([
-    uploadOne(receiptFile, "receipts"),
+    receiptFile ? uploadOne(receiptFile, "receipts") : Promise.resolve(null),
     uploadOne(photoFile, "photos"),
     certificateFile ? uploadOne(certificateFile, "certificates") : Promise.resolve(null),
   ])
 
-  if (!receiptPath || !photoPath || (certificateFile && !certificatePath)) {
+  if ((receiptFile && !receiptPath) || !photoPath || (certificateFile && !certificatePath)) {
     if (uploadedPaths.length > 0) {
       await admin.storage.from("registration-receipts").remove(uploadedPaths)
     }
@@ -206,6 +231,7 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
       payment_receipt_path: receiptPath,
       passport_photo_path: photoPath,
       asm_certificate_path: certificatePath,
+      subcommittee: isCommitteeMember ? parsed.data.subcommittee ?? null : null,
       ip_address: ip,
     })
     .select("id")

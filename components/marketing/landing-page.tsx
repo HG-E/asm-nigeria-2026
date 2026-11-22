@@ -11,6 +11,7 @@ import { Reveal } from "@/components/marketing/reveal"
 import { SiteHeader } from "@/components/marketing/site-header"
 import { SpeakerBio } from "@/components/marketing/speaker-bio"
 import { ELIGIBLE_SUBTHEMES, SPEAKERS } from "@/components/marketing/speakers-data"
+import { SUBCOMMITTEE_NAMES } from "@/lib/subcommittees"
 
 import "./landing.css"
 
@@ -262,7 +263,7 @@ const FAQS = [
 // than this committee's actual mandate; flagged back rather than guessed at.
 const SUBCOMMITTEES = [
   {
-    name: "Scientific Programme Committee",
+    name: SUBCOMMITTEE_NAMES[0],
     members: [
       { position: "Chairman", name: "Prof. Nura Muhammad Sani", institution: "Federal University Dutse" },
       { position: "Secretary", name: "Dr. Stephen Dare Oloninefa", institution: "Kogi State University, Kabba" },
@@ -286,7 +287,7 @@ const SUBCOMMITTEES = [
     ],
   },
   {
-    name: "Finance and Budget Committee",
+    name: SUBCOMMITTEE_NAMES[1],
     members: [
       { position: "Chairman", name: "Dr. Sylvia O. Anyadoh-Nwadike", institution: "ASM Nigeria Ambassador/Convener" },
       { position: "Secretary", name: "Dr. Ndidiamaka Daniella Ugo-Nkwoala", institution: "Clipstone Research Consulting" },
@@ -298,7 +299,7 @@ const SUBCOMMITTEES = [
     tor: null,
   },
   {
-    name: "Sponsorship and Fundraising Committee",
+    name: SUBCOMMITTEE_NAMES[2],
     members: [
       { position: "Chairman", name: "Dr. Stephen Dare Oloninefa", institution: "Kogi State University" },
       { position: "Co-Chairman", name: "Dr. Abiodun Aransiola", institution: "University of Abuja" },
@@ -324,7 +325,7 @@ const SUBCOMMITTEES = [
     ],
   },
   {
-    name: "Publicity, Media and Communications Committee",
+    name: SUBCOMMITTEE_NAMES[3],
     members: [
       { position: "Chairman", name: "Prof. Maureen Okwu", institution: "Igbinedion University" },
       { position: "Member", name: "Miss Prisca Nwanyibuife Anyadoh", institution: "BusinessDay Newspaper, Abuja" },
@@ -348,7 +349,7 @@ const SUBCOMMITTEES = [
     ],
   },
   {
-    name: "Registration and Accreditation Committee",
+    name: SUBCOMMITTEE_NAMES[4],
     members: [
       { position: "Chairman", name: "Dr. Ngozika Okey-Ndeche", institution: "Veritas University Abuja" },
       { position: "Member", name: "Mr. Halilu Hafiz", institution: "ATBUTH Bauchi" },
@@ -371,7 +372,7 @@ const SUBCOMMITTEES = [
     ],
   },
   {
-    name: "Protocol and Hospitality Committee",
+    name: SUBCOMMITTEE_NAMES[5],
     members: [
       { position: "Chairman", name: "Mrs. Martha Ikpeamanze", institution: "Abuja" },
       { position: "Secretary", name: "Mrs. Precious Ishaku", institution: "Bingham University" },
@@ -390,7 +391,7 @@ const SUBCOMMITTEES = [
     ],
   },
   {
-    name: "Logistics, Transportation and Venue Committee",
+    name: SUBCOMMITTEE_NAMES[6],
     members: [
       { position: "Chairman", name: "Dr. Gloria Ezeagu", institution: "Nile University Abuja" },
       { position: "Secretary", name: "Mr. Uchechukwu Mbonu", institution: "Nile University Abuja" },
@@ -414,7 +415,7 @@ const SUBCOMMITTEES = [
     ],
   },
   {
-    name: "Technical and ICT Committee",
+    name: SUBCOMMITTEE_NAMES[7],
     members: [
       { position: "Chairman", name: "Dr. Abiodun Aransiola", institution: "University of Abuja" },
       { position: "Secretary", name: "Mr. Taiwo Joshua", institution: "Sightsavers Abuja" },
@@ -435,7 +436,7 @@ const SUBCOMMITTEES = [
     ],
   },
   {
-    name: "Volunteer Coordination Committee",
+    name: SUBCOMMITTEE_NAMES[8],
     members: [
       { position: "Chairman", name: "Dr. Ibangha Ini-Abasi", institution: "Baze University Abuja" },
       { position: "Secretary", name: "Mr. Omada Stephen", institution: "NOUN Abuja" },
@@ -456,7 +457,7 @@ const SUBCOMMITTEES = [
     ],
   },
   {
-    name: "Exhibition, Partnerships and Industry Engagement Committee",
+    name: SUBCOMMITTEE_NAMES[9],
     members: [
       { position: "Chairman", name: "Miss Prisca Anyadoh", institution: "BusinessDay Newspaper, Abuja" },
       { position: "Member", name: "Dr. Japhet Erasmus Aisoni", institution: "Deep K.Tyagi Foundation International (DKT Nigeria), Abuja" },

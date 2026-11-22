@@ -65,6 +65,87 @@ export async function verifyRegistrationAction(registrationId: string): Promise<
   return { success: true }
 }
 
+// Covers someone who registered (or tried to) before being told committee
+// registration is free -- e.g. a pending paid registration sitting on an
+// unverified receipt, or one already rejected. Converting in place keeps
+// their existing reference number and dodges the duplicate-registration
+// check in submitRegistrationAction (keyed on email), which would otherwise
+// block a fresh free submission while their old row is still pending.
+// Deliberately refuses an already-verified row: that money has actually
+// moved, and reversing it is a refund conversation to have manually, not
+// something this button should paper over.
+export async function convertToCommitteeMemberAction(
+  registrationId: string,
+  subcommittee: string
+): Promise<RegistrationActionResult> {
+  const session = await requireRole("admin")
+  const supabase = await createClient()
+
+  if (!subcommittee.trim()) {
+    return { error: "Enter at least one subcommittee." }
+  }
+
+  const { data: registration } = await supabase
+    .from("conference_registrations")
+    .select("id, full_name, email, reference_number, participant_category, payment_status")
+    .eq("id", registrationId)
+    .single()
+
+  if (!registration) {
+    return { error: "Registration not found." }
+  }
+  if (registration.payment_status === "verified") {
+    return { error: "This registration is already verified as paid -- converting it isn't a refund, handle that manually first." }
+  }
+  if (registration.participant_category === "Committee Member") {
+    return { error: "This registration is already a Committee Member registration." }
+  }
+
+  const { error } = await supabase
+    .from("conference_registrations")
+    .update({
+      participant_category: "Committee Member",
+      amount_expected: "Free",
+      subcommittee: subcommittee.trim(),
+      payment_status: "verified",
+      payment_verified_by: session.authUserId,
+      payment_verified_at: new Date().toISOString(),
+      payment_rejection_reason: null,
+    })
+    .eq("id", registrationId)
+
+  if (error) {
+    return { error: "Could not convert this registration. Please try again." }
+  }
+
+  await supabase.from("audit_logs").insert({
+    actor_id: session.authUserId,
+    actor_email: session.email,
+    action: "registration_converted_to_committee_member",
+    entity_type: "conference_registration",
+    entity_id: registrationId,
+    metadata: { previous_category: registration.participant_category, subcommittee: subcommittee.trim() },
+  })
+
+  after(async () => {
+    try {
+      await sendMail({
+        to: registration.email,
+        subject: `Registration confirmed — ${registration.reference_number}`,
+        html: registrationVerifiedHtml({
+          fullName: registration.full_name,
+          referenceNumber: registration.reference_number ?? "",
+        }),
+      })
+    } catch {
+      // best-effort
+    }
+  })
+
+  revalidatePath("/admin/registrations")
+  return { success: true }
+}
+
 // Independent of payment status -- verified only means they paid, not that
 // they actually showed up. This is what gates Certificate of Participation
 // eligibility, set by hand at check-in.

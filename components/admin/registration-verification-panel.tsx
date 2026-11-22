@@ -4,22 +4,45 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
-import { rejectRegistrationAction, verifyRegistrationAction } from "@/app/admin/registrations/actions"
+import {
+  convertToCommitteeMemberAction,
+  rejectRegistrationAction,
+  verifyRegistrationAction,
+} from "@/app/admin/registrations/actions"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 
 export function RegistrationVerificationPanel({
   registrationId,
   status,
+  participantCategory,
 }: {
   registrationId: string
   status: "pending" | "verified" | "rejected"
+  participantCategory: string
 }) {
   const router = useRouter()
   const [showReject, setShowReject] = useState(false)
   const [reason, setReason] = useState("")
+  const [showConvert, setShowConvert] = useState(false)
+  const [subcommittee, setSubcommittee] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  async function handleConvert() {
+    setError(null)
+    setIsSubmitting(true)
+    const result = await convertToCommitteeMemberAction(registrationId, subcommittee)
+    setIsSubmitting(false)
+    if ("error" in result) {
+      setError(result.error)
+      return
+    }
+    toast.success("Converted to a free Committee Member registration")
+    setShowConvert(false)
+    router.refresh()
+  }
 
   async function handleVerify() {
     setError(null)
@@ -54,14 +77,37 @@ export function RegistrationVerificationPanel({
 
   return (
     <div className="space-y-2 text-sm">
-      {!showReject && (
-        <div className="flex gap-2">
+      {!showReject && !showConvert && (
+        <div className="flex flex-wrap gap-2">
           <Button type="button" size="sm" onClick={handleVerify} disabled={isSubmitting}>
             {isSubmitting ? "Verifying..." : "Verify"}
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={() => setShowReject(true)} disabled={isSubmitting}>
             Reject
           </Button>
+          {participantCategory !== "Committee Member" && (
+            <Button type="button" variant="outline" size="sm" onClick={() => setShowConvert(true)} disabled={isSubmitting}>
+              Convert to Committee Member (free)
+            </Button>
+          )}
+        </div>
+      )}
+
+      {showConvert && (
+        <div className="space-y-2">
+          <Input
+            placeholder="Subcommittee(s), e.g. Scientific Programme Committee"
+            value={subcommittee}
+            onChange={(e) => setSubcommittee(e.target.value)}
+          />
+          <div className="flex gap-2">
+            <Button type="button" size="sm" onClick={handleConvert} disabled={isSubmitting}>
+              {isSubmitting ? "Converting..." : "Confirm Convert"}
+            </Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => setShowConvert(false)}>
+              Cancel
+            </Button>
+          </div>
         </div>
       )}
 

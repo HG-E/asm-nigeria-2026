@@ -17,6 +17,13 @@ export const PARTICIPANT_CATEGORIES = [
   "Online Participants — Local",
   "Online Participants — Foreign",
   "Foreign Corporate Bodies",
+  // Not shown in the public category dropdown -- only reachable via the
+  // ?committee=1 registration link shared directly with committee members.
+  // No payment receipt is required for this category (see
+  // app/register-conference/actions.ts); every registration still goes
+  // through the same manual admin verification as everyone else, so this
+  // doesn't bypass review, only the payment-receipt requirement.
+  "Committee Member",
 ] as const
 
 export type ParticipantCategory = (typeof PARTICIPANT_CATEGORIES)[number]
@@ -32,6 +39,7 @@ export const REGISTRATION_FEES: Record<ParticipantCategory, FeeRow> = {
   "Online Participants — Local": { early: "₦25,000", late: "₦30,000", currency: "NGN" },
   "Online Participants — Foreign": { early: "$25 USD", late: "$30 USD", currency: "USD" },
   "Foreign Corporate Bodies": { early: "$150 USD", late: "$155 USD", currency: "USD" },
+  "Committee Member": { early: "Free", late: "Free", currency: "NGN" },
 }
 
 // Flat rate -- no early/late split for the workshop (unlike the main

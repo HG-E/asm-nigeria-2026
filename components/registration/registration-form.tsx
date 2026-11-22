@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState, useTransition } from "react"
+import { useEffect, useRef, useState, useTransition } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
@@ -17,6 +17,7 @@ import {
   WORKSHOP_FEE,
   type ParticipantCategory,
 } from "@/lib/registration-fees"
+import { SUBCOMMITTEE_NAMES } from "@/lib/subcommittees"
 import { ATTENDANCE_MODES, registrationSchema, type RegistrationInput } from "@/lib/validations/registration"
 
 const period = currentRegistrationPeriod()
@@ -148,7 +149,24 @@ function FileUploadField({
   )
 }
 
-export function RegistrationForm() {
+export function RegistrationForm({
+  isCommitteeLink,
+  committeeToken,
+}: {
+  isCommitteeLink: boolean
+  committeeToken: string
+}) {
+  // "Committee Member" (free, no receipt needed) is only offered when the
+  // server (app/register-conference/page.tsx) confirmed the ?committee=
+  // link's token against COMMITTEE_REGISTRATION_TOKEN -- this component
+  // never checks the secret itself, it only trusts that server-verified
+  // prop. committeeToken is echoed back in the submission so the server
+  // action can independently re-verify it too, rather than trusting a
+  // client-submitted "Committee Member" category on its own.
+  const visibleCategories = isCommitteeLink
+    ? PARTICIPANT_CATEGORIES
+    : PARTICIPANT_CATEGORIES.filter((c) => c !== "Committee Member")
+
   const [isPending, startTransition] = useTransition()
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [referenceNumber, setReferenceNumber] = useState<string | null>(null)
@@ -159,6 +177,18 @@ export function RegistrationForm() {
   const [photoError, setPhotoError] = useState<string | null>(null)
   const [certificateFile, setCertificateFile] = useState<File | null>(null)
   const [certificateError, setCertificateError] = useState<string | null>(null)
+
+  // Committee members can serve on more than one subcommittee, and the
+  // named list can lag behind who's actually been added -- so this is a
+  // multi-select plus a free-text fallback, not a single dropdown pick.
+  const [selectedSubcommittees, setSelectedSubcommittees] = useState<string[]>([])
+  const [otherSubcommitteeChecked, setOtherSubcommitteeChecked] = useState(false)
+  const [otherSubcommittee, setOtherSubcommittee] = useState("")
+  const [subcommitteeError, setSubcommitteeError] = useState<string | null>(null)
+
+  function toggleSubcommittee(name: string, checked: boolean) {
+    setSelectedSubcommittees((prev) => (checked ? [...prev, name] : prev.filter((n) => n !== name)))
+  }
 
   const form = useForm<RegistrationInput>({
     resolver: zodResolver(registrationSchema),
@@ -174,18 +204,27 @@ export function RegistrationForm() {
     },
   })
 
+  // The private ?committee=1 link is only ever shared with actual committee
+  // members, so it skips the category picker entirely rather than making
+  // them find "Committee Member" in a list of paid categories.
+  useEffect(() => {
+    if (isCommitteeLink) form.setValue("participantCategory", "Committee Member")
+  }, [isCommitteeLink, form])
+
   const category = form.watch("participantCategory") as ParticipantCategory | undefined
   const includeWorkshop = form.watch("includeWorkshop")
   const fee = category ? feeFor(category, period) : null
+  const isCommitteeMember = isCommitteeLink
 
   function onSubmit(values: RegistrationInput) {
     setSubmitError(null)
     setReceiptError(null)
     setPhotoError(null)
     setCertificateError(null)
+    setSubcommitteeError(null)
 
     let hasFileError = false
-    if (!receiptFile) {
+    if (!receiptFile && !isCommitteeMember) {
       setReceiptError("Please upload your payment receipt or screenshot.")
       hasFileError = true
     }
@@ -193,7 +232,14 @@ export function RegistrationForm() {
       setPhotoError("Please upload a passport photograph.")
       hasFileError = true
     }
+    const otherText = otherSubcommitteeChecked ? otherSubcommittee.trim() : ""
+    if (isCommitteeMember && selectedSubcommittees.length === 0 && !otherText) {
+      setSubcommitteeError("Select at least one subcommittee.")
+      hasFileError = true
+    }
     if (hasFileError) return
+
+    const subcommitteeValue = [...selectedSubcommittees, ...(otherText ? [`Other: ${otherText}`] : [])].join("; ")
 
     const formData = new FormData()
     formData.set("fullName", values.fullName)
@@ -203,8 +249,10 @@ export function RegistrationForm() {
     formData.set("participantCategory", values.participantCategory)
     formData.set("attendanceMode", values.attendanceMode)
     formData.set("includeWorkshop", String(values.includeWorkshop))
+    if (subcommitteeValue) formData.set("subcommittee", subcommitteeValue)
+    if (isCommitteeMember) formData.set("committeeToken", committeeToken)
     formData.set("company", values.company ?? "")
-    formData.set("receipt", receiptFile!)
+    if (receiptFile) formData.set("receipt", receiptFile)
     formData.set("photo", photoFile!)
     if (certificateFile) formData.set("certificate", certificateFile)
 
@@ -257,14 +305,24 @@ export function RegistrationForm() {
           <p className="font-medium">
             {period === "early" ? "Early/Regular registration (till Oct 22, 2026)" : "Late registration (after Oct 22, 2026)"}
           </p>
-          <p className="text-muted-foreground">
-            Complete your bank transfer first (see the Payment section on the homepage), then
-            fill this form with your receipt.
-          </p>
-          <p className="text-muted-foreground">
-            You&apos;ll need two files ready before you start: a photo or screenshot of your payment
-            receipt, and a passport photograph of yourself (each under {MAX_FILE_MB}MB).
-          </p>
+          {isCommitteeLink ? (
+            <p className="text-muted-foreground">
+              You&apos;re registering via the committee member link, so no payment is required.
+              You&apos;ll still need a passport photograph of yourself ready (under {MAX_FILE_MB}MB)
+              for your conference badge.
+            </p>
+          ) : (
+            <>
+              <p className="text-muted-foreground">
+                Complete your bank transfer first (see the Payment section on the homepage), then
+                fill this form with your receipt.
+              </p>
+              <p className="text-muted-foreground">
+                You&apos;ll need two files ready before you start: a photo or screenshot of your payment
+                receipt, and a passport photograph of yourself (each under {MAX_FILE_MB}MB).
+              </p>
+            </>
+          )}
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -325,36 +383,77 @@ export function RegistrationForm() {
           />
         </div>
 
-        <FormField
-          control={form.control}
-          name="participantCategory"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Participant category</FormLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    {/* Base UI's SelectValue shows the raw stored value with
-                        no children mapper -- without this it dropped the fee
-                        from the label after a category was picked, on the
-                        page every registrant uses. */}
-                    <SelectValue>
-                      {(value: ParticipantCategory | "") => (value ? `${value} — ${feeFor(value, period)}` : "Select your category")}
-                    </SelectValue>
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {PARTICIPANT_CATEGORIES.map((c) => (
-                    <SelectItem key={c} value={c}>
-                      {c} — {feeFor(c, period)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {isCommitteeLink ? (
+          <div className="space-y-3">
+            <label className="text-sm font-medium">Subcommittee(s)</label>
+            <p className="text-muted-foreground text-sm">
+              Select every subcommittee you serve on. If yours isn&apos;t listed, check &ldquo;Other&rdquo; and
+              name it.
+            </p>
+            <div className="space-y-2">
+              {SUBCOMMITTEE_NAMES.map((name) => (
+                <label key={name} className="flex items-start gap-2 text-sm">
+                  <Checkbox
+                    checked={selectedSubcommittees.includes(name)}
+                    onCheckedChange={(checked) => toggleSubcommittee(name, checked === true)}
+                  />
+                  <span>{name}</span>
+                </label>
+              ))}
+              <label className="flex items-start gap-2 text-sm">
+                <Checkbox
+                  checked={otherSubcommitteeChecked}
+                  onCheckedChange={(checked) => setOtherSubcommitteeChecked(checked === true)}
+                />
+                <span>Other / not listed</span>
+              </label>
+              {otherSubcommitteeChecked && (
+                <Input
+                  value={otherSubcommittee}
+                  onChange={(e) => setOtherSubcommittee(e.target.value)}
+                  placeholder="Name your subcommittee"
+                  className="ml-6 w-[calc(100%-1.5rem)]"
+                />
+              )}
+            </div>
+            {subcommitteeError && (
+              <p className="text-destructive text-sm" role="alert">
+                {subcommitteeError}
+              </p>
+            )}
+          </div>
+        ) : (
+          <FormField
+            control={form.control}
+            name="participantCategory"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Participant category</FormLabel>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      {/* Base UI's SelectValue shows the raw stored value with
+                          no children mapper -- without this it dropped the fee
+                          from the label after a category was picked, on the
+                          page every registrant uses. */}
+                      <SelectValue>
+                        {(value: ParticipantCategory | "") => (value ? `${value} — ${feeFor(value, period)}` : "Select your category")}
+                      </SelectValue>
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {visibleCategories.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c} — {feeFor(c, period)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={form.control}
@@ -406,16 +505,22 @@ export function RegistrationForm() {
           </p>
         )}
 
-        <FileUploadField
-          label="Payment receipt or screenshot"
-          hint={`A photo or screenshot of your bank transfer confirmation. PDF, JPG, or PNG, up to ${MAX_FILE_MB}MB -- a normal phone photo is fine, just avoid sending the original full-resolution camera file if it's very large.`}
-          accept=".pdf,.jpg,.jpeg,.png"
-          allowedTypes={["pdf", "jpg", "jpeg", "png"]}
-          file={receiptFile}
-          onChange={setReceiptFile}
-          error={receiptError}
-          setError={setReceiptError}
-        />
+        {isCommitteeMember ? (
+          <p className="bg-muted/50 rounded-lg border p-4 text-sm">
+            No payment receipt is needed for committee member registrations.
+          </p>
+        ) : (
+          <FileUploadField
+            label="Payment receipt or screenshot"
+            hint={`A photo or screenshot of your bank transfer confirmation. PDF, JPG, or PNG, up to ${MAX_FILE_MB}MB -- a normal phone photo is fine, just avoid sending the original full-resolution camera file if it's very large.`}
+            accept=".pdf,.jpg,.jpeg,.png"
+            allowedTypes={["pdf", "jpg", "jpeg", "png"]}
+            file={receiptFile}
+            onChange={setReceiptFile}
+            error={receiptError}
+            setError={setReceiptError}
+          />
+        )}
 
         <FileUploadField
           label="Passport photograph"

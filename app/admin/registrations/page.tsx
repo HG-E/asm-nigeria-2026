@@ -155,6 +155,9 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
                     {r.participant_category}
                     <span className="text-muted-foreground"> ({r.registration_period})</span>
                     <div className="text-muted-foreground text-xs">{r.attendance_mode}</div>
+                    {r.subcommittee && (
+                      <div className="text-muted-foreground text-xs">{r.subcommittee}</div>
+                    )}
                   </TableCell>
                   <TableCell className="text-sm">{r.amount_expected}</TableCell>
                   <TableCell className="text-sm">
@@ -214,6 +217,7 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
                     <RegistrationVerificationPanel
                       registrationId={r.id}
                       status={r.payment_status as "pending" | "verified" | "rejected"}
+                      participantCategory={r.participant_category}
                     />
                   </TableCell>
                 </TableRow>
