@@ -2001,6 +2001,7 @@ export function LandingPage() {
                     <li><a href="#programme">Programme</a></li>
                     <li><Link href="/speakers">Speakers</Link></li>
                     <li><Link href="/awardees">Awardees</Link></li>
+                    <li><Link href="/schedule">Schedule</Link></li>
                     <li><Link href="/partners">Partners</Link></li>
                     <li><a href="#planning-committee">Planning Committee</a></li>
                   </ul>

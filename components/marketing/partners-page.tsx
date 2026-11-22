@@ -141,6 +141,7 @@ export function PartnersPage({ partners = PARTNERS }: { partners?: Partner[] } =
                   <li><Link href="/#programme">Programme</Link></li>
                   <li><Link href="/speakers">Speakers</Link></li>
                   <li><Link href="/awardees">Awardees</Link></li>
+                  <li><Link href="/schedule">Schedule</Link></li>
                 </ul>
               </div>
               <div className="footer-col">
