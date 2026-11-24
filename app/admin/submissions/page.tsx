@@ -52,6 +52,17 @@ function statusVariant(status: SubmissionStatus): "gold" | "secondary" | "destru
   return "secondary"
 }
 
+const SORTS = ["date", "subtheme", "type", "attendance"] as const
+type Sort = (typeof SORTS)[number]
+const SORT_LABELS: Record<Sort, string> = {
+  date: "Submission date",
+  subtheme: "Subtheme",
+  type: "Oral / Poster",
+  attendance: "Attendance mode",
+}
+
+const ATTENDANCE_MODES = ["Virtual", "In-person", "Both"] as const
+
 export default async function AdminSubmissionsPage(props: PageProps<"/admin/submissions">) {
   await requireRole("admin")
   const searchParams = await props.searchParams
@@ -64,6 +75,8 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
   const status = typeof searchParams.status === "string" ? searchParams.status : ""
   const statusList = status ? status.split(",").filter(Boolean) : []
   const subtheme = typeof searchParams.subtheme === "string" ? searchParams.subtheme : ""
+  const attendance = typeof searchParams.attendance === "string" ? searchParams.attendance : ""
+  const sort: Sort = SORTS.includes(searchParams.sort as Sort) ? (searchParams.sort as Sort) : "date"
 
   const { data: subthemes } = await supabase
     .from("conference_subthemes")
@@ -76,7 +89,11 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
       "id, reference_number, title, status, payment_status, submitted_at, created_at, conference_subthemes(name), user_profiles:corresponding_author_id(first_name, last_name, email)"
     )
     .order("created_at", { ascending: false })
-    .limit(100)
+    // Sorting/grouping below (by subtheme, oral/poster, or attendance mode)
+    // happens in JS over the whole filtered set, not just one DB-ordered
+    // page of it -- raised from 100 to comfortably cover every submission
+    // this conference has ever received.
+    .limit(1000)
 
   if (q) {
     // title_plain is the title without formatting tags, so a search for
@@ -92,7 +109,51 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
     query = query.eq("subtheme_id", subtheme)
   }
 
-  const { data: submissions } = await query
+  const { data: rawSubmissions } = await query
+
+  // Attendance mode lives on conference_registrations, not on the submission
+  // or the author's profile -- there's no foreign key between the two, a
+  // presenter registers and submits separately, so the only link is the
+  // email they used for each. Matched case-insensitively, same as the
+  // certificate route and the registration-desk lookup. Fetching every
+  // registration once and building a map is simpler and cheaper here than
+  // one query per presenter -- at most a few hundred rows for this
+  // conference, the same scale admin/registrations already loads whole.
+  const { data: registrationsForAttendance } = await supabase
+    .from("conference_registrations")
+    .select("email, attendance_mode, payment_status")
+  const attendanceByEmail = new Map<string, string>()
+  for (const r of registrationsForAttendance ?? []) {
+    const key = r.email.toLowerCase()
+    const existing = attendanceByEmail.get(key)
+    // Prefer a verified registration's mode over a pending/rejected one if
+    // the same email shows up more than once (e.g. a rejected attempt
+    // followed by a corrected resubmission).
+    if (!existing || r.payment_status === "verified") {
+      attendanceByEmail.set(key, r.attendance_mode)
+    }
+  }
+
+  let submissions = (rawSubmissions ?? []).map((s) => ({
+    ...s,
+    attendanceMode: s.user_profiles?.email ? (attendanceByEmail.get(s.user_profiles.email.toLowerCase()) ?? null) : null,
+  }))
+
+  if (attendance) {
+    submissions = submissions.filter((s) => s.attendanceMode === attendance)
+  }
+
+  const typeRank = (status: string) => (status === "accepted_oral" ? 0 : status === "accepted_poster" ? 1 : 2)
+  if (sort === "subtheme") {
+    submissions.sort((a, b) => (a.conference_subthemes?.name ?? "").localeCompare(b.conference_subthemes?.name ?? ""))
+  } else if (sort === "type") {
+    submissions.sort((a, b) => typeRank(a.status) - typeRank(b.status))
+  } else if (sort === "attendance") {
+    submissions.sort((a, b) => (a.attendanceMode ?? "").localeCompare(b.attendanceMode ?? ""))
+  }
+  // "date" needs no re-sort -- the DB query above already ordered by
+  // created_at descending, and Array.prototype.sort above is stable, so
+  // leaving it alone keeps that order exactly where no other sort applies.
 
   return (
     <div className="space-y-6">
@@ -150,10 +211,35 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
                 ))}
               </SelectContent>
             </Select>
+            <Select name="attendance" defaultValue={attendance}>
+              <SelectTrigger className="w-44">
+                <SelectValue>{attendance || "All attendance modes"}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All attendance modes</SelectItem>
+                {ATTENDANCE_MODES.map((m) => (
+                  <SelectItem key={m} value={m}>
+                    {m}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select name="sort" defaultValue={sort}>
+              <SelectTrigger className="w-48">
+                <SelectValue>{`Sort: ${SORT_LABELS[sort]}`}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {SORTS.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {SORT_LABELS[s]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Button type="submit" variant="outline">
               Apply
             </Button>
-            {(q || status || subtheme) && (
+            {(q || status || subtheme || attendance || sort !== "date") && (
               <Link href="/admin/submissions" className={cn(buttonVariants({ variant: "ghost" }))}>
                 Clear
               </Link>
@@ -181,6 +267,7 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
                   <TableHead>Author</TableHead>
                   <TableHead>Subtheme</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Attendance</TableHead>
                   <TableHead>Payment</TableHead>
                   <TableHead>Submitted</TableHead>
                 </TableRow>
@@ -203,6 +290,7 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
                     <TableCell>
                       <Badge variant={statusVariant(s.status)}>{s.status.replaceAll("_", " ")}</Badge>
                     </TableCell>
+                    <TableCell className="text-sm">{s.attendanceMode ?? "—"}</TableCell>
                     <TableCell>
                       <Badge
                         variant={
