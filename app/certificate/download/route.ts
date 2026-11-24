@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 import { type NextRequest } from "next/server"
 
-import { generateParticipationCertificate, generatePresentationCertificate } from "@/lib/certificate"
+import { generateParticipationCertificate, generatePresentationCertificate, generateWorkshopCertificate } from "@/lib/certificate"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { toPlain } from "@/lib/rich-text"
 
@@ -33,6 +33,45 @@ async function handleParticipation(referenceNumber: string, email: string) {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="ASM-Nigeria-2026-Participation-Certificate-${registration.reference_number}.pdf"`,
+    },
+  })
+}
+
+async function handleWorkshop(referenceNumber: string, email: string) {
+  const admin = createAdminClient()
+  const { data: registration } = await admin
+    .from("conference_registrations")
+    .select("full_name, reference_number, payment_status, attended, amount_expected")
+    .eq("reference_number", referenceNumber)
+    .ilike("email", email)
+    .maybeSingle()
+
+  if (!registration) {
+    redirect("/certificate?type=workshop&error=not_found")
+  }
+  // The registration's amount_expected only mentions the workshop fee when
+  // the add-on was actually selected at registration (see
+  // app/register-conference/actions.ts) -- this is the only record of who
+  // opted in, there's no separate boolean column for it.
+  if (!registration.amount_expected?.toLowerCase().includes("workshop")) {
+    redirect("/certificate?type=workshop&error=no_workshop")
+  }
+  if (registration.payment_status !== "verified") {
+    redirect("/certificate?type=workshop&error=not_verified")
+  }
+  if (!registration.attended) {
+    redirect("/certificate?type=workshop&error=not_attended")
+  }
+
+  const pdfBytes = await generateWorkshopCertificate({
+    fullName: registration.full_name,
+    certificateNumber: registration.reference_number ?? referenceNumber,
+  })
+
+  return new Response(new Uint8Array(pdfBytes), {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="ASM-Nigeria-2026-Workshop-Certificate-${registration.reference_number}.pdf"`,
     },
   })
 }
@@ -106,5 +145,7 @@ export async function POST(request: NextRequest) {
     redirect(`/certificate?type=${type}&error=not_found`)
   }
 
-  return type === "presentation" ? handlePresentation(referenceNumber, email) : handleParticipation(referenceNumber, email)
+  if (type === "presentation") return handlePresentation(referenceNumber, email)
+  if (type === "workshop") return handleWorkshop(referenceNumber, email)
+  return handleParticipation(referenceNumber, email)
 }

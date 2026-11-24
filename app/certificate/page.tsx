@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export const metadata: Metadata = {
   title: "Download Your Certificate | ASM Nigeria 2026",
-  description: "Download your Certificate of Participation or Presentation for the Maiden American Society for Microbiology Nigeria Conference.",
+  description: "Download your Certificate of Participation, Presentation, or Workshop Participation for the Maiden American Society for Microbiology Nigeria Conference.",
   alternates: { canonical: "/certificate" },
   robots: { index: false, follow: true },
 }
@@ -22,13 +22,16 @@ const ERROR_MESSAGES: Record<string, string> = {
     "This abstract doesn't have a final accepted decision on record, so a presentation certificate isn't available yet.",
   format_pending:
     "Your abstract was accepted, but whether it's an oral or poster presentation hasn't been finalized yet. Check back once that's confirmed, or contact the admin.",
+  no_workshop:
+    "We couldn't find a workshop add-on on this registration. Workshop certificates are only available to participants who registered for the Pre & Post-Conference Hands-On Workshop.",
 }
 
 export default async function CertificatePage(props: PageProps<"/certificate">) {
   const searchParams = await props.searchParams
   const errorCode = typeof searchParams.error === "string" ? searchParams.error : null
   const errorMessage = errorCode ? (ERROR_MESSAGES[errorCode] ?? "Something went wrong. Please try again.") : null
-  const defaultType = searchParams.type === "presentation" ? "presentation" : "participation"
+  const defaultType =
+    searchParams.type === "presentation" ? "presentation" : searchParams.type === "workshop" ? "workshop" : "participation"
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-gradient-to-b from-white to-[#eef2fa] px-4 py-12">
@@ -49,8 +52,8 @@ export default async function CertificatePage(props: PageProps<"/certificate">) 
             Download your certificate
           </h1>
           <p className="text-muted-foreground text-sm text-balance">
-            Certificate of Participation or Presentation for the Maiden American Society for Microbiology Nigeria Conference.
-            Enter the reference number and email you used to register or submit.
+            Certificate of Participation, Presentation, or Workshop Participation for the Maiden American Society
+            for Microbiology Nigeria Conference. Enter the reference number and email you used to register or submit.
           </p>
         </div>
 
