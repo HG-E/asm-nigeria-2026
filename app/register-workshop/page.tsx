@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-import { RegistrationForm } from "@/components/registration/registration-form"
+import { WorkshopRegistrationTabs } from "@/components/registration/workshop-registration-tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 // Same reasoning as app/register-conference/page.tsx -- this page shares the
@@ -21,10 +21,10 @@ export default function RegisterWorkshopPage() {
         <CardHeader>
           <CardTitle className="text-2xl">Register for the workshop</CardTitle>
           <CardDescription>
-            This registers you for the Pre &amp; Post-Conference Hands-On Workshop only — for those
-            who want to attend the workshop without the main conference, or who already registered
-            for the conference and missed adding it. Already registering for the conference?
-            Add the workshop directly from the{" "}
+            For the Pre &amp; Post-Conference Hands-On Workshop. Use &ldquo;New registration&rdquo; if you
+            haven&apos;t registered for anything yet, or &ldquo;Add to existing registration&rdquo; if you
+            already registered for the conference and missed adding the workshop. Registering for the
+            conference for the first time? Add the workshop directly from the{" "}
             <Link href="/register-conference" className="underline underline-offset-4">
               conference registration form
             </Link>{" "}
@@ -37,7 +37,7 @@ export default function RegisterWorkshopPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <RegistrationForm isCommitteeLink={false} committeeToken="" lockedCategory="Workshop Only" />
+          <WorkshopRegistrationTabs />
           <p className="text-muted-foreground mt-6 text-center text-sm">
             <Link href="/" className="underline underline-offset-4">
               ← Back to homepage

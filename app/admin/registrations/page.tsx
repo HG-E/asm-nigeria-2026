@@ -181,6 +181,28 @@ export default async function AdminRegistrationsPage(props: PageProps<"/admin/re
                           </span>
                         )
                       })}
+                      {/* Only ever present on a registration that added the
+                          workshop after the fact via /register-workshop's
+                          "Add to existing registration" flow -- omitted
+                          entirely for every other row rather than showing a
+                          "not provided" for something most registrants never
+                          have. */}
+                      {r.workshop_added_at && (
+                        <>
+                          {fileUrls.get(r.id)?.workshopReceipt ? (
+                            <Link
+                              href={fileUrls.get(r.id)!.workshopReceipt!}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-primary underline underline-offset-4"
+                            >
+                              Workshop Receipt
+                            </Link>
+                          ) : (
+                            <span className="text-muted-foreground">Workshop Receipt: —</span>
+                          )}
+                        </>
+                      )}
                       {r.reference_number && (
                         <Link
                           href={`/registration-desk/qr/${r.reference_number}`}

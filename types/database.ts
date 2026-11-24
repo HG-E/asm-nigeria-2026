@@ -247,6 +247,8 @@ export type Database = {
           confirmation_email_status: Database["public"]["Enums"]["notification_status"]
           confirmation_email_error: string | null
           confirmation_email_sent_at: string | null
+          workshop_receipt_path: string | null
+          workshop_added_at: string | null
           created_at: string
           updated_at: string
         }
@@ -276,6 +278,8 @@ export type Database = {
           confirmation_email_status?: Database["public"]["Enums"]["notification_status"]
           confirmation_email_error?: string | null
           confirmation_email_sent_at?: string | null
+          workshop_receipt_path?: string | null
+          workshop_added_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -305,6 +309,8 @@ export type Database = {
           confirmation_email_status?: Database["public"]["Enums"]["notification_status"]
           confirmation_email_error?: string | null
           confirmation_email_sent_at?: string | null
+          workshop_receipt_path?: string | null
+          workshop_added_at?: string | null
           created_at?: string
           updated_at?: string
         }

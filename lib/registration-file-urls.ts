@@ -2,13 +2,22 @@ import "server-only"
 
 import type { createAdminClient } from "@/lib/supabase/admin"
 
-export type RegistrationFileLinks = { receipt: string | null; photo: string | null; certificate: string | null }
+export type RegistrationFileLinks = {
+  receipt: string | null
+  photo: string | null
+  certificate: string | null
+  workshopReceipt: string | null
+}
 
 type Registration = {
   id: string
   payment_receipt_path: string | null
   passport_photo_path: string | null
   asm_certificate_path: string | null
+  // Optional because not every caller needs it (e.g. badge printing only
+  // ever wants the photo) -- callers that select specific columns rather
+  // than "*" aren't forced to add one they have no use for.
+  workshop_receipt_path?: string | null
 }
 
 // Each registrant's receipt/photo/certificate path used to be signed one at
@@ -36,10 +45,11 @@ export async function buildRegistrationFileUrls(
     return map
   }
 
-  const [receiptUrls, photoUrls, certificateUrls] = await Promise.all([
+  const [receiptUrls, photoUrls, certificateUrls, workshopReceiptUrls] = await Promise.all([
     batchSign(registrations.map((r) => r.payment_receipt_path)),
     batchSign(registrations.map((r) => r.passport_photo_path)),
     batchSign(registrations.map((r) => r.asm_certificate_path)),
+    batchSign(registrations.map((r) => r.workshop_receipt_path ?? null)),
   ])
 
   const fileUrls = new Map<string, RegistrationFileLinks>()
@@ -48,6 +58,7 @@ export async function buildRegistrationFileUrls(
       receipt: r.payment_receipt_path ? (receiptUrls.get(r.payment_receipt_path) ?? null) : null,
       photo: r.passport_photo_path ? (photoUrls.get(r.passport_photo_path) ?? null) : null,
       certificate: r.asm_certificate_path ? (certificateUrls.get(r.asm_certificate_path) ?? null) : null,
+      workshopReceipt: r.workshop_receipt_path ? (workshopReceiptUrls.get(r.workshop_receipt_path) ?? null) : null,
     })
   }
   return fileUrls

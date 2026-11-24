@@ -68,6 +68,20 @@ export function whatsappGroupInviteHtml(params: { fullName: string; groupLink: s
   `
 }
 
+export function workshopAddedConfirmationHtml(params: { fullName: string; referenceNumber: string; amountExpected: string }) {
+  const firstName = params.fullName.trim().split(/\s+/)[0] || params.fullName
+  return `
+    <h2>Workshop added to your registration</h2>
+    <p>Hi ${escapeHtml(firstName)},</p>
+    <p>We've added the Pre &amp; Post-Conference Hands-On Workshop to your registration
+    <strong>${escapeHtml(params.referenceNumber)}</strong>.</p>
+    <p><strong>New amount due:</strong> ${escapeHtml(params.amountExpected)}</p>
+    <p>The admin will verify your additional payment receipt and confirm the update. This
+    usually takes 2-3 working days.</p>
+    <p>— ASM Nigeria 2026 Finance &amp; Budget Committee and Admin</p>
+  `
+}
+
 export function workshopWhatsappGroupInviteHtml(params: { fullName: string; groupLink: string }) {
   const firstName = params.fullName.trim().split(/\s+/)[0] || params.fullName
   return `
