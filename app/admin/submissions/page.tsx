@@ -22,6 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { requireRole } from "@/lib/auth"
+import { ATTENDANCE_MODES, fetchFilteredSubmissions, SORT_LABELS, SORTS, type Sort } from "@/lib/submissions-list"
 import { createClient } from "@/lib/supabase/server"
 import { cn } from "@/lib/utils"
 import type { Database } from "@/types/database"
@@ -45,23 +46,12 @@ const STATUSES: SubmissionStatus[] = [
   "withdrawn",
 ]
 
-function statusVariant(status: SubmissionStatus): "gold" | "secondary" | "destructive" | "outline" {
+function statusVariant(status: string): "gold" | "secondary" | "destructive" | "outline" {
   if (status === "draft") return "outline"
   if (status === "accepted" || status === "accepted_oral" || status === "accepted_poster") return "gold"
   if (status === "rejected" || status === "withdrawn") return "destructive"
   return "secondary"
 }
-
-const SORTS = ["date", "subtheme", "type", "attendance"] as const
-type Sort = (typeof SORTS)[number]
-const SORT_LABELS: Record<Sort, string> = {
-  date: "Submission date",
-  subtheme: "Subtheme",
-  type: "Oral / Poster",
-  attendance: "Attendance mode",
-}
-
-const ATTENDANCE_MODES = ["Virtual", "In-person", "Both"] as const
 
 export default async function AdminSubmissionsPage(props: PageProps<"/admin/submissions">) {
   await requireRole("admin")
@@ -83,77 +73,20 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
     .select("id, name")
     .order("name", { ascending: true })
 
-  let query = supabase
-    .from("submissions")
-    .select(
-      "id, reference_number, title, status, payment_status, submitted_at, created_at, conference_subthemes(name), user_profiles:corresponding_author_id(first_name, last_name, email)"
-    )
-    .order("created_at", { ascending: false })
-    // Sorting/grouping below (by subtheme, oral/poster, or attendance mode)
-    // happens in JS over the whole filtered set, not just one DB-ordered
-    // page of it -- raised from 100 to comfortably cover every submission
-    // this conference has ever received.
-    .limit(1000)
+  const submissions = await fetchFilteredSubmissions(supabase, { q, statusList, subtheme, attendance, sort })
 
-  if (q) {
-    // title_plain is the title without formatting tags, so a search for
-    // "aureus infection" still finds "<i>Staphylococcus aureus</i> infection".
-    query = query.or(`title_plain.ilike.%${q}%,reference_number.ilike.%${q}%`)
-  }
-  if (statusList.length === 1) {
-    query = query.eq("status", statusList[0] as SubmissionStatus)
-  } else if (statusList.length > 1) {
-    query = query.in("status", statusList as SubmissionStatus[])
-  }
-  if (subtheme) {
-    query = query.eq("subtheme_id", subtheme)
-  }
+  const exportParams = new URLSearchParams()
+  if (q) exportParams.set("q", q)
+  if (status) exportParams.set("status", status)
+  if (subtheme) exportParams.set("subtheme", subtheme)
+  if (attendance) exportParams.set("attendance", attendance)
+  if (sort !== "date") exportParams.set("sort", sort)
 
-  const { data: rawSubmissions } = await query
-
-  // Attendance mode lives on conference_registrations, not on the submission
-  // or the author's profile -- there's no foreign key between the two, a
-  // presenter registers and submits separately, so the only link is the
-  // email they used for each. Matched case-insensitively, same as the
-  // certificate route and the registration-desk lookup. Fetching every
-  // registration once and building a map is simpler and cheaper here than
-  // one query per presenter -- at most a few hundred rows for this
-  // conference, the same scale admin/registrations already loads whole.
-  const { data: registrationsForAttendance } = await supabase
-    .from("conference_registrations")
-    .select("email, attendance_mode, payment_status")
-  const attendanceByEmail = new Map<string, string>()
-  for (const r of registrationsForAttendance ?? []) {
-    const key = r.email.toLowerCase()
-    const existing = attendanceByEmail.get(key)
-    // Prefer a verified registration's mode over a pending/rejected one if
-    // the same email shows up more than once (e.g. a rejected attempt
-    // followed by a corrected resubmission).
-    if (!existing || r.payment_status === "verified") {
-      attendanceByEmail.set(key, r.attendance_mode)
-    }
+  function exportHref(format: "csv" | "xlsx") {
+    const p = new URLSearchParams(exportParams)
+    p.set("format", format)
+    return `/admin/submissions/export?${p.toString()}`
   }
-
-  let submissions = (rawSubmissions ?? []).map((s) => ({
-    ...s,
-    attendanceMode: s.user_profiles?.email ? (attendanceByEmail.get(s.user_profiles.email.toLowerCase()) ?? null) : null,
-  }))
-
-  if (attendance) {
-    submissions = submissions.filter((s) => s.attendanceMode === attendance)
-  }
-
-  const typeRank = (status: string) => (status === "accepted_oral" ? 0 : status === "accepted_poster" ? 1 : 2)
-  if (sort === "subtheme") {
-    submissions.sort((a, b) => (a.conference_subthemes?.name ?? "").localeCompare(b.conference_subthemes?.name ?? ""))
-  } else if (sort === "type") {
-    submissions.sort((a, b) => typeRank(a.status) - typeRank(b.status))
-  } else if (sort === "attendance") {
-    submissions.sort((a, b) => (a.attendanceMode ?? "").localeCompare(b.attendanceMode ?? ""))
-  }
-  // "date" needs no re-sort -- the DB query above already ordered by
-  // created_at descending, and Array.prototype.sort above is stable, so
-  // leaving it alone keeps that order exactly where no other sort applies.
 
   return (
     <div className="space-y-6">
@@ -249,10 +182,20 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between gap-3">
           <CardTitle className="text-base">
             Results{submissions ? ` (${submissions.length})` : ""}
           </CardTitle>
+          {submissions.length > 0 && (
+            <div className="flex gap-2">
+              <a href={exportHref("csv")} className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>
+                Download CSV
+              </a>
+              <a href={exportHref("xlsx")} className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>
+                Download Excel
+              </a>
+            </div>
+          )}
         </CardHeader>
         <CardContent className="px-0 sm:px-6">
           {!submissions || submissions.length === 0 ? (
