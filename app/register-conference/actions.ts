@@ -168,9 +168,17 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
   const period = currentRegistrationPeriod()
   const category = parsed.data.participantCategory as ParticipantCategory
   const fee = feeFor(category, period)
-  const amountExpected = parsed.data.includeWorkshop
-    ? `${fee} + ${WORKSHOP_FEE[period]} (pre & post-conference workshop)`
-    : fee
+  const isWorkshopOnly = category === "Workshop Only"
+  // Built explicitly here (rather than reusing `fee` alone) so it still
+  // contains the word "workshop" -- every workshop filter (the certificate
+  // route, the WhatsApp/email broadcast scripts) matches on that substring,
+  // not on participant_category, since the add-on path below never sets
+  // participant_category to anything workshop-specific.
+  const amountExpected = isWorkshopOnly
+    ? `${WORKSHOP_FEE[period]} (pre & post-conference workshop)`
+    : parsed.data.includeWorkshop
+      ? `${fee} + ${WORKSHOP_FEE[period]} (pre & post-conference workshop)`
+      : fee
   const currency = fee.trim().startsWith("$") ? "USD" : "NGN"
 
   const uploadedPaths: string[] = []

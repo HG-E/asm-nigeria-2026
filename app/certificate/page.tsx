@@ -24,6 +24,8 @@ const ERROR_MESSAGES: Record<string, string> = {
     "Your abstract was accepted, but whether it's an oral or poster presentation hasn't been finalized yet. Check back once that's confirmed, or contact the admin.",
   no_workshop:
     "We couldn't find a workshop add-on on this registration. Workshop certificates are only available to participants who registered for the Pre & Post-Conference Hands-On Workshop.",
+  workshop_only:
+    "This reference number registered for the Pre & Post-Conference Hands-On Workshop only, not the main conference, so a Participation certificate isn't available. Switch to the Workshop tab above to download your certificate.",
 }
 
 export default async function CertificatePage(props: PageProps<"/certificate">) {

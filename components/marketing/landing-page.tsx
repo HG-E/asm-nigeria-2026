@@ -252,7 +252,7 @@ const FAQS = [
   { q: "Can I attend online?", a: "Yes! The conference is hybrid. Local online participants pay ₦25,000 (early rate) and foreign online participants pay $25 USD. You'll receive a link to the virtual platform after registration is confirmed." },
   { q: "What is the abstract submission fee and what does it cover?", a: <>The abstract processing fee is ₦3,000 (or $5 USD). This is separate from your conference registration fee. Payment should be made to the ASM Nigeria account at First Bank (2047664724) before or alongside your abstract submission via the <Link href="/register">official portal</Link>.</> },
   { q: "What is the difference between Early and Late registration?", a: "Early/Regular registration ran until October 22, 2026 at a lower rate (e.g., ASM Members ₦25,000 vs ₦30,000 late). After that date, Late registration rates apply right up to the conference." },
-  { q: "What are the Pre and Post-Conference Hands-On Workshops?", a: "These are additional paid sessions (₦8,000, one fee covers both) offering practical, skills-based training, particularly valuable for students and early-career researchers. The Pre-Conference Workshop runs November 22 and the Post-Conference Workshop runs November 25. Add them by ticking the workshop box on the conference registration form, no separate registration needed." },
+  { q: "What are the Pre and Post-Conference Hands-On Workshops?", a: <>These are additional paid sessions (₦8,000, one fee covers both) offering practical, skills-based training, particularly valuable for students and early-career researchers. The Pre-Conference Workshop runs November 22 and the Post-Conference Workshop runs November 25. Registering for the conference? Tick the workshop box on the conference registration form. Only want the workshop, or already registered for the conference without it? Use the <Link href="/register-workshop">separate workshop registration</Link>.</> },
   { q: "How do I confirm my payment was received?", a: <>After making your bank transfer to First Bank (Acc: 2047664724, ASM Nigeria), attach your receipt when you register or submit your abstract. No separate email is needed. The admin confirms it from your account within 2–3 working days.</> },
   { q: "Can I submit more than one abstract?", a: "Yes, you may submit multiple abstracts. Each abstract requires a separate processing fee of ₦3,000. Each submission must meet all guidelines and address one or two of the five stated sub-themes." },
 ]
@@ -2013,6 +2013,7 @@ export function LandingPage() {
                   <ul>
                     <li><Link href="/register">Submit Abstract</Link></li>
                     <li><a href="#registration">Register</a></li>
+                    <li><Link href="/register-workshop">Register for Workshop</Link></li>
                     <li><a href="#payment">Payment</a></li>
                     <li><a href="#accommodation">Accommodation</a></li>
                   </ul>

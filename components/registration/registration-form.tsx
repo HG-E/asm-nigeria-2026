@@ -152,9 +152,14 @@ function FileUploadField({
 export function RegistrationForm({
   isCommitteeLink,
   committeeToken,
+  lockedCategory,
 }: {
   isCommitteeLink: boolean
   committeeToken: string
+  // Set by app/register-workshop/page.tsx to pin the category to "Workshop
+  // Only" and skip the category picker entirely -- the same pattern the
+  // committee link already uses for "Committee Member" below.
+  lockedCategory?: ParticipantCategory
 }) {
   // "Committee Member" (free, no receipt needed) is only offered when the
   // server (app/register-conference/page.tsx) confirmed the ?committee=
@@ -163,9 +168,13 @@ export function RegistrationForm({
   // prop. committeeToken is echoed back in the submission so the server
   // action can independently re-verify it too, rather than trusting a
   // client-submitted "Committee Member" category on its own.
-  const visibleCategories = isCommitteeLink
-    ? PARTICIPANT_CATEGORIES
-    : PARTICIPANT_CATEGORIES.filter((c) => c !== "Committee Member")
+  //
+  // "Workshop Only" is likewise never shown in this list -- it's only ever
+  // set via lockedCategory, from the dedicated /register-workshop page.
+  const visibleCategories = (isCommitteeLink ? PARTICIPANT_CATEGORIES : PARTICIPANT_CATEGORIES.filter((c) => c !== "Committee Member")).filter(
+    (c) => c !== "Workshop Only"
+  )
+  const isWorkshopOnly = lockedCategory === "Workshop Only"
 
   const [isPending, startTransition] = useTransition()
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -209,7 +218,8 @@ export function RegistrationForm({
   // them find "Committee Member" in a list of paid categories.
   useEffect(() => {
     if (isCommitteeLink) form.setValue("participantCategory", "Committee Member")
-  }, [isCommitteeLink, form])
+    if (lockedCategory) form.setValue("participantCategory", lockedCategory)
+  }, [isCommitteeLink, lockedCategory, form])
 
   const category = form.watch("participantCategory") as ParticipantCategory | undefined
   const includeWorkshop = form.watch("includeWorkshop")
@@ -383,7 +393,19 @@ export function RegistrationForm({
           />
         </div>
 
-        {isCommitteeLink ? (
+        {isWorkshopOnly ? (
+          <div className="bg-muted/50 rounded-lg border p-4 text-sm">
+            <p className="font-medium">Pre &amp; Post-Conference Hands-On Workshop</p>
+            <p className="text-muted-foreground mt-1">
+              This registers you for the workshop only, not the main conference. One fee covers
+              both the Pre-Conference and Post-Conference sessions. See the{" "}
+              <a href="/schedule" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
+                workshop schedule
+              </a>{" "}
+              for facilitators and times.
+            </p>
+          </div>
+        ) : isCommitteeLink ? (
           <div className="space-y-3">
             <label className="text-sm font-medium">Subcommittee(s)</label>
             <p className="text-muted-foreground text-sm">
@@ -480,34 +502,37 @@ export function RegistrationForm({
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="includeWorkshop"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start gap-2 space-y-0">
-              <FormControl>
-                <Checkbox checked={field.value} onCheckedChange={(checked) => field.onChange(checked === true)} />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel className="font-normal">
-                  Add the Pre &amp; Post-Conference hands-on workshops ({WORKSHOP_FEE[period]})
-                </FormLabel>
-                <p className="text-muted-foreground text-sm">
-                  One fee covers both sessions. See the{" "}
-                  <a href="/schedule" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
-                    workshop schedule
-                  </a>{" "}
-                  for facilitators and times.
-                </p>
-              </div>
-            </FormItem>
-          )}
-        />
+        {!isWorkshopOnly && (
+          <FormField
+            control={form.control}
+            name="includeWorkshop"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start gap-2 space-y-0">
+                <FormControl>
+                  <Checkbox checked={field.value} onCheckedChange={(checked) => field.onChange(checked === true)} />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel className="font-normal">
+                    Add the Pre &amp; Post-Conference hands-on workshops ({WORKSHOP_FEE[period]})
+                  </FormLabel>
+                  <p className="text-muted-foreground text-sm">
+                    One fee covers both sessions. See the{" "}
+                    <a href="/schedule" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
+                      workshop schedule
+                    </a>{" "}
+                    for facilitators and times.
+                  </p>
+                </div>
+              </FormItem>
+            )}
+          />
+        )}
 
         {fee && (
           <p className="text-sm">
             <span className="font-medium">Amount due: </span>
             {fee}
+            {isWorkshopOnly && <> (Pre &amp; Post-Conference Hands-On Workshop)</>}
             {includeWorkshop && <> + {WORKSHOP_FEE[period]} (Pre &amp; Post-Conference workshops)</>}
           </p>
         )}

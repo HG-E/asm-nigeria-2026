@@ -9,13 +9,20 @@ async function handleParticipation(referenceNumber: string, email: string) {
   const admin = createAdminClient()
   const { data: registration } = await admin
     .from("conference_registrations")
-    .select("full_name, reference_number, payment_status, attended")
+    .select("full_name, reference_number, payment_status, attended, participant_category")
     .eq("reference_number", referenceNumber)
     .ilike("email", email)
     .maybeSingle()
 
   if (!registration) {
     redirect("/certificate?type=participation&error=not_found")
+  }
+  // A "Workshop Only" registrant never registered for the main conference,
+  // so a generic Participation certificate would overstate what they
+  // attended -- they get the Workshop certificate instead (handleWorkshop
+  // below), issued under the same reference number and email.
+  if (registration.participant_category === "Workshop Only") {
+    redirect("/certificate?type=participation&error=workshop_only")
   }
   if (registration.payment_status !== "verified") {
     redirect("/certificate?type=participation&error=not_verified")

@@ -107,6 +107,7 @@ export function AwardeesPage() {
                 <ul>
                   <li><Link href="/register">Submit Abstract</Link></li>
                   <li><Link href="/#registration">Register</Link></li>
+                  <li><Link href="/register-workshop">Register for Workshop</Link></li>
                   <li><Link href="/#accommodation">Accommodation</Link></li>
                 </ul>
               </div>

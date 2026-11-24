@@ -24,6 +24,15 @@ export const PARTICIPANT_CATEGORIES = [
   // through the same manual admin verification as everyone else, so this
   // doesn't bypass review, only the payment-receipt requirement.
   "Committee Member",
+  // Also not shown in the public category dropdown -- only reachable via
+  // the dedicated /register-workshop page, for people registering for the
+  // Pre & Post-Conference Hands-On Workshop only, without also attending
+  // the main conference. Its fee is the flat workshop fee (see
+  // WORKSHOP_FEE below); amountExpected for this category is built
+  // specially in app/register-conference/actions.ts so it still contains
+  // the word "workshop", which is what every workshop-only filter (the
+  // certificate route, the WhatsApp/email broadcast scripts) matches on.
+  "Workshop Only",
 ] as const
 
 export type ParticipantCategory = (typeof PARTICIPANT_CATEGORIES)[number]
@@ -40,6 +49,11 @@ export const REGISTRATION_FEES: Record<ParticipantCategory, FeeRow> = {
   "Online Participants — Foreign": { early: "$25 USD", late: "$30 USD", currency: "USD" },
   "Foreign Corporate Bodies": { early: "$150 USD", late: "$155 USD", currency: "USD" },
   "Committee Member": { early: "Free", late: "Free", currency: "NGN" },
+  // Kept in sync with WORKSHOP_FEE below (both flat, no early/late split) --
+  // only used for display (e.g. feeFor) since the actual amountExpected
+  // string for this category is built directly from WORKSHOP_FEE in
+  // app/register-conference/actions.ts.
+  "Workshop Only": { early: "₦8,000", late: "₦8,000", currency: "NGN" },
 }
 
 // Flat rate -- no early/late split for the workshop (unlike the main
