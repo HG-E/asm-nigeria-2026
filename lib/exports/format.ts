@@ -26,21 +26,46 @@ export async function toXlsx(
   rows: ExportCell[][],
   sheetName: string
 ): Promise<Buffer> {
+  return toXlsxMultiSheet([{ name: sheetName, headers, rows }])
+}
+
+// One worksheet per entry -- e.g. one per subtheme, so a grouped download
+// reads as distinct sections in Excel's sheet tabs rather than one long
+// flat list the admin has to re-sort themselves.
+export async function toXlsxMultiSheet(
+  sheets: { name: string; headers: string[]; rows: ExportCell[][] }[]
+): Promise<Buffer> {
   const workbook = new ExcelJS.Workbook()
-  const sheet = workbook.addWorksheet(sheetName.slice(0, 31))
-  sheet.addRow(headers)
-  sheet.getRow(1).font = { bold: true }
-  for (const row of rows) {
-    sheet.addRow(row)
-  }
-  sheet.columns.forEach((column) => {
-    let maxLength = 10
-    column.eachCell?.({ includeEmpty: true }, (cell) => {
-      const length = cell.value ? String(cell.value).length : 0
-      if (length > maxLength) maxLength = length
+  const usedNames = new Set<string>()
+  for (const { name, headers, rows } of sheets) {
+    // Excel sheet names: max 31 chars, no \ / ? * [ ] colons, and must be
+    // unique within the workbook -- two subthemes that only differ past
+    // character 31 would otherwise collide and silently overwrite each
+    // other's sheet.
+    let safeName = name.replace(/[\\/?*[\]:]/g, "-").slice(0, 31) || "Sheet"
+    let suffix = 2
+    while (usedNames.has(safeName)) {
+      const base = name.replace(/[\\/?*[\]:]/g, "-").slice(0, 31 - String(suffix).length - 1)
+      safeName = `${base}-${suffix}`
+      suffix += 1
+    }
+    usedNames.add(safeName)
+
+    const sheet = workbook.addWorksheet(safeName)
+    sheet.addRow(headers)
+    sheet.getRow(1).font = { bold: true }
+    for (const row of rows) {
+      sheet.addRow(row)
+    }
+    sheet.columns.forEach((column) => {
+      let maxLength = 10
+      column.eachCell?.({ includeEmpty: true }, (cell) => {
+        const length = cell.value ? String(cell.value).length : 0
+        if (length > maxLength) maxLength = length
+      })
+      column.width = Math.min(maxLength + 2, 60)
     })
-    column.width = Math.min(maxLength + 2, 60)
-  })
+  }
   const buffer = await workbook.xlsx.writeBuffer()
   return Buffer.from(buffer)
 }

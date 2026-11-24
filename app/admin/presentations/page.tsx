@@ -27,6 +27,8 @@ import { createClient } from "@/lib/supabase/server"
 import { RichText } from "@/components/submission/rich-text"
 import { cn } from "@/lib/utils"
 
+const DEFAULT_CHECKED_COLUMNS = new Set(["reference", "title", "presenter", "subtheme", "type"])
+
 export default async function AdminPresentationsPage(props: PageProps<"/admin/presentations">) {
   await requireRole("admin")
   const searchParams = await props.searchParams
@@ -221,19 +223,33 @@ export default async function AdminPresentationsPage(props: PageProps<"/admin/pr
                 <div className="flex flex-wrap gap-x-4 gap-y-2">
                   {PRESENTER_EXPORT_COLUMNS.map((c) => (
                     <label key={c.key} className="flex items-center gap-1.5 text-sm">
-                      <input type="checkbox" name="columns" value={c.key} defaultChecked className="size-4" />
+                      <input
+                        type="checkbox"
+                        name="columns"
+                        value={c.key}
+                        // Reference/Title/Presenter/Subtheme/Type checked by
+                        // default -- the core set someone organizing session
+                        // handouts by subtheme actually needs; the rest
+                        // (email, attendance, scheduling, slide tracking)
+                        // stay available but opt-in.
+                        defaultChecked={DEFAULT_CHECKED_COLUMNS.has(c.key)}
+                        className="size-4"
+                      />
                       {c.label}
                     </label>
                   ))}
                 </div>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button type="submit" name="format" value="csv" variant="outline" size="sm">
                   Download CSV
                 </Button>
                 <Button type="submit" name="format" value="xlsx" variant="outline" size="sm">
                   Download Excel
+                </Button>
+                <Button type="submit" name="format" value="xlsx-grouped" variant="outline" size="sm">
+                  Download Excel (one sheet per subtheme)
                 </Button>
               </div>
             </form>

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 
 import { requireRole } from "@/lib/auth"
 import { getActiveConference } from "@/lib/conference"
-import { toCsv, toXlsx, type ExportCell } from "@/lib/exports/format"
+import { toCsv, toXlsxMultiSheet, type ExportCell } from "@/lib/exports/format"
 import {
   fetchTrackingData,
   lookupScheduledSlot,
@@ -59,7 +59,9 @@ export async function GET(request: Request) {
   const attendance = url.searchParams.get("attendance") ?? ""
   const sortParam = url.searchParams.get("sort")
   const sort: Sort = SORTS.includes(sortParam as Sort) ? (sortParam as Sort) : "date"
-  const format = url.searchParams.get("format") === "xlsx" ? "xlsx" : "csv"
+  const formatParam = url.searchParams.get("format")
+  const format: "csv" | "xlsx" | "xlsx-grouped" =
+    formatParam === "xlsx-grouped" ? "xlsx-grouped" : formatParam === "xlsx" ? "xlsx" : "csv"
 
   const requestedColumns = url.searchParams.getAll("columns")
   const columns =
@@ -85,12 +87,41 @@ export async function GET(request: Request) {
   }))
 
   const headers = columns.map((c) => c.label)
-  const rows: ExportCell[][] = presenters.map((p) => columns.map((c) => CELL_GETTERS[c.key](p)))
 
+  if (format === "xlsx-grouped") {
+    // One sheet per subtheme -- grouped sorted alphabetically by name, with
+    // ungrouped presenters (no subtheme assigned yet) collected in a final
+    // "No Subtheme" sheet rather than silently dropped.
+    const bySubtheme = new Map<string, Row[]>()
+    for (const p of presenters) {
+      const key = p.conference_subthemes?.name ?? "No Subtheme"
+      const group = bySubtheme.get(key)
+      if (group) group.push(p)
+      else bySubtheme.set(key, [p])
+    }
+    const sheetNames = [...bySubtheme.keys()].sort((a, b) =>
+      a === "No Subtheme" ? 1 : b === "No Subtheme" ? -1 : a.localeCompare(b)
+    )
+    const sheets = sheetNames.map((name) => ({
+      name,
+      headers,
+      rows: bySubtheme.get(name)!.map((p) => columns.map((c) => CELL_GETTERS[c.key](p))),
+    }))
+
+    const buffer = await toXlsxMultiSheet(sheets)
+    return new NextResponse(new Uint8Array(buffer), {
+      headers: {
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "Content-Disposition": `attachment; filename="asm-nigeria-2026-presenters-by-subtheme.xlsx"`,
+      },
+    })
+  }
+
+  const rows: ExportCell[][] = presenters.map((p) => columns.map((c) => CELL_GETTERS[c.key](p)))
   const filename = `asm-nigeria-2026-presenters.${format}`
 
   if (format === "xlsx") {
-    const buffer = await toXlsx(headers, rows, "Presenters")
+    const buffer = await toXlsxMultiSheet([{ name: "Presenters", headers, rows }])
     return new NextResponse(new Uint8Array(buffer), {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
