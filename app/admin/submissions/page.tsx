@@ -22,7 +22,14 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { requireRole } from "@/lib/auth"
-import { ATTENDANCE_MODES, fetchFilteredSubmissions, SORT_LABELS, SORTS, type Sort } from "@/lib/submissions-list"
+import {
+  ATTENDANCE_MODES,
+  fetchFilteredSubmissions,
+  SORT_LABELS,
+  SORTS,
+  SUBMISSION_EXPORT_COLUMNS,
+  type Sort,
+} from "@/lib/submissions-list"
 import { createClient } from "@/lib/supabase/server"
 import { cn } from "@/lib/utils"
 import type { Database } from "@/types/database"
@@ -74,19 +81,6 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
     .order("name", { ascending: true })
 
   const submissions = await fetchFilteredSubmissions(supabase, { q, statusList, subtheme, attendance, sort })
-
-  const exportParams = new URLSearchParams()
-  if (q) exportParams.set("q", q)
-  if (status) exportParams.set("status", status)
-  if (subtheme) exportParams.set("subtheme", subtheme)
-  if (attendance) exportParams.set("attendance", attendance)
-  if (sort !== "date") exportParams.set("sort", sort)
-
-  function exportHref(format: "csv" | "xlsx") {
-    const p = new URLSearchParams(exportParams)
-    p.set("format", format)
-    return `/admin/submissions/export?${p.toString()}`
-  }
 
   return (
     <div className="space-y-6">
@@ -182,21 +176,51 @@ export default async function AdminSubmissionsPage(props: PageProps<"/admin/subm
       </Card>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between gap-3">
+        <CardHeader>
           <CardTitle className="text-base">
             Results{submissions ? ` (${submissions.length})` : ""}
           </CardTitle>
-          {submissions.length > 0 && (
-            <div className="flex gap-2">
-              <a href={exportHref("csv")} className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>
-                Download CSV
-              </a>
-              <a href={exportHref("xlsx")} className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>
-                Download Excel
-              </a>
-            </div>
-          )}
         </CardHeader>
+        {submissions.length > 0 && (
+          <CardContent className="border-b pb-6">
+            {/* A plain native form, not the Select/Checkbox components used
+                above -- those are Base UI primitives that render as buttons
+                rather than real <input>s, so they never participate in a
+                no-JS GET submission. Every filter currently applied is
+                carried over as a hidden field so the download always
+                matches what's on screen, and each column checkbox submits
+                as its own "columns" value (see app/admin/submissions/export's
+                SUBMISSION_EXPORT_COLUMNS handling). */}
+            <form action="/admin/submissions/export" method="get" className="space-y-3">
+              {q && <input type="hidden" name="q" value={q} />}
+              {status && <input type="hidden" name="status" value={status} />}
+              {subtheme && <input type="hidden" name="subtheme" value={subtheme} />}
+              {attendance && <input type="hidden" name="attendance" value={attendance} />}
+              {sort !== "date" && <input type="hidden" name="sort" value={sort} />}
+
+              <div>
+                <p className="mb-2 text-sm font-medium">Columns to include</p>
+                <div className="flex flex-wrap gap-x-4 gap-y-2">
+                  {SUBMISSION_EXPORT_COLUMNS.map((c) => (
+                    <label key={c.key} className="flex items-center gap-1.5 text-sm">
+                      <input type="checkbox" name="columns" value={c.key} defaultChecked className="size-4" />
+                      {c.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button type="submit" name="format" value="csv" variant="outline" size="sm">
+                  Download CSV
+                </Button>
+                <Button type="submit" name="format" value="xlsx" variant="outline" size="sm">
+                  Download Excel
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        )}
         <CardContent className="px-0 sm:px-6">
           {!submissions || submissions.length === 0 ? (
             <p className="text-muted-foreground py-8 text-center text-sm">

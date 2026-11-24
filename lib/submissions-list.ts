@@ -18,6 +18,24 @@ export const SORT_LABELS: Record<Sort, string> = {
 
 export const ATTENDANCE_MODES = ["Virtual", "In-person", "Both"] as const
 
+// Shared by the Submissions page's download form (which column checkboxes
+// to render, in this order) and the export route (which columns to
+// actually include and in what order) -- same reasoning as the rest of
+// this file: one definition, so the two can't disagree about what a column
+// key means.
+export const SUBMISSION_EXPORT_COLUMNS = [
+  { key: "reference", label: "Reference Number" },
+  { key: "title", label: "Title" },
+  { key: "author", label: "Author" },
+  { key: "email", label: "Email" },
+  { key: "subtheme", label: "Subtheme" },
+  { key: "status", label: "Status" },
+  { key: "attendance", label: "Attendance" },
+  { key: "payment", label: "Payment Status" },
+  { key: "submitted", label: "Submitted At" },
+] as const
+export type SubmissionExportColumnKey = (typeof SUBMISSION_EXPORT_COLUMNS)[number]["key"]
+
 export type SubmissionListRow = {
   id: string
   reference_number: string | null
