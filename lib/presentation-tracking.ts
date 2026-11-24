@@ -1,6 +1,28 @@
 import "server-only"
 
+import { ORAL_SCHEDULE, POSTER_SCHEDULE } from "@/components/marketing/schedule-data"
 import { findColumn, parseCsvRecords } from "@/lib/parse-csv"
+
+export type ScheduledSlot = { day: string; time: string }
+
+// Built once per request from the same static schedule data the public
+// /schedule page renders (components/marketing/schedule-data.ts) -- the
+// committee's finalized scheduling sheet, keyed by abstract/reference
+// number. Every currently-approved presenter has matched a slot here 1:1
+// (confirmed against the live database), so this is a reliable "has this
+// person actually been scheduled" check, not just "were they approved."
+const SCHEDULE_BY_REFERENCE: Map<string, ScheduledSlot> = (() => {
+  const map = new Map<string, ScheduledSlot>()
+  for (const entry of [...ORAL_SCHEDULE, ...POSTER_SCHEDULE]) {
+    map.set(entry.abstractNumber, { day: entry.day, time: entry.time })
+  }
+  return map
+})()
+
+export function lookupScheduledSlot(referenceNumber: string | null): ScheduledSlot | null {
+  if (!referenceNumber) return null
+  return SCHEDULE_BY_REFERENCE.get(referenceNumber) ?? null
+}
 
 // Reference numbers are typed by hand into the Google Form -- phones
 // autocorrect "-" to an en-dash, copy-paste from a confirmation email often

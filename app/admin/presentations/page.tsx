@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { requireRole } from "@/lib/auth"
 import { getActiveConference } from "@/lib/conference"
-import { fetchTrackingData, lookupTrackedSubmission } from "@/lib/presentation-tracking"
+import { fetchTrackingData, lookupScheduledSlot, lookupTrackedSubmission } from "@/lib/presentation-tracking"
 import {
   ATTENDANCE_MODES,
   fetchFilteredSubmissions,
@@ -68,10 +68,12 @@ export default async function AdminPresentationsPage(props: PageProps<"/admin/pr
       trackingData && s.status === "accepted_oral"
         ? lookupTrackedSubmission(trackingData, s.reference_number, s.user_profiles?.email)
         : null,
+    scheduled: lookupScheduledSlot(s.reference_number),
   }))
 
   const oralCount = presenters.filter((p) => p.status === "accepted_oral").length
   const submittedCount = trackingData ? presenters.filter((p) => p.status === "accepted_oral" && p.track).length : 0
+  const scheduledCount = presenters.filter((p) => p.scheduled).length
 
   return (
     <div className="space-y-6">
@@ -116,6 +118,9 @@ export default async function AdminPresentationsPage(props: PageProps<"/admin/pr
           {submittedCount} of {oralCount} oral presenters have submitted their slides.
         </p>
       )}
+      <p className="text-muted-foreground text-sm">
+        {scheduledCount} of {presenters.length} currently shown have a confirmed schedule slot.
+      </p>
 
       <Card>
         <CardHeader>
@@ -249,6 +254,7 @@ export default async function AdminPresentationsPage(props: PageProps<"/admin/pr
                   <TableHead>Subtheme</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Attendance</TableHead>
+                  <TableHead>Scheduled</TableHead>
                   <TableHead>Slide Status</TableHead>
                   <TableHead>Submitted At</TableHead>
                   <TableHead>File</TableHead>
@@ -275,6 +281,16 @@ export default async function AdminPresentationsPage(props: PageProps<"/admin/pr
                         <Badge variant={isOral ? "gold" : "secondary"}>{isOral ? "Oral" : "Poster"}</Badge>
                       </TableCell>
                       <TableCell className="text-sm">{p.attendanceMode ?? "—"}</TableCell>
+                      <TableCell className="text-sm">
+                        {p.scheduled ? (
+                          <>
+                            <div>{p.scheduled.day}</div>
+                            <div className="text-muted-foreground text-xs">{p.scheduled.time}</div>
+                          </>
+                        ) : (
+                          <Badge variant="destructive">Not scheduled</Badge>
+                        )}
+                      </TableCell>
                       <TableCell>
                         {!isOral ? (
                           <span className="text-muted-foreground text-sm">N/A (poster)</span>

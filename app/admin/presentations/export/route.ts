@@ -3,7 +3,13 @@ import { NextResponse } from "next/server"
 import { requireRole } from "@/lib/auth"
 import { getActiveConference } from "@/lib/conference"
 import { toCsv, toXlsx, type ExportCell } from "@/lib/exports/format"
-import { fetchTrackingData, lookupTrackedSubmission, type SubmissionRecord } from "@/lib/presentation-tracking"
+import {
+  fetchTrackingData,
+  lookupScheduledSlot,
+  lookupTrackedSubmission,
+  type ScheduledSlot,
+  type SubmissionRecord,
+} from "@/lib/presentation-tracking"
 import { toPlain } from "@/lib/rich-text"
 import {
   fetchFilteredSubmissions,
@@ -18,7 +24,7 @@ import {
 } from "@/lib/submissions-list"
 import { createClient } from "@/lib/supabase/server"
 
-type Row = SubmissionListRow & { track: SubmissionRecord | null }
+type Row = SubmissionListRow & { track: SubmissionRecord | null; scheduled: ScheduledSlot | null }
 
 const CELL_GETTERS: Record<PresenterExportColumnKey, (s: Row) => ExportCell> = {
   reference: (s) => s.reference_number,
@@ -28,6 +34,8 @@ const CELL_GETTERS: Record<PresenterExportColumnKey, (s: Row) => ExportCell> = {
   subtheme: (s) => s.conference_subthemes?.name ?? "",
   type: (s) => (s.status === "accepted_oral" ? "Oral" : "Poster"),
   attendance: (s) => s.attendanceMode ?? "",
+  scheduledDay: (s) => s.scheduled?.day ?? "Not scheduled",
+  scheduledTime: (s) => s.scheduled?.time ?? "",
   slideStatus: (s) => (s.status !== "accepted_oral" ? "N/A (poster)" : s.track ? "Submitted" : "Not yet"),
   slideSubmittedAt: (s) => s.track?.timestamp ?? "",
   fileLink: (s) => s.track?.fileLink ?? "",
@@ -73,6 +81,7 @@ export async function GET(request: Request) {
       trackingData && s.status === "accepted_oral"
         ? lookupTrackedSubmission(trackingData, s.reference_number, s.user_profiles?.email)
         : null,
+    scheduled: lookupScheduledSlot(s.reference_number),
   }))
 
   const headers = columns.map((c) => c.label)

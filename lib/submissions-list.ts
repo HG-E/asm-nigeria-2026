@@ -55,6 +55,8 @@ export const PRESENTER_EXPORT_COLUMNS = [
   { key: "subtheme", label: "Subtheme" },
   { key: "type", label: "Presentation Type" },
   { key: "attendance", label: "Attendance" },
+  { key: "scheduledDay", label: "Scheduled Day" },
+  { key: "scheduledTime", label: "Scheduled Time" },
   { key: "slideStatus", label: "Slide Status" },
   { key: "slideSubmittedAt", label: "Slide Submitted At" },
   { key: "fileLink", label: "Slide File Link" },
