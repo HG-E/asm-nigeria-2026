@@ -36,6 +36,31 @@ export const SUBMISSION_EXPORT_COLUMNS = [
 ] as const
 export type SubmissionExportColumnKey = (typeof SUBMISSION_EXPORT_COLUMNS)[number]["key"]
 
+// For admin/presentations, which is scoped to approved presenters only
+// (accepted_oral + accepted_poster) rather than every submission regardless
+// of status.
+export const PRESENTATION_TYPES = ["oral", "poster"] as const
+export type PresentationType = (typeof PRESENTATION_TYPES)[number]
+export const PRESENTATION_TYPE_LABELS: Record<PresentationType, string> = { oral: "Oral", poster: "Poster" }
+export const STATUS_BY_TYPE: Record<PresentationType, SubmissionStatus> = {
+  oral: "accepted_oral",
+  poster: "accepted_poster",
+}
+
+export const PRESENTER_EXPORT_COLUMNS = [
+  { key: "reference", label: "Reference Number" },
+  { key: "title", label: "Title" },
+  { key: "presenter", label: "Presenter" },
+  { key: "email", label: "Email" },
+  { key: "subtheme", label: "Subtheme" },
+  { key: "type", label: "Presentation Type" },
+  { key: "attendance", label: "Attendance" },
+  { key: "slideStatus", label: "Slide Status" },
+  { key: "slideSubmittedAt", label: "Slide Submitted At" },
+  { key: "fileLink", label: "Slide File Link" },
+] as const
+export type PresenterExportColumnKey = (typeof PRESENTER_EXPORT_COLUMNS)[number]["key"]
+
 export type SubmissionListRow = {
   id: string
   reference_number: string | null
