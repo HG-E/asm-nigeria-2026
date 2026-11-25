@@ -14,12 +14,17 @@ async function handleParticipation(referenceNumber: string, email: string) {
   const admin = createAdminClient()
   const { data: registration } = await admin
     .from("conference_registrations")
-    .select("full_name, reference_number, payment_status, attended, participant_category")
+    .select("full_name, reference_number, email, payment_status, attended, participant_category")
     .eq("reference_number", referenceNumber)
-    .ilike("email", email)
     .maybeSingle()
 
-  if (!registration) {
+  // Compared in JS, not via .ilike("email", email) -- ilike treats "%" and
+  // "_" as wildcards, so a submitted email of e.g. "%" would match every
+  // row's email and return a certificate with no real knowledge of who it
+  // belongs to. Reference numbers are sequential and easily guessed, so
+  // that alone was enough to download anyone's certificate. Confirmed
+  // exploitable in this exact form before this fix.
+  if (!registration || registration.email.toLowerCase() !== email.toLowerCase()) {
     redirect("/certificate?type=participation&error=not_found")
   }
   // A "Workshop Only" registrant never registered for the main conference,
@@ -58,12 +63,13 @@ async function handleWorkshop(referenceNumber: string, email: string) {
   const admin = createAdminClient()
   const { data: registration } = await admin
     .from("conference_registrations")
-    .select("full_name, reference_number, payment_status, attended, amount_expected")
+    .select("full_name, reference_number, email, payment_status, attended, amount_expected")
     .eq("reference_number", referenceNumber)
-    .ilike("email", email)
     .maybeSingle()
 
-  if (!registration) {
+  // See handleParticipation's comment -- compared in JS rather than via
+  // .ilike("email", email), which a wildcard email could bypass entirely.
+  if (!registration || registration.email.toLowerCase() !== email.toLowerCase()) {
     redirect("/certificate?type=workshop&error=not_found")
   }
   // The registration's amount_expected only mentions the workshop fee when
@@ -97,12 +103,13 @@ async function handleVolunteer(referenceNumber: string, email: string) {
   const admin = createAdminClient()
   const { data: registration } = await admin
     .from("conference_registrations")
-    .select("full_name, reference_number, payment_status, attended, participant_category")
+    .select("full_name, reference_number, email, payment_status, attended, participant_category")
     .eq("reference_number", referenceNumber)
-    .ilike("email", email)
     .maybeSingle()
 
-  if (!registration) {
+  // See handleParticipation's comment -- compared in JS rather than via
+  // .ilike("email", email), which a wildcard email could bypass entirely.
+  if (!registration || registration.email.toLowerCase() !== email.toLowerCase()) {
     redirect("/certificate?type=volunteer&error=not_found")
   }
   if (registration.participant_category !== "Volunteer") {
@@ -132,7 +139,9 @@ async function handlePresentation(referenceNumber: string, email: string) {
   const admin = createAdminClient()
   const { data: submission } = await admin
     .from("submissions")
-    .select("id, title, reference_number, presentation_preference, submission_authors(email, is_corresponding, first_name, last_name)")
+    .select(
+      "id, title, reference_number, presentation_preference, payment_status, submission_authors(email, is_corresponding, first_name, last_name)"
+    )
     .eq("reference_number", referenceNumber)
     .maybeSingle()
 
@@ -140,6 +149,16 @@ async function handlePresentation(referenceNumber: string, email: string) {
 
   if (!submission || !correspondingAuthor || correspondingAuthor.email.toLowerCase() !== email.toLowerCase()) {
     redirect("/certificate?type=presentation&error=not_found")
+  }
+
+  // Nothing earlier in the review pipeline (assignReviewerAction,
+  // finalizeDecisionAction) checks this -- an abstract can be screened,
+  // reviewed and accepted entirely independently of whether its ₦3,000
+  // processing fee was ever verified. Without this check, an accepted
+  // submission whose fee was never paid (or was rejected) could still
+  // produce a Certificate of Presentation.
+  if (submission.payment_status !== "verified") {
+    redirect("/certificate?type=presentation&error=fee_not_verified")
   }
 
   const { data: decision } = await admin

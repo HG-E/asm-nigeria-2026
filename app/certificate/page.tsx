@@ -30,6 +30,8 @@ const ERROR_MESSAGES: Record<string, string> = {
     "This reference number registered as a conference volunteer, not a main-conference participant, so a Participation certificate isn't available. Switch to the Volunteer tab above to download your certificate.",
   not_volunteer:
     "We couldn't find a volunteer registration for that reference number and email. Volunteer certificates are only available to registered conference volunteers.",
+  fee_not_verified:
+    "Your abstract processing fee hasn't been verified yet, so a presentation certificate isn't available. Contact the admin to resolve this.",
 }
 
 export default async function CertificatePage(props: PageProps<"/certificate">) {

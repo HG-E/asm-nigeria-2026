@@ -42,10 +42,14 @@ export async function addWorkshopToRegistrationAction(formData: FormData): Promi
     .from("conference_registrations")
     .select("id, conference_id, full_name, email, reference_number, payment_status, amount_expected")
     .eq("reference_number", referenceNumber)
-    .ilike("email", email)
     .maybeSingle()
 
-  if (!registration) {
+  // Compared in JS, not via .ilike("email", email) -- ilike treats "%" and
+  // "_" as wildcards, so a submitted email of e.g. "%" would match this row
+  // regardless of its real email, letting anyone who knows (or guesses) a
+  // reference number add a receipt to someone else's registration and flip
+  // it back to pending with no knowledge of the real email at all.
+  if (!registration || registration.email.toLowerCase() !== email.toLowerCase()) {
     return { error: "We couldn't find a match for that reference number and email. Double-check both and try again." }
   }
   if (registration.payment_status === "rejected") {
