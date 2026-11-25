@@ -129,6 +129,37 @@ export async function generateParticipationCertificate(params: {
   return pdfDoc.save()
 }
 
+export async function generateVolunteerCertificate(params: {
+  fullName: string
+  certificateNumber: string
+}): Promise<Uint8Array> {
+  const pdfDoc = await PDFDocument.create()
+  const page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT])
+  const templateImage = await loadTemplate(pdfDoc, "volunteer-template.png")
+  page.drawImage(templateImage, { x: 0, y: 0, width: PAGE_WIDTH, height: PAGE_HEIGHT })
+
+  const nameFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold)
+  const numberFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
+
+  // Built on the participation template (name box and number line are at
+  // the same coordinates as that template), only the title, subtitle and
+  // body paragraph differ -- baked into volunteer-template.png itself.
+  drawCenteredFitted(page, params.fullName, PARTICIPATION_NAME_BOX, nameFont, {
+    maxSize: 26,
+    minSize: 12,
+    color: INK_BLUE,
+  })
+
+  const numberLabel = `Certificate No: ${params.certificateNumber}`
+  const numberSize = 9
+  const numberWidth = numberFont.widthOfTextAtSize(numberLabel, numberSize)
+  const numberX = PARTICIPATION_NUMBER_LINE.left + PARTICIPATION_NUMBER_LINE.width - numberWidth
+  const numberBaselineY = PAGE_HEIGHT - PARTICIPATION_NUMBER_LINE.top - PARTICIPATION_NUMBER_LINE.height + 11
+  page.drawText(numberLabel, { x: numberX, y: numberBaselineY, size: numberSize, font: numberFont, color: MUTED_BLUE })
+
+  return pdfDoc.save()
+}
+
 export async function generateWorkshopCertificate(params: {
   fullName: string
   certificateNumber: string

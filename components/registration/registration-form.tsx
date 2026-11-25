@@ -37,29 +37,41 @@ const PHOTO_MIN_DIMENSION = 400
 export function RegistrationForm({
   isCommitteeLink,
   committeeToken,
+  isVolunteerLink,
+  volunteerToken,
   lockedCategory,
 }: {
   isCommitteeLink: boolean
   committeeToken: string
+  // Same pattern as isCommitteeLink/committeeToken below, for the private
+  // ?token= link on /register-volunteer -- server-verified there against
+  // VOLUNTEER_REGISTRATION_TOKEN, echoed back here so the submit action can
+  // independently re-check it too.
+  isVolunteerLink?: boolean
+  volunteerToken?: string
   // Set by app/register-workshop/page.tsx to pin the category to "Workshop
   // Only" and skip the category picker entirely -- the same pattern the
   // committee link already uses for "Committee Member" below.
   lockedCategory?: ParticipantCategory
 }) {
-  // "Committee Member" (free, no receipt needed) is only offered when the
-  // server (app/register-conference/page.tsx) confirmed the ?committee=
-  // link's token against COMMITTEE_REGISTRATION_TOKEN -- this component
-  // never checks the secret itself, it only trusts that server-verified
-  // prop. committeeToken is echoed back in the submission so the server
-  // action can independently re-verify it too, rather than trusting a
-  // client-submitted "Committee Member" category on its own.
+  // "Committee Member" and "Volunteer" (both free, no receipt needed) are
+  // only offered when the server (app/register-conference/page.tsx or
+  // app/register-volunteer/page.tsx) confirmed the link's token against the
+  // matching env var -- this component never checks either secret itself,
+  // it only trusts these server-verified props. The tokens are echoed back
+  // in the submission so the server action can independently re-verify them
+  // too, rather than trusting a client-submitted category on its own.
   //
   // "Workshop Only" is likewise never shown in this list -- it's only ever
   // set via lockedCategory, from the dedicated /register-workshop page.
-  const visibleCategories = (isCommitteeLink ? PARTICIPANT_CATEGORIES : PARTICIPANT_CATEGORIES.filter((c) => c !== "Committee Member")).filter(
-    (c) => c !== "Workshop Only"
-  )
+  const visibleCategories = PARTICIPANT_CATEGORIES.filter((c) => {
+    if (c === "Committee Member") return isCommitteeLink
+    if (c === "Volunteer") return isVolunteerLink
+    if (c === "Workshop Only") return false
+    return true
+  })
   const isWorkshopOnly = lockedCategory === "Workshop Only"
+  const isFreeNoReceipt = isCommitteeLink || Boolean(isVolunteerLink)
 
   const [isPending, startTransition] = useTransition()
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -103,13 +115,13 @@ export function RegistrationForm({
   // them find "Committee Member" in a list of paid categories.
   useEffect(() => {
     if (isCommitteeLink) form.setValue("participantCategory", "Committee Member")
+    if (isVolunteerLink) form.setValue("participantCategory", "Volunteer")
     if (lockedCategory) form.setValue("participantCategory", lockedCategory)
-  }, [isCommitteeLink, lockedCategory, form])
+  }, [isCommitteeLink, isVolunteerLink, lockedCategory, form])
 
   const category = form.watch("participantCategory") as ParticipantCategory | undefined
   const includeWorkshop = form.watch("includeWorkshop")
   const fee = category ? feeFor(category, period) : null
-  const isCommitteeMember = isCommitteeLink
 
   function onSubmit(values: RegistrationInput) {
     setSubmitError(null)
@@ -119,7 +131,7 @@ export function RegistrationForm({
     setSubcommitteeError(null)
 
     let hasFileError = false
-    if (!receiptFile && !isCommitteeMember) {
+    if (!receiptFile && !isFreeNoReceipt) {
       setReceiptError("Please upload your payment receipt or screenshot.")
       hasFileError = true
     }
@@ -128,7 +140,7 @@ export function RegistrationForm({
       hasFileError = true
     }
     const otherText = otherSubcommitteeChecked ? otherSubcommittee.trim() : ""
-    if (isCommitteeMember && selectedSubcommittees.length === 0 && !otherText) {
+    if (isCommitteeLink && selectedSubcommittees.length === 0 && !otherText) {
       setSubcommitteeError("Select at least one subcommittee.")
       hasFileError = true
     }
@@ -145,7 +157,8 @@ export function RegistrationForm({
     formData.set("attendanceMode", values.attendanceMode)
     formData.set("includeWorkshop", String(values.includeWorkshop))
     if (subcommitteeValue) formData.set("subcommittee", subcommitteeValue)
-    if (isCommitteeMember) formData.set("committeeToken", committeeToken)
+    if (isCommitteeLink) formData.set("committeeToken", committeeToken)
+    if (isVolunteerLink) formData.set("volunteerToken", volunteerToken ?? "")
     formData.set("company", values.company ?? "")
     if (receiptFile) formData.set("receipt", receiptFile)
     formData.set("photo", photoFile!)
@@ -200,11 +213,11 @@ export function RegistrationForm({
           <p className="font-medium">
             {period === "early" ? "Early/Regular registration (till Oct 22, 2026)" : "Late registration (after Oct 22, 2026)"}
           </p>
-          {isCommitteeLink ? (
+          {isFreeNoReceipt ? (
             <p className="text-muted-foreground">
-              You&apos;re registering via the committee member link, so no payment is required.
-              You&apos;ll still need a passport photograph of yourself ready (under {MAX_FILE_MB}MB)
-              for your conference badge.
+              You&apos;re registering via the {isVolunteerLink ? "volunteer" : "committee member"} link, so no
+              payment is required. You&apos;ll still need a passport photograph of yourself ready (under{" "}
+              {MAX_FILE_MB}MB) for your conference badge.
             </p>
           ) : (
             <>
@@ -288,6 +301,14 @@ export function RegistrationForm({
                 workshop schedule
               </a>{" "}
               for facilitators and times.
+            </p>
+          </div>
+        ) : isVolunteerLink ? (
+          <div className="bg-muted/50 rounded-lg border p-4 text-sm">
+            <p className="font-medium">Volunteer Registration</p>
+            <p className="text-muted-foreground mt-1">
+              This registers you as a conference volunteer. Registration is free, and the admin will
+              confirm it after review.
             </p>
           </div>
         ) : isCommitteeLink ? (
@@ -422,9 +443,9 @@ export function RegistrationForm({
           </p>
         )}
 
-        {isCommitteeMember ? (
+        {isFreeNoReceipt ? (
           <p className="bg-muted/50 rounded-lg border p-4 text-sm">
-            No payment receipt is needed for committee member registrations.
+            No payment receipt is needed for {isVolunteerLink ? "volunteer" : "committee member"} registrations.
           </p>
         ) : (
           <FileUploadField

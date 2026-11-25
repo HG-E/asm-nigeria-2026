@@ -98,8 +98,23 @@ export async function submitRegistrationAction(formData: FormData): Promise<Regi
     }
   }
 
+  // Volunteers register for free, same reasoning as Committee Member above --
+  // never offered in the public dropdown, only via the private
+  // /register-volunteer link, independently re-verified here against
+  // VOLUNTEER_REGISTRATION_TOKEN rather than trusted from the client.
+  const isVolunteer = parsed.data.participantCategory === "Volunteer"
+  if (isVolunteer) {
+    const expectedToken = process.env.VOLUNTEER_REGISTRATION_TOKEN
+    const submittedToken = formData.get("volunteerToken")
+    if (!expectedToken || submittedToken !== expectedToken) {
+      return { error: "That registration link is invalid or has expired. Please use the link shared with you directly, or contact the Admin." }
+    }
+  }
+
+  const isFreeNoReceipt = isCommitteeMember || isVolunteer
+
   const receiptCheck = validateFile(formData.get("receipt"), {
-    required: !isCommitteeMember,
+    required: !isFreeNoReceipt,
     allowedTypes: DOCUMENT_TYPES,
     label: "payment receipt or screenshot",
   })

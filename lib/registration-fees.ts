@@ -33,6 +33,12 @@ export const PARTICIPANT_CATEGORIES = [
   // the word "workshop", which is what every workshop-only filter (the
   // certificate route, the WhatsApp/email broadcast scripts) matches on.
   "Workshop Only",
+  // Also hidden from the public dropdown -- only reachable via the private
+  // ?token= link on /register-volunteer, shared directly with people
+  // already approached to volunteer. Free, same as Committee Member (see
+  // isFreeRegistration in app/register-conference/actions.ts), and goes
+  // through the same manual admin review before being marked verified.
+  "Volunteer",
 ] as const
 
 export type ParticipantCategory = (typeof PARTICIPANT_CATEGORIES)[number]
@@ -54,6 +60,7 @@ export const REGISTRATION_FEES: Record<ParticipantCategory, FeeRow> = {
   // string for this category is built directly from WORKSHOP_FEE in
   // app/register-conference/actions.ts.
   "Workshop Only": { early: "₦8,000", late: "₦8,000", currency: "NGN" },
+  Volunteer: { early: "Free", late: "Free", currency: "NGN" },
 }
 
 // Flat rate -- no early/late split for the workshop (unlike the main

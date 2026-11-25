@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-type CertType = "participation" | "presentation" | "workshop"
+type CertType = "participation" | "presentation" | "workshop" | "volunteer"
 
 const COPY: Record<CertType, { label: string; placeholder: string; hint: string }> = {
   participation: {
@@ -24,12 +24,18 @@ const COPY: Record<CertType, { label: string; placeholder: string; hint: string 
     placeholder: "REG-ASM-ABJ-2026-XXX",
     hint: "The reference number from your conference registration, with the workshop add-on.",
   },
+  volunteer: {
+    label: "Registration reference number",
+    placeholder: "REG-ASM-ABJ-2026-XXX",
+    hint: "The reference number from your volunteer registration.",
+  },
 }
 
 const LABELS: Record<CertType, string> = {
   participation: "Participation",
   presentation: "Presentation",
   workshop: "Workshop",
+  volunteer: "Volunteer",
 }
 
 export function CertificateForm({ defaultType }: { defaultType: CertType }) {
@@ -38,8 +44,8 @@ export function CertificateForm({ defaultType }: { defaultType: CertType }) {
 
   return (
     <form method="POST" action="/certificate/download" className="space-y-4">
-      <div className="grid grid-cols-3 gap-2 rounded-lg bg-[#eef2fa] p-1">
-        {(["participation", "presentation", "workshop"] as const).map((t) => (
+      <div className="grid grid-cols-2 gap-2 rounded-lg bg-[#eef2fa] p-1 sm:grid-cols-4">
+        {(["participation", "presentation", "workshop", "volunteer"] as const).map((t) => (
           <button
             key={t}
             type="button"

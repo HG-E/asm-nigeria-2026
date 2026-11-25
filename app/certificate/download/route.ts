@@ -1,7 +1,12 @@
 import { redirect } from "next/navigation"
 import { type NextRequest } from "next/server"
 
-import { generateParticipationCertificate, generatePresentationCertificate, generateWorkshopCertificate } from "@/lib/certificate"
+import {
+  generateParticipationCertificate,
+  generatePresentationCertificate,
+  generateVolunteerCertificate,
+  generateWorkshopCertificate,
+} from "@/lib/certificate"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { toPlain } from "@/lib/rich-text"
 
@@ -23,6 +28,11 @@ async function handleParticipation(referenceNumber: string, email: string) {
   // below), issued under the same reference number and email.
   if (registration.participant_category === "Workshop Only") {
     redirect("/certificate?type=participation&error=workshop_only")
+  }
+  // Likewise a "Volunteer" registrant gets the Volunteer certificate
+  // (handleVolunteer below), not a generic Participation one.
+  if (registration.participant_category === "Volunteer") {
+    redirect("/certificate?type=participation&error=volunteer_only")
   }
   if (registration.payment_status !== "verified") {
     redirect("/certificate?type=participation&error=not_verified")
@@ -79,6 +89,41 @@ async function handleWorkshop(referenceNumber: string, email: string) {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="ASM-Nigeria-2026-Workshop-Certificate-${registration.reference_number}.pdf"`,
+    },
+  })
+}
+
+async function handleVolunteer(referenceNumber: string, email: string) {
+  const admin = createAdminClient()
+  const { data: registration } = await admin
+    .from("conference_registrations")
+    .select("full_name, reference_number, payment_status, attended, participant_category")
+    .eq("reference_number", referenceNumber)
+    .ilike("email", email)
+    .maybeSingle()
+
+  if (!registration) {
+    redirect("/certificate?type=volunteer&error=not_found")
+  }
+  if (registration.participant_category !== "Volunteer") {
+    redirect("/certificate?type=volunteer&error=not_volunteer")
+  }
+  if (registration.payment_status !== "verified") {
+    redirect("/certificate?type=volunteer&error=not_verified")
+  }
+  if (!registration.attended) {
+    redirect("/certificate?type=volunteer&error=not_attended")
+  }
+
+  const pdfBytes = await generateVolunteerCertificate({
+    fullName: registration.full_name,
+    certificateNumber: registration.reference_number ?? referenceNumber,
+  })
+
+  return new Response(new Uint8Array(pdfBytes), {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="ASM-Nigeria-2026-Volunteer-Certificate-${registration.reference_number}.pdf"`,
     },
   })
 }
@@ -154,5 +199,6 @@ export async function POST(request: NextRequest) {
 
   if (type === "presentation") return handlePresentation(referenceNumber, email)
   if (type === "workshop") return handleWorkshop(referenceNumber, email)
+  if (type === "volunteer") return handleVolunteer(referenceNumber, email)
   return handleParticipation(referenceNumber, email)
 }

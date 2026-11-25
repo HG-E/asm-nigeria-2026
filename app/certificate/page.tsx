@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export const metadata: Metadata = {
   title: "Download Your Certificate | ASM Nigeria 2026",
-  description: "Download your Certificate of Participation, Presentation, or Workshop Participation for the Maiden American Society for Microbiology Nigeria Conference.",
+  description: "Download your Certificate of Participation, Presentation, Workshop Participation, or Volunteer Service for the Maiden American Society for Microbiology Nigeria Conference.",
   alternates: { canonical: "/certificate" },
   robots: { index: false, follow: true },
 }
@@ -26,6 +26,10 @@ const ERROR_MESSAGES: Record<string, string> = {
     "We couldn't find a workshop add-on on this registration. Workshop certificates are only available to participants who registered for the Pre & Post-Conference Hands-On Workshop.",
   workshop_only:
     "This reference number registered for the Pre & Post-Conference Hands-On Workshop only, not the main conference, so a Participation certificate isn't available. Switch to the Workshop tab above to download your certificate.",
+  volunteer_only:
+    "This reference number registered as a conference volunteer, not a main-conference participant, so a Participation certificate isn't available. Switch to the Volunteer tab above to download your certificate.",
+  not_volunteer:
+    "We couldn't find a volunteer registration for that reference number and email. Volunteer certificates are only available to registered conference volunteers.",
 }
 
 export default async function CertificatePage(props: PageProps<"/certificate">) {
@@ -33,7 +37,13 @@ export default async function CertificatePage(props: PageProps<"/certificate">) 
   const errorCode = typeof searchParams.error === "string" ? searchParams.error : null
   const errorMessage = errorCode ? (ERROR_MESSAGES[errorCode] ?? "Something went wrong. Please try again.") : null
   const defaultType =
-    searchParams.type === "presentation" ? "presentation" : searchParams.type === "workshop" ? "workshop" : "participation"
+    searchParams.type === "presentation"
+      ? "presentation"
+      : searchParams.type === "workshop"
+        ? "workshop"
+        : searchParams.type === "volunteer"
+          ? "volunteer"
+          : "participation"
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-gradient-to-b from-white to-[#eef2fa] px-4 py-12">
@@ -54,8 +64,9 @@ export default async function CertificatePage(props: PageProps<"/certificate">) 
             Download your certificate
           </h1>
           <p className="text-muted-foreground text-sm text-balance">
-            Certificate of Participation, Presentation, or Workshop Participation for the Maiden American Society
-            for Microbiology Nigeria Conference. Enter the reference number and email you used to register or submit.
+            Certificate of Participation, Presentation, Workshop Participation, or Volunteer Service for the
+            Maiden American Society for Microbiology Nigeria Conference. Enter the reference number and email you
+            used to register or submit.
           </p>
         </div>
 
