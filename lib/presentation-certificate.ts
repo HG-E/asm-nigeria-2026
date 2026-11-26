@@ -6,6 +6,11 @@ import { toPlain } from "@/lib/rich-text"
 export type PresentationAuthorCandidate = {
   authorOrder: number
   fullName: string
+  // Corresponding authors already paid the abstract's own ₦3,000 processing
+  // fee at submission time, so they're exempt from the separate co-author
+  // certificate fee checked in handlePresentation -- this flag is what lets
+  // that decision be made per chosen candidate, not per submission.
+  isCorresponding: boolean
 }
 
 export type PresentationEligibility =
@@ -16,6 +21,7 @@ export type PresentationEligibility =
   | {
       ok: true
       submissionId: string
+      conferenceId: string
       referenceNumber: string
       abstractTitle: string
       presentationType: "Oral Presentation" | "Poster Presentation"
@@ -47,7 +53,7 @@ export async function lookupPresentationEligibility(
 
   const { data: conference } = await admin
     .from("conferences")
-    .select("presentation_certificates_open")
+    .select("id, presentation_certificates_open")
     .eq("is_active", true)
     .maybeSingle()
 
@@ -58,11 +64,18 @@ export async function lookupPresentationEligibility(
   if (!conference?.presentation_certificates_open && !hasValidPreview) {
     return { ok: false, error: "paused" }
   }
+  // Guards the conference.id use below -- only reachable via the preview
+  // bypass with no active conference configured at all, which shouldn't
+  // happen in practice but would otherwise make every downstream lookup
+  // meaningless.
+  if (!conference) {
+    return { ok: false, error: "not_found" }
+  }
 
   const { data: submission } = await admin
     .from("submissions")
     .select(
-      "id, title, reference_number, presentation_preference, payment_status, submission_authors(email, first_name, last_name, author_order)"
+      "id, title, reference_number, presentation_preference, payment_status, submission_authors(email, first_name, last_name, author_order, is_corresponding)"
     )
     .eq("reference_number", referenceNumber)
     .order("author_order", { referencedTable: "submission_authors", ascending: true })
@@ -140,15 +153,50 @@ export async function lookupPresentationEligibility(
     const key = fullName.toLowerCase()
     if (seen.has(key)) continue
     seen.add(key)
-    candidates.push({ authorOrder: author.author_order, fullName })
+    candidates.push({ authorOrder: author.author_order, fullName, isCorresponding: author.is_corresponding })
   }
 
   return {
     ok: true,
     submissionId: submission.id,
+    conferenceId: conference.id,
     referenceNumber: submission.reference_number ?? referenceNumber,
     abstractTitle: toPlain(submission.title),
     presentationType,
     candidates,
   }
+}
+
+export type CoauthorFeeStatus = "exempt" | "verified" | "pending" | "rejected" | "unpaid"
+
+/**
+ * Whether this specific candidate still needs to pay (or wait on) the flat,
+ * one-time co-author certificate fee before their Certificate of
+ * Presentation can be issued. Corresponding authors are always "exempt" --
+ * they already paid the abstract's own processing fee. Looked up by
+ * (conference_id, email) since the fee is flat per person per conference,
+ * not tied to any one abstract (see migration 0045).
+ */
+export async function getCoauthorFeeStatus(
+  conferenceId: string,
+  email: string,
+  isCorresponding: boolean
+): Promise<CoauthorFeeStatus> {
+  if (isCorresponding) return "exempt"
+
+  const admin = createAdminClient()
+  const normalizedEmail = email.trim().toLowerCase()
+  // Scoped by conference_id server-side (safe, not user input), then
+  // compared exactly in JS for the email -- same reasoning as elsewhere in
+  // this file: never .ilike(column, userValue).
+  const { data: rows } = await admin
+    .from("coauthor_certificate_fees")
+    .select("email, payment_status")
+    .eq("conference_id", conferenceId)
+  const row = rows?.find((r) => r.email.trim().toLowerCase() === normalizedEmail)
+
+  if (!row) return "unpaid"
+  if (row.payment_status === "verified") return "verified"
+  if (row.payment_status === "rejected") return "rejected"
+  return "pending"
 }

@@ -8,7 +8,7 @@ import {
   generateWorkshopCertificate,
 } from "@/lib/certificate"
 import { createAdminClient } from "@/lib/supabase/admin"
-import { lookupPresentationEligibility } from "@/lib/presentation-certificate"
+import { getCoauthorFeeStatus, lookupPresentationEligibility } from "@/lib/presentation-certificate"
 
 async function handleParticipation(referenceNumber: string, email: string) {
   const admin = createAdminClient()
@@ -167,6 +167,17 @@ async function handlePresentation(
       if (previewToken) params.set("preview", previewToken)
       redirect(`/certificate/select-author?${params.toString()}`)
     }
+  }
+
+  // Corresponding authors are exempt (already paid the abstract's own
+  // processing fee); every other co-author needs this separate, flat,
+  // one-time fee verified before their own certificate is issued -- see
+  // migration 0045 and getCoauthorFeeStatus's own comment for why it's
+  // looked up by email rather than per-submission.
+  const feeStatus = await getCoauthorFeeStatus(result.conferenceId, email, chosen.isCorresponding)
+  if (feeStatus !== "exempt" && feeStatus !== "verified") {
+    const params = new URLSearchParams({ email, name: chosen.fullName })
+    redirect(`/certificate/pay-coauthor-fee?${params.toString()}`)
   }
 
   const pdfBytes = await generatePresentationCertificate({

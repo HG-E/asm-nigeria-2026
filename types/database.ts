@@ -1067,6 +1067,63 @@ export type Database = {
           },
         ]
       }
+      coauthor_certificate_fees: {
+        Row: {
+          id: string
+          conference_id: string
+          email: string
+          full_name: string
+          payment_status: string
+          receipt_path: string | null
+          submitted_at: string
+          verified_at: string | null
+          verified_by: string | null
+          rejection_reason: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          conference_id: string
+          email: string
+          full_name: string
+          payment_status?: string
+          receipt_path?: string | null
+          submitted_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+          rejection_reason?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          conference_id?: string
+          email?: string
+          full_name?: string
+          payment_status?: string
+          receipt_path?: string | null
+          submitted_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+          rejection_reason?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coauthor_certificate_fees_conference_id_fkey"
+            columns: ["conference_id"]
+            isOneToOne: false
+            referencedRelation: "conferences"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coauthor_certificate_fees_verified_by_fkey"
+            columns: ["verified_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_messages: {
         Row: {
           id: string
