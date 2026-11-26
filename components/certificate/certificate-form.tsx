@@ -17,7 +17,7 @@ const COPY: Record<CertType, { label: string; placeholder: string; hint: string 
   presentation: {
     label: "Abstract reference number",
     placeholder: "ASM-ABJ-2026-XXX-XXX",
-    hint: "The reference number from your abstract submission.",
+    hint: "The reference number from the abstract submission. Co-authors can use this too — enter your own email below and your certificate will be issued in your own name.",
   },
   workshop: {
     label: "Registration reference number",

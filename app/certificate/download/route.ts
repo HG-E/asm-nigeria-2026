@@ -8,7 +8,7 @@ import {
   generateWorkshopCertificate,
 } from "@/lib/certificate"
 import { createAdminClient } from "@/lib/supabase/admin"
-import { toPlain } from "@/lib/rich-text"
+import { lookupPresentationEligibility } from "@/lib/presentation-certificate"
 
 async function handleParticipation(referenceNumber: string, email: string) {
   const admin = createAdminClient()
@@ -135,73 +135,55 @@ async function handleVolunteer(referenceNumber: string, email: string) {
   })
 }
 
-async function handlePresentation(referenceNumber: string, email: string) {
-  const admin = createAdminClient()
-  const { data: submission } = await admin
-    .from("submissions")
-    .select(
-      "id, title, reference_number, presentation_preference, payment_status, submission_authors(email, is_corresponding, first_name, last_name)"
-    )
-    .eq("reference_number", referenceNumber)
-    .maybeSingle()
+async function handlePresentation(referenceNumber: string, email: string, authorOrderRaw: string) {
+  const result = await lookupPresentationEligibility(referenceNumber, email)
 
-  const correspondingAuthor = submission?.submission_authors.find((a) => a.is_corresponding)
-
-  if (!submission || !correspondingAuthor || correspondingAuthor.email.toLowerCase() !== email.toLowerCase()) {
-    redirect("/certificate?type=presentation&error=not_found")
+  if (!result.ok) {
+    redirect(`/certificate?type=presentation&error=${result.error}`)
   }
 
-  // Nothing earlier in the review pipeline (assignReviewerAction,
-  // finalizeDecisionAction) checks this -- an abstract can be screened,
-  // reviewed and accepted entirely independently of whether its ₦3,000
-  // processing fee was ever verified. Without this check, an accepted
-  // submission whose fee was never paid (or was rejected) could still
-  // produce a Certificate of Presentation.
-  if (submission.payment_status !== "verified") {
-    redirect("/certificate?type=presentation&error=fee_not_verified")
-  }
+  let chosen = result.candidates[0]
 
-  const { data: decision } = await admin
-    .from("decisions")
-    .select("decision")
-    .eq("submission_id", submission.id)
-    .eq("is_final", true)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle()
+  if (result.candidates.length > 1) {
+    const authorOrder = Number(authorOrderRaw)
+    const requested = Number.isFinite(authorOrder)
+      ? result.candidates.find((c) => c.authorOrder === authorOrder)
+      : undefined
 
-  const ACCEPTED = ["accepted", "accepted_oral", "accepted_poster"]
-  if (!decision || !ACCEPTED.includes(decision.decision)) {
-    redirect("/certificate?type=presentation&error=not_accepted")
-  }
-
-  let presentationType: "Oral Presentation" | "Poster Presentation"
-  if (decision.decision === "accepted_oral") {
-    presentationType = "Oral Presentation"
-  } else if (decision.decision === "accepted_poster") {
-    presentationType = "Poster Presentation"
-  } else if (submission.presentation_preference === "oral") {
-    presentationType = "Oral Presentation"
-  } else if (submission.presentation_preference === "poster") {
-    presentationType = "Poster Presentation"
-  } else {
-    // Generic "accepted" with no oral/poster preference on record -- there's
-    // no honest value to print here, so this isn't ready yet rather than a
-    // guess.
-    redirect("/certificate?type=presentation&error=format_pending")
+    if (requested) {
+      chosen = requested
+    } else {
+      // More than one distinct person on this abstract submitted the same
+      // email (a real, confirmed data pattern -- see the dedupe comment in
+      // lookupPresentationEligibility) and no specific author was chosen
+      // yet. Rather than guess, send them to pick their own name; that page
+      // posts back here with authorOrder set.
+      const params = new URLSearchParams({ referenceNumber, email })
+      redirect(`/certificate/select-author?${params.toString()}`)
+    }
   }
 
   const pdfBytes = await generatePresentationCertificate({
-    fullName: `${correspondingAuthor.first_name} ${correspondingAuthor.last_name}`,
-    abstractTitle: toPlain(submission.title),
-    presentationType,
-    certificateNumber: submission.reference_number ?? referenceNumber,
+    fullName: chosen.fullName,
+    abstractTitle: result.abstractTitle,
+    presentationType: result.presentationType,
+    certificateNumber: result.referenceNumber,
   })
+
+  // Several authors can now download under the same abstract reference
+  // number, so the author's own name is folded into the filename -- without
+  // this, a corresponding author and a co-author downloading to the same
+  // Downloads folder would silently collide (or "(1)"-suffix) on an
+  // identical filename despite holding different certificates.
+  const authorSlug = chosen.fullName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
 
   return new Response(new Uint8Array(pdfBytes), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="ASM-Nigeria-2026-Presentation-Certificate-${submission.reference_number}.pdf"`,
+      "Content-Disposition": `attachment; filename="ASM-Nigeria-2026-Presentation-Certificate-${result.referenceNumber}${authorSlug ? `-${authorSlug}` : ""}.pdf"`,
     },
   })
 }
@@ -216,7 +198,10 @@ export async function POST(request: NextRequest) {
     redirect(`/certificate?type=${type}&error=not_found`)
   }
 
-  if (type === "presentation") return handlePresentation(referenceNumber, email)
+  if (type === "presentation") {
+    const authorOrder = String(formData.get("authorOrder") ?? "")
+    return handlePresentation(referenceNumber, email, authorOrder)
+  }
   if (type === "workshop") return handleWorkshop(referenceNumber, email)
   if (type === "volunteer") return handleVolunteer(referenceNumber, email)
   return handleParticipation(referenceNumber, email)
