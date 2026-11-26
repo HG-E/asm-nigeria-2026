@@ -7,7 +7,7 @@ import { CoauthorFeeForm } from "@/components/certificate/coauthor-fee-form"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { buttonVariants } from "@/components/ui/button"
 import { getActiveConference } from "@/lib/conference"
-import { getCoauthorFeeStatus } from "@/lib/presentation-certificate"
+import { COAUTHOR_FEE_NGN, getCoauthorFeeStatus } from "@/lib/presentation-certificate"
 
 export const metadata: Metadata = {
   title: "Co-Author Certificate Fee | ASM Nigeria 2026",
@@ -15,8 +15,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/certificate/pay-coauthor-fee" },
   robots: { index: false, follow: true },
 }
-
-const COAUTHOR_FEE_NGN = 5000
 
 export default async function PayCoauthorFeePage(props: PageProps<"/certificate/pay-coauthor-fee">) {
   const searchParams = await props.searchParams

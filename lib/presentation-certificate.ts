@@ -3,6 +3,11 @@ import "server-only"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { toPlain } from "@/lib/rich-text"
 
+// Single source of truth for the flat, one-time co-author certificate fee
+// amount -- used by the payment page's copy and the admin revenue summary
+// alike, so the two can never drift out of sync with each other.
+export const COAUTHOR_FEE_NGN = 5000
+
 const HONORIFICS = new Set(["dr", "prof", "professor", "mr", "mrs", "ms", "miss", "phd", "md", "engr", "barr"])
 
 function nameWords(name: string): Set<string> {

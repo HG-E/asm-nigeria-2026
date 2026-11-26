@@ -1,10 +1,12 @@
 import Link from "next/link"
+import { CheckCheck, Clock, PiggyBank, XCircle } from "lucide-react"
 
 import { CoauthorFeeVerificationPanel } from "@/components/admin/coauthor-fee-verification-panel"
 import { PageHeader } from "@/components/dashboard/page-header"
+import { StatCard, StatGrid } from "@/components/dashboard/stat-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { requireRole } from "@/lib/auth"
-import { findAmbiguousAuthorEmails } from "@/lib/presentation-certificate"
+import { COAUTHOR_FEE_NGN, findAmbiguousAuthorEmails } from "@/lib/presentation-certificate"
 import { createAdminClient } from "@/lib/supabase/admin"
 
 export default async function AdminCoauthorFeesPage() {
@@ -44,13 +46,40 @@ export default async function AdminCoauthorFeesPage() {
   )
 
   const pendingCount = sorted.filter((f) => f.payment_status === "pending").length
+  const verifiedCount = sorted.filter((f) => f.payment_status === "verified").length
+  const rejectedCount = sorted.filter((f) => f.payment_status === "rejected").length
+  // Revenue is counted only from verified rows -- a pending or rejected
+  // receipt is a claim, not confirmed income, same as how the abstract and
+  // registration fees elsewhere in this app are never counted as revenue
+  // until an admin has actually verified them.
+  const revenueCollected = verifiedCount * COAUTHOR_FEE_NGN
+  const revenuePending = pendingCount * COAUTHOR_FEE_NGN
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <PageHeader
         title="Co-Author Certificate Fees"
-        description={`One-time ₦5,000 fee each co-author pays to unlock their own Certificate of Presentation. ${pendingCount} pending review.`}
+        description={`One-time ₦${COAUTHOR_FEE_NGN.toLocaleString()} fee each co-author pays to unlock their own Certificate of Presentation.`}
       />
+
+      <StatGrid>
+        <StatCard
+          label="Collected"
+          value={`₦${revenueCollected.toLocaleString()}`}
+          hint={`${verifiedCount} verified`}
+          icon={PiggyBank}
+          accent="gold"
+        />
+        <StatCard
+          label="Pending review"
+          value={pendingCount}
+          hint={pendingCount > 0 ? `₦${revenuePending.toLocaleString()} if all verified` : undefined}
+          icon={Clock}
+          accent="blue"
+        />
+        <StatCard label="Verified" value={verifiedCount} icon={CheckCheck} accent="gold" />
+        <StatCard label="Rejected" value={rejectedCount} icon={XCircle} accent="red" />
+      </StatGrid>
 
       {ambiguousGroups.length > 0 && (
         <Card className="border-[#f5a800]/40 bg-[#fffaf0]">
