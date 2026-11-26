@@ -243,3 +243,138 @@ export async function generatePaymentReceipt(params: {
 
   return pdfDoc.save()
 }
+
+/**
+ * A simpler receipt for the flat, one-time co-author certificate fee
+ * (lib/presentation-certificate.ts) -- shares this file's layout primitives
+ * (color band, label/value drawing, ₦-safe text) rather than duplicating
+ * them, but doesn't need generatePaymentReceipt's amount-wrapping logic
+ * since the amount here is always the same short, fixed string.
+ */
+export async function generateCoauthorFeeReceipt(params: {
+  fullName: string
+  email: string
+  amountNgn: number
+  receiptNumber: string
+  issuedAt: Date
+}): Promise<Uint8Array> {
+  const pdfDoc = await PDFDocument.create()
+  const page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT])
+
+  const regular = await pdfDoc.embedFont(StandardFonts.Helvetica)
+  const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
+  const italic = await pdfDoc.embedFont(StandardFonts.HelveticaOblique)
+
+  drawColorBand(page, PAGE_HEIGHT - 6)
+  drawColorBand(page, 0)
+
+  const logoPath = path.join(process.cwd(), "public/brand/asm-logo.png")
+  const logoBytes = await readFile(logoPath)
+  const logoImage = await pdfDoc.embedPng(logoBytes)
+  const logoScale = 90 / logoImage.width
+  page.drawImage(logoImage, {
+    x: 48,
+    y: PAGE_HEIGHT - 46 - logoImage.height * logoScale,
+    width: logoImage.width * logoScale,
+    height: logoImage.height * logoScale,
+  })
+
+  page.drawText("CO-AUTHOR CERTIFICATE FEE RECEIPT", {
+    x: PAGE_WIDTH - 48 - bold.widthOfTextAtSize("CO-AUTHOR CERTIFICATE FEE RECEIPT", 15),
+    y: PAGE_HEIGHT - 60,
+    size: 15,
+    font: bold,
+    color: INK,
+  })
+  const subtitle = "First ASM Nigeria Conference 2026"
+  page.drawText(subtitle, {
+    x: PAGE_WIDTH - 48 - regular.widthOfTextAtSize(subtitle, 10),
+    y: PAGE_HEIGHT - 76,
+    size: 10,
+    font: regular,
+    color: MUTED,
+  })
+
+  let y = PAGE_HEIGHT - 150
+  page.drawLine({ start: { x: 48, y }, end: { x: PAGE_WIDTH - 48, y }, thickness: 1, color: LINE })
+
+  y -= 36
+  drawLabelValue(page, "Receipt No.", params.receiptNumber, 48, y, bold, regular)
+  const dateLabel = params.issuedAt.toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" })
+  drawLabelValue(page, "Date Issued", dateLabel, 320, y, bold, regular)
+
+  y -= 56
+  drawLabelValue(page, "Received From", params.fullName, 48, y, bold, bold)
+  drawLabelValue(page, "Email", params.email, 320, y, bold, regular)
+
+  const boxHeight = 70
+  y -= 50
+  page.drawRectangle({
+    x: 48,
+    y: y - boxHeight + 16,
+    width: PAGE_WIDTH - 96,
+    height: boxHeight,
+    color: rgb(0.96, 0.97, 0.99),
+  })
+  page.drawText("AMOUNT PAID", { x: 64, y: y - 2, size: 9, font: bold, color: MUTED })
+
+  const paidLabel = "PAID"
+  const paidWidth = bold.widthOfTextAtSize(paidLabel, 11)
+  const badgeX = PAGE_WIDTH - 64 - paidWidth - 24
+  page.drawRectangle({ x: badgeX, y: y - 14, width: paidWidth + 24, height: 20, color: PAID_BG })
+  page.drawText(paidLabel, { x: badgeX + 12, y: y - 7, size: 10, font: bold, color: PAID_TEXT })
+
+  page.drawText(`NGN ${params.amountNgn.toLocaleString()}`, { x: 64, y: y - 34, size: 20, font: bold, color: INK })
+
+  y -= 90
+  page.drawText("Co-author certificate fee for the Maiden American Society for Microbiology Nigeria", {
+    x: 48,
+    y,
+    size: 10.5,
+    font: regular,
+    color: INK,
+  })
+  y -= 15
+  page.drawText("Conference 2026, 22-25 November 2026, Abuja, Nigeria -- covers every abstract this", {
+    x: 48,
+    y,
+    size: 10.5,
+    font: regular,
+    color: INK,
+  })
+  y -= 15
+  page.drawText("person is listed on as a co-author.", { x: 48, y, size: 10.5, font: regular, color: INK })
+
+  const footerY = 150
+  page.drawLine({ start: { x: 48, y: footerY }, end: { x: PAGE_WIDTH - 48, y: footerY }, thickness: 1, color: LINE })
+  page.drawText("This is a computer-generated receipt confirming your verified payment. It does not require a", {
+    x: 48,
+    y: footerY - 24,
+    size: 9,
+    font: italic,
+    color: MUTED,
+  })
+  page.drawText("signature or stamp to be valid.", {
+    x: 48,
+    y: footerY - 37,
+    size: 9,
+    font: italic,
+    color: MUTED,
+  })
+  page.drawText("ASM Nigeria 2026 Finance & Budget Committee", {
+    x: 48,
+    y: footerY - 64,
+    size: 10,
+    font: bold,
+    color: RED,
+  })
+  page.drawText("asmnigeriaonehealth@gmail.com", {
+    x: 48,
+    y: footerY - 79,
+    size: 9.5,
+    font: regular,
+    color: MUTED,
+  })
+
+  return pdfDoc.save()
+}

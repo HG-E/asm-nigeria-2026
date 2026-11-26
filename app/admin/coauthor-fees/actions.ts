@@ -57,6 +57,7 @@ export async function verifyCoauthorFeeAction(feeId: string): Promise<ActionResu
   })
 
   if (fee) {
+    const receiptUrl = `https://www.asmnigeriaconference.com.ng/certificate/pay-coauthor-fee/receipt?email=${encodeURIComponent(fee.email)}&name=${encodeURIComponent(fee.full_name)}`
     after(() =>
       notifyCoauthor(
         fee.email,
@@ -64,7 +65,8 @@ export async function verifyCoauthorFeeAction(feeId: string): Promise<ActionResu
         `<p>Hi ${escapeHtml(fee.full_name)},</p>
          <p>Your co-author certificate fee has been verified. You can now download your Certificate of Presentation
          at <a href="https://www.asmnigeriaconference.com.ng/certificate?type=presentation">asmnigeriaconference.com.ng/certificate</a>
-         using your abstract's reference number and this email address.</p>`
+         using your abstract's reference number and this email address.</p>
+         <p>You can also download your <a href="${receiptUrl}">payment receipt</a> for your records.</p>`
       )
     )
   }

@@ -64,9 +64,19 @@ export default async function PayCoauthorFeePage(props: PageProps<"/certificate/
             <Alert className="border-[#187752]/30 bg-[#f1faf5]">
               <AlertDescription className="space-y-2 text-[#0e5a3a]">
                 <p>This fee has already been verified for {email}. Download your certificate below.</p>
-                <Link href="/certificate?type=presentation" className={buttonVariants({ size: "sm" })}>
-                  Go to certificate download
-                </Link>
+                <div className="flex flex-wrap gap-2">
+                  <Link href="/certificate?type=presentation" className={buttonVariants({ size: "sm" })}>
+                    Go to certificate download
+                  </Link>
+                  {name && (
+                    <Link
+                      href={`/certificate/pay-coauthor-fee/receipt?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`}
+                      className={buttonVariants({ size: "sm", variant: "outline" })}
+                    >
+                      Download fee receipt
+                    </Link>
+                  )}
+                </div>
               </AlertDescription>
             </Alert>
           )}
