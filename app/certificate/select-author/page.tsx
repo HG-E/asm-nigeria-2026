@@ -17,12 +17,13 @@ export default async function SelectAuthorPage(props: PageProps<"/certificate/se
   const searchParams = await props.searchParams
   const referenceNumber = typeof searchParams.referenceNumber === "string" ? searchParams.referenceNumber : ""
   const email = typeof searchParams.email === "string" ? searchParams.email : ""
+  const previewToken = typeof searchParams.preview === "string" ? searchParams.preview : ""
 
   if (!referenceNumber || !email) {
     redirect("/certificate?type=presentation&error=not_found")
   }
 
-  const result = await lookupPresentationEligibility(referenceNumber, email)
+  const result = await lookupPresentationEligibility(referenceNumber, email, previewToken)
 
   if (!result.ok) {
     redirect(`/certificate?type=presentation&error=${result.error}`)
@@ -60,6 +61,7 @@ export default async function SelectAuthorPage(props: PageProps<"/certificate/se
               <input type="hidden" name="referenceNumber" value={referenceNumber} />
               <input type="hidden" name="email" value={email} />
               <input type="hidden" name="authorOrder" value={candidate.authorOrder} />
+              <input type="hidden" name="previewToken" value={previewToken} />
               <Button
                 type="submit"
                 variant="outline"

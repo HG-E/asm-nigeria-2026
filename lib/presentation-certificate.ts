@@ -9,7 +9,10 @@ export type PresentationAuthorCandidate = {
 }
 
 export type PresentationEligibility =
-  | { ok: false; error: "not_found" | "fee_not_verified" | "not_accepted" | "format_pending" }
+  | {
+      ok: false
+      error: "paused" | "not_found" | "fee_not_verified" | "not_accepted" | "format_pending"
+    }
   | {
       ok: true
       submissionId: string
@@ -33,9 +36,29 @@ export type PresentationEligibility =
  */
 export async function lookupPresentationEligibility(
   referenceNumber: string,
-  email: string
+  email: string,
+  // Lets the admin's own testing bypass the public pause below -- compared
+  // against PRESENTATION_CERTIFICATE_PREVIEW_TOKEN, same pattern as
+  // COMMITTEE_REGISTRATION_TOKEN / VOLUNTEER_REGISTRATION_TOKEN elsewhere in
+  // this app. Never trusted from anywhere but this exact env comparison.
+  previewToken?: string
 ): Promise<PresentationEligibility> {
   const admin = createAdminClient()
+
+  const { data: conference } = await admin
+    .from("conferences")
+    .select("presentation_certificates_open")
+    .eq("is_active", true)
+    .maybeSingle()
+
+  const hasValidPreview =
+    Boolean(process.env.PRESENTATION_CERTIFICATE_PREVIEW_TOKEN) &&
+    previewToken === process.env.PRESENTATION_CERTIFICATE_PREVIEW_TOKEN
+
+  if (!conference?.presentation_certificates_open && !hasValidPreview) {
+    return { ok: false, error: "paused" }
+  }
+
   const { data: submission } = await admin
     .from("submissions")
     .select(

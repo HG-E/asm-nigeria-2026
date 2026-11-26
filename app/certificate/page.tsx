@@ -32,6 +32,8 @@ const ERROR_MESSAGES: Record<string, string> = {
     "We couldn't find a volunteer registration for that reference number and email. Volunteer certificates are only available to registered conference volunteers.",
   fee_not_verified:
     "Your abstract processing fee hasn't been verified yet, so a presentation certificate isn't available. Contact the admin to resolve this.",
+  paused:
+    "Certificate of Presentation downloads are temporarily paused while we finalize some changes. Please check back soon.",
 }
 
 export default async function CertificatePage(props: PageProps<"/certificate">) {
@@ -46,6 +48,7 @@ export default async function CertificatePage(props: PageProps<"/certificate">) 
         : searchParams.type === "volunteer"
           ? "volunteer"
           : "participation"
+  const previewToken = typeof searchParams.preview === "string" ? searchParams.preview : ""
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-gradient-to-b from-white to-[#eef2fa] px-4 py-12">
@@ -78,7 +81,7 @@ export default async function CertificatePage(props: PageProps<"/certificate">) 
               <AlertDescription className="text-[#9e1a1f]">{errorMessage}</AlertDescription>
             </Alert>
           )}
-          <CertificateForm defaultType={defaultType} />
+          <CertificateForm defaultType={defaultType} previewToken={previewToken} />
         </div>
       </div>
 

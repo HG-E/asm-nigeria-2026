@@ -100,6 +100,7 @@ export type Database = {
           payment_account_details: string | null
           presentation_upload_form_url: string | null
           presentation_tracking_csv_url: string | null
+          presentation_certificates_open: boolean
           created_at: string
           updated_at: string
         }
@@ -134,6 +135,7 @@ export type Database = {
           payment_account_details?: string | null
           presentation_upload_form_url?: string | null
           presentation_tracking_csv_url?: string | null
+          presentation_certificates_open?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -168,6 +170,7 @@ export type Database = {
           payment_account_details?: string | null
           presentation_upload_form_url?: string | null
           presentation_tracking_csv_url?: string | null
+          presentation_certificates_open?: boolean
           created_at?: string
           updated_at?: string
         }

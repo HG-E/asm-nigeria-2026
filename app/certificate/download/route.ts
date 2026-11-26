@@ -135,8 +135,13 @@ async function handleVolunteer(referenceNumber: string, email: string) {
   })
 }
 
-async function handlePresentation(referenceNumber: string, email: string, authorOrderRaw: string) {
-  const result = await lookupPresentationEligibility(referenceNumber, email)
+async function handlePresentation(
+  referenceNumber: string,
+  email: string,
+  authorOrderRaw: string,
+  previewToken: string
+) {
+  const result = await lookupPresentationEligibility(referenceNumber, email, previewToken)
 
   if (!result.ok) {
     redirect(`/certificate?type=presentation&error=${result.error}`)
@@ -159,6 +164,7 @@ async function handlePresentation(referenceNumber: string, email: string, author
       // yet. Rather than guess, send them to pick their own name; that page
       // posts back here with authorOrder set.
       const params = new URLSearchParams({ referenceNumber, email })
+      if (previewToken) params.set("preview", previewToken)
       redirect(`/certificate/select-author?${params.toString()}`)
     }
   }
@@ -200,7 +206,8 @@ export async function POST(request: NextRequest) {
 
   if (type === "presentation") {
     const authorOrder = String(formData.get("authorOrder") ?? "")
-    return handlePresentation(referenceNumber, email, authorOrder)
+    const previewToken = String(formData.get("previewToken") ?? "")
+    return handlePresentation(referenceNumber, email, authorOrder, previewToken)
   }
   if (type === "workshop") return handleWorkshop(referenceNumber, email)
   if (type === "volunteer") return handleVolunteer(referenceNumber, email)

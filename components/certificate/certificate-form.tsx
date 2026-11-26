@@ -38,7 +38,13 @@ const LABELS: Record<CertType, string> = {
   volunteer: "Volunteer",
 }
 
-export function CertificateForm({ defaultType }: { defaultType: CertType }) {
+export function CertificateForm({
+  defaultType,
+  previewToken,
+}: {
+  defaultType: CertType
+  previewToken?: string
+}) {
   const [type, setType] = useState<CertType>(defaultType)
   const copy = COPY[type]
 
@@ -61,6 +67,7 @@ export function CertificateForm({ defaultType }: { defaultType: CertType }) {
         ))}
       </div>
       <input type="hidden" name="type" value={type} />
+      {previewToken && <input type="hidden" name="previewToken" value={previewToken} />}
 
       <div className="space-y-2">
         <Label htmlFor="referenceNumber">{copy.label}</Label>
