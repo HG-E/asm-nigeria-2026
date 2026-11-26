@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { after } from "next/server"
+import { z } from "zod"
 
 import { applyFormattingOnly } from "@/lib/abstract-formatting"
 import { normalizeKeywords, normalizeTitle } from "@/lib/abstract-structure"
@@ -481,5 +482,98 @@ export async function adminUpdateRevisionTitleAction(
 
   revalidatePath(`/admin/submissions/${submissionId}`)
   revalidatePath(`/author/submissions/${submissionId}`)
+  return { success: true }
+}
+
+const authorContactSchema = z.object({
+  firstName: z.string().trim().min(1, "First name is required."),
+  lastName: z.string().trim().min(1, "Last name is required."),
+  email: z.email("Enter a valid email address."),
+})
+
+export type UpdateAuthorContactResult =
+  | { error: string }
+  | { error: string; duplicateOf: string; requiresConfirm: true }
+  | { success: true }
+
+// Lets an admin correct an author's own name/email on a submission -- most
+// often to fix a co-author row where the corresponding author didn't have
+// the real co-author's email at submission time and typed in someone
+// else's instead (confirmed live on ~8% of multi-author accepted
+// abstracts). That data error is exactly what the self-serve Certificate
+// of Presentation flow (app/certificate/download/route.ts) has to work
+// around with a "which name is yours" disambiguation step -- fixing the
+// record here is what lets that step go away for a given abstract.
+export async function updateAuthorContactAction(
+  submissionId: string,
+  authorId: string,
+  input: { firstName: string; lastName: string; email: string },
+  // Explicit, separate opt-in -- the default path refuses to save an email
+  // that already belongs to a different author on the SAME submission,
+  // since that's the exact duplicate-email condition the certificate
+  // lookup has to disambiguate. An admin can force it through for the rare
+  // genuine case (e.g. two authors sharing one institutional mailbox), but
+  // only as a second, deliberate step, never silently.
+  allowDuplicateEmail = false
+): Promise<UpdateAuthorContactResult> {
+  const session = await requireRole("admin")
+
+  const parsed = authorContactSchema.safeParse(input)
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input." }
+  }
+  const { firstName, lastName, email } = parsed.data
+  const normalizedEmail = email.trim().toLowerCase()
+
+  const admin = createAdminClient()
+
+  // Scoped by submission_id too, not just the author row's own id -- a
+  // stale or tampered authorId must not be able to edit a row on a
+  // different submission.
+  const { data: authors } = await admin
+    .from("submission_authors")
+    .select("id, first_name, last_name, email")
+    .eq("submission_id", submissionId)
+
+  const target = authors?.find((a) => a.id === authorId)
+  if (!target) {
+    return { error: "Author not found on this submission." }
+  }
+
+  const duplicate = authors?.find(
+    (a) => a.id !== authorId && a.email.trim().toLowerCase() === normalizedEmail
+  )
+  if (duplicate && !allowDuplicateEmail) {
+    return {
+      error: `This email is already on file for ${duplicate.first_name} ${duplicate.last_name} on this same abstract. Saving anyway will make it ambiguous which of them it belongs to when either downloads a certificate.`,
+      duplicateOf: `${duplicate.first_name} ${duplicate.last_name}`,
+      requiresConfirm: true,
+    }
+  }
+
+  const { error: updateError } = await admin
+    .from("submission_authors")
+    .update({ first_name: firstName, last_name: lastName, email: normalizedEmail })
+    .eq("id", authorId)
+
+  if (updateError) {
+    return { error: "Could not save. Please try again." }
+  }
+
+  await admin.from("audit_logs").insert({
+    actor_id: session.authUserId,
+    actor_email: session.email,
+    action: "submission_author_contact_corrected",
+    entity_type: "submission",
+    entity_id: submissionId,
+    metadata: {
+      author_id: authorId,
+      previous: { first_name: target.first_name, last_name: target.last_name, email: target.email },
+      updated: { first_name: firstName, last_name: lastName, email: normalizedEmail },
+      forced_duplicate: Boolean(duplicate && allowDuplicateEmail),
+    },
+  })
+
+  revalidatePath(`/admin/submissions/${submissionId}`)
   return { success: true }
 }

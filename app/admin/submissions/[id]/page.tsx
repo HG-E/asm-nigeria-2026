@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 
 import { proposeDecisionAction } from "@/app/committee/submissions/[id]/actions"
+import { AuthorContactPanel } from "@/components/admin/author-contact-panel"
 import { DecisionFinalizePanel } from "@/components/admin/decision-finalize-panel"
 import { PaymentVerificationPanel } from "@/components/admin/payment-verification-panel"
 import { ReviewerAssignmentPanel } from "@/components/admin/reviewer-assignment-panel"
@@ -14,7 +15,7 @@ import { FormattingEditor } from "@/components/submission/formatting-editor"
 import { RevisionTitleForm } from "@/components/submission/revision-title-form"
 import { canFormatStatus } from "@/lib/abstract-formatting"
 import { isStructured, sectionsFromVersion } from "@/lib/abstract-structure"
-import { adminUpdateFormattingAction, adminUpdateRevisionTitleAction } from "./actions"
+import { adminUpdateFormattingAction, adminUpdateRevisionTitleAction, updateAuthorContactAction } from "./actions"
 import { requireRole } from "@/lib/auth"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
@@ -150,19 +151,21 @@ export default async function AdminSubmissionDetailPage(
           <CardTitle className="text-base">Authors</CardTitle>
         </CardHeader>
         <CardContent>
-          <ol className="list-inside list-decimal space-y-1 text-sm">
-            {authors?.map((a) => (
-              <li key={a.id}>
-                {a.first_name} {a.last_name}
-                {a.is_corresponding && (
-                  <span className="text-muted-foreground"> (Corresponding)</span>
-                )}
-                {a.institution && <span className="text-muted-foreground"> — {a.institution}</span>}
-                {" · "}
-                <span className="text-muted-foreground">{a.email}</span>
-              </li>
-            ))}
-          </ol>
+          <p className="text-muted-foreground mb-3 text-xs">
+            Each author&apos;s own email is what they use to self-serve their Certificate of Presentation.
+            Correct it here if it was mistyped or duplicated from another author at submission time.
+          </p>
+          <AuthorContactPanel
+            authors={(authors ?? []).map((a) => ({
+              id: a.id,
+              firstName: a.first_name,
+              lastName: a.last_name,
+              email: a.email,
+              isCorresponding: a.is_corresponding,
+              institution: a.institution,
+            }))}
+            save={updateAuthorContactAction.bind(null, id)}
+          />
         </CardContent>
       </Card>
 
