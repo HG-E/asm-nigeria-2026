@@ -172,10 +172,25 @@ export type CoauthorFeeStatus = "exempt" | "verified" | "pending" | "rejected" |
 /**
  * Whether this specific candidate still needs to pay (or wait on) the flat,
  * one-time co-author certificate fee before their Certificate of
- * Presentation can be issued. Corresponding authors are always "exempt" --
- * they already paid the abstract's own processing fee. Looked up by
- * (conference_id, email) since the fee is flat per person per conference,
- * not tied to any one abstract (see migration 0045).
+ * Presentation can be issued. Two independent ways to be "exempt":
+ *
+ *  1. They're the corresponding author on THIS abstract -- already paid
+ *     the abstract's own processing fee.
+ *  2. They've separately registered and paid for the conference itself,
+ *     under this same email -- the fee exists to charge co-authors who
+ *     never contributed anything toward the conference financially; it was
+ *     never meant to charge someone twice who already has.
+ *
+ * An earlier version of this file tried a much stricter rule -- requiring
+ * EVERY author to have a conference registration before any certificate
+ * could be issued at all -- and live data showed that would have blocked
+ * roughly three in four listed authors, including a third of actual
+ * presenters, almost none of it from a fixable email mismatch. This is the
+ * safe version of that same idea: a registered person is simply exempt from
+ * the fee rather than the fee becoming a hard, irreversible lockout for
+ * everyone else. Worst case on a missed match here is someone who should
+ * have been exempt is asked to pay instead -- an inconvenience an admin can
+ * manually wave through, not a hard failure.
  */
 export async function getCoauthorFeeStatus(
   conferenceId: string,
@@ -186,6 +201,21 @@ export async function getCoauthorFeeStatus(
 
   const admin = createAdminClient()
   const normalizedEmail = email.trim().toLowerCase()
+
+  // Looked up the same safe way as every other email match in this file:
+  // filter server-side on the cheap, known-safe columns, then compare the
+  // email exactly in JS -- never .ilike(column, email), which treats
+  // "%"/"_" in the value as wildcards.
+  const { data: registrations } = await admin
+    .from("conference_registrations")
+    .select("email")
+    .eq("conference_id", conferenceId)
+    .eq("payment_status", "verified")
+  const hasConferenceRegistration = (registrations ?? []).some(
+    (r) => r.email.trim().toLowerCase() === normalizedEmail
+  )
+  if (hasConferenceRegistration) return "exempt"
+
   // Scoped by conference_id server-side (safe, not user input), then
   // compared exactly in JS for the email -- same reasoning as elsewhere in
   // this file: never .ilike(column, userValue).

@@ -40,9 +40,11 @@ export default async function PayCoauthorFeePage(props: PageProps<"/certificate/
             Co-author certificate fee
           </h1>
           <p className="text-muted-foreground text-sm text-balance">
-            A one-time ₦{COAUTHOR_FEE_NGN.toLocaleString()} fee for co-authors (not the corresponding author) to
-            download their own Certificate of Presentation. Pay once and it covers every abstract you&apos;re listed
-            on as a co-author.
+            Co-authors (not the corresponding author) need either a registered, paid conference registration or
+            this one-time ₦{COAUTHOR_FEE_NGN.toLocaleString()} fee to download their own Certificate of
+            Presentation. If you&apos;ve already registered and paid for the conference under this email, no fee is
+            needed — just try downloading again. Otherwise, pay once below and it covers every abstract you&apos;re
+            listed on as a co-author.
           </p>
         </div>
 
@@ -61,6 +63,15 @@ export default async function PayCoauthorFeePage(props: PageProps<"/certificate/
             <Alert className="border-[#187752]/30 bg-[#f1faf5]">
               <AlertDescription className="text-[#0e5a3a]">
                 This fee has already been verified for {email}. Go back and download your certificate as usual.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {status === "exempt" && (
+            <Alert className="border-[#187752]/30 bg-[#f1faf5]">
+              <AlertDescription className="text-[#0e5a3a]">
+                Good news — {email} already has a verified conference registration, so no fee is needed. Go back
+                and download your certificate as usual.
               </AlertDescription>
             </Alert>
           )}
