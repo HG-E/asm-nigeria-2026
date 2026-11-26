@@ -280,3 +280,72 @@ export async function getCoauthorFeeStatus(
   if (row.payment_status === "rejected") return "rejected"
   return "pending"
 }
+
+export type AmbiguousAuthorEmailGroup = {
+  submissionId: string
+  referenceNumber: string
+  abstractTitle: string
+  email: string
+  names: string[]
+}
+
+/**
+ * Finds every accepted, fee-verified abstract where two or more genuinely
+ * different people share one listed author email -- the exact data
+ * condition that forces a co-author onto the "which name is yours?"
+ * selection screen, and the one namesLikelyMatch above exists to stop from
+ * becoming a free-certificate exploit. Letting an admin proactively find
+ * and fix these via the author-edit panel in
+ * app/admin/submissions/[id]/actions.ts is better than only ever
+ * discovering one when a real co-author happens to hit the selection
+ * screen themselves.
+ */
+export async function findAmbiguousAuthorEmails(conferenceId: string): Promise<AmbiguousAuthorEmailGroup[]> {
+  const admin = createAdminClient()
+
+  const { data: decisions } = await admin
+    .from("decisions")
+    .select("submission_id, decision, is_final")
+    .eq("is_final", true)
+    .in("decision", ["accepted", "accepted_oral", "accepted_poster"])
+  const acceptedIds = new Set((decisions ?? []).map((d) => d.submission_id))
+  if (acceptedIds.size === 0) return []
+
+  const { data: submissions } = await admin
+    .from("submissions")
+    .select(
+      "id, reference_number, title, payment_status, conference_id, submission_authors(email, first_name, last_name, author_order)"
+    )
+    .eq("conference_id", conferenceId)
+    .eq("payment_status", "verified")
+
+  const groups: AmbiguousAuthorEmailGroup[] = []
+  for (const s of submissions ?? []) {
+    if (!acceptedIds.has(s.id) || !s.reference_number) continue
+
+    const byEmail = new Map<string, typeof s.submission_authors>()
+    for (const a of s.submission_authors) {
+      const key = a.email.trim().toLowerCase()
+      if (!byEmail.has(key)) byEmail.set(key, [])
+      byEmail.get(key)!.push(a)
+    }
+
+    for (const [email, authors] of byEmail) {
+      if (authors.length < 2) continue
+      const seen = new Set<string>()
+      const names: string[] = []
+      for (const a of authors.sort((x, y) => x.author_order - y.author_order)) {
+        const fullName = `${a.first_name} ${a.last_name}`.trim().replace(/\s+/g, " ")
+        const key = fullName.toLowerCase()
+        if (seen.has(key)) continue
+        seen.add(key)
+        names.push(fullName)
+      }
+      if (names.length > 1) {
+        groups.push({ submissionId: s.id, referenceNumber: s.reference_number, abstractTitle: toPlain(s.title), email, names })
+      }
+    }
+  }
+
+  return groups
+}
