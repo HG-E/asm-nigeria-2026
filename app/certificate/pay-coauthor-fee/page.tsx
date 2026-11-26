@@ -1,8 +1,11 @@
 import type { Metadata } from "next"
 
+import Link from "next/link"
+
 import { BrandMark } from "@/components/layout/brand-mark"
 import { CoauthorFeeForm } from "@/components/certificate/coauthor-fee-form"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { buttonVariants } from "@/components/ui/button"
 import { getActiveConference } from "@/lib/conference"
 import { getCoauthorFeeStatus } from "@/lib/presentation-certificate"
 
@@ -61,17 +64,25 @@ export default async function PayCoauthorFeePage(props: PageProps<"/certificate/
 
           {status === "verified" && (
             <Alert className="border-[#187752]/30 bg-[#f1faf5]">
-              <AlertDescription className="text-[#0e5a3a]">
-                This fee has already been verified for {email}. Go back and download your certificate as usual.
+              <AlertDescription className="space-y-2 text-[#0e5a3a]">
+                <p>This fee has already been verified for {email}. Download your certificate below.</p>
+                <Link href="/certificate?type=presentation" className={buttonVariants({ size: "sm" })}>
+                  Go to certificate download
+                </Link>
               </AlertDescription>
             </Alert>
           )}
 
           {status === "exempt" && (
             <Alert className="border-[#187752]/30 bg-[#f1faf5]">
-              <AlertDescription className="text-[#0e5a3a]">
-                Good news — {email} already has a verified conference registration, so no fee is needed. Go back
-                and download your certificate as usual.
+              <AlertDescription className="space-y-2 text-[#0e5a3a]">
+                <p>
+                  Good news — {email} already has a verified conference registration, so no fee is needed. Download
+                  your certificate below.
+                </p>
+                <Link href="/certificate?type=presentation" className={buttonVariants({ size: "sm" })}>
+                  Go to certificate download
+                </Link>
               </AlertDescription>
             </Alert>
           )}

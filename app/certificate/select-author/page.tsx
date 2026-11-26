@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation"
+import Link from "next/link"
 import type { Metadata } from "next"
 
 import { BrandMark } from "@/components/layout/brand-mark"
@@ -52,7 +53,11 @@ export default async function SelectAuthorPage(props: PageProps<"/certificate/se
           <Alert className="border-[#003087]/20 bg-[#eef2fa]">
             <AlertDescription className="text-[#0d1b3e]">
               If your name isn&apos;t listed, or more than one entry could be you, the author details on the abstract
-              need correcting first. Contact the admin.
+              need correcting first. Contact the admin, or{" "}
+              <Link href="/certificate?type=presentation" className="underline underline-offset-2">
+                go back and try a different reference number or email
+              </Link>
+              .
             </AlertDescription>
           </Alert>
           {result.candidates.map((candidate) => (

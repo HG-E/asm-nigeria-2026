@@ -1,8 +1,11 @@
 "use server"
 
 import { redirect } from "next/navigation"
+import { after } from "next/server"
 import { z } from "zod"
 
+import { sendMail } from "@/lib/email"
+import { escapeHtml } from "@/lib/html"
 import { namesLikelyMatch } from "@/lib/presentation-certificate"
 import { createAdminClient } from "@/lib/supabase/admin"
 
@@ -39,7 +42,11 @@ export async function submitCoauthorFeeAction(formData: FormData): Promise<Submi
   }
 
   const admin = createAdminClient()
-  const { data: conference } = await admin.from("conferences").select("id").eq("is_active", true).maybeSingle()
+  const { data: conference } = await admin
+    .from("conferences")
+    .select("id, secretariat_email")
+    .eq("is_active", true)
+    .maybeSingle()
   if (!conference) {
     return { error: "No active conference is configured. Contact the Admin." }
   }
@@ -101,6 +108,28 @@ export async function submitCoauthorFeeAction(formData: FormData): Promise<Submi
     await admin.storage.from("coauthor-fee-receipts").remove([storagePath])
     return { error: "Could not record your payment. Please try again." }
   }
+
+  // Without this, the only way an admin would know a co-author fee needs
+  // review is by remembering to check /admin/coauthor-fees unprompted --
+  // every other receipt-upload flow in this app (registration, workshop
+  // add-on) notifies the secretariat the same way.
+  after(async () => {
+    if (!conference.secretariat_email) return
+    try {
+      await sendMail({
+        to: conference.secretariat_email,
+        subject: `New co-author certificate fee receipt — ${fullName}`,
+        html: `
+          <p><strong>Name:</strong> ${escapeHtml(fullName)}</p>
+          <p><strong>Email:</strong> ${escapeHtml(normalizedEmail)}</p>
+          <p>Review and verify the receipt from the admin Co-Author Fees page.</p>
+        `,
+      })
+    } catch {
+      // The row and uploaded receipt are already durable -- admin can still
+      // find and verify it from the review queue even if this email fails.
+    }
+  })
 
   redirect(
     `/certificate/pay-coauthor-fee?submitted=1&email=${encodeURIComponent(normalizedEmail)}&name=${encodeURIComponent(fullName)}`
