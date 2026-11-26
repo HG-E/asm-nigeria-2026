@@ -8,6 +8,8 @@ import { applyFormattingOnly } from "@/lib/abstract-formatting"
 import { normalizeKeywords, normalizeTitle } from "@/lib/abstract-structure"
 import { requireRole } from "@/lib/auth"
 import { createDecisionDocuments, formatAuthorList, isAcceptDecision } from "@/lib/decision-documents"
+import { sendMail } from "@/lib/email"
+import { escapeHtml } from "@/lib/html"
 import { sendNotifications } from "@/lib/notifications"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
@@ -215,10 +217,15 @@ export async function finalizeDecisionAction(
 
     // All listed authors, in order, for the formal acceptance letter --
     // not just the corresponding author (submission_authors already has
-    // first/last name, so no extra profile lookups are needed).
+    // first/last name, so no extra profile lookups are needed). Also
+    // carries email/is_corresponding now, reused below to notify co-authors
+    // directly -- previously only the corresponding author ever learned the
+    // reference number, so a co-author had no way to self-serve their own
+    // Certificate of Presentation unless the corresponding author happened
+    // to forward it to them.
     const { data: allAuthors } = await createAdminClient()
       .from("submission_authors")
-      .select("first_name, last_name")
+      .select("first_name, last_name, email, is_corresponding")
       .eq("submission_id", submissionId)
       .order("author_order")
 
@@ -231,6 +238,41 @@ export async function finalizeDecisionAction(
     })
     if ("error" in result) {
       console.error(`[finalizeDecisionAction] document generation failed for ${submissionId}:`, result.error)
+    }
+
+    // The corresponding author gets the full notification + acceptance
+    // letter below; every OTHER listed author gets this shorter, separate
+    // email instead, since they never get an account or a notifications-
+    // table row (same reasoning as registration confirmations and the
+    // co-author fee emails elsewhere in this app). One failed send here
+    // doesn't block another author's, or the corresponding author's own
+    // notification below.
+    const referenceNumber = submission.reference_number ?? submissionId
+    const abstractTitle = toPlain(submission.title) || "Untitled"
+    const coAuthors = (allAuthors ?? []).filter((a) => !a.is_corresponding)
+    if (coAuthors.length > 0) {
+      after(() =>
+        Promise.allSettled(
+          coAuthors.map((coAuthor) =>
+            sendMail({
+              to: coAuthor.email,
+              subject: `Your co-authored abstract has been accepted — ${referenceNumber}`,
+              html: `
+                <p>Hi ${escapeHtml(coAuthor.first_name)},</p>
+                <p>The abstract you co-authored, "${escapeHtml(abstractTitle)}" (reference
+                <strong>${escapeHtml(referenceNumber)}</strong>), has been accepted for ${escapeHtml(presentationType)}
+                at the Maiden American Society for Microbiology Nigeria Conference 2026.</p>
+                <p>As a co-author, you can download your own Certificate of Presentation -- in your own name -- after
+                the conference, at <a href="https://www.asmnigeriaconference.com.ng/certificate?type=presentation">asmnigeriaconference.com.ng/certificate</a>,
+                using this reference number and your own email address.</p>
+                <p>If you haven't separately registered and paid for the conference, a one-time ₦5,000 co-author
+                certificate fee applies -- you'll be guided through that automatically if needed when you try to
+                download.</p>
+              `,
+            })
+          )
+        )
+      )
     }
   }
 
