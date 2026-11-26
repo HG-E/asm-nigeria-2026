@@ -3,6 +3,47 @@ import "server-only"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { toPlain } from "@/lib/rich-text"
 
+const HONORIFICS = new Set(["dr", "prof", "professor", "mr", "mrs", "ms", "miss", "phd", "md", "engr", "barr"])
+
+function nameWords(name: string): Set<string> {
+  return new Set(
+    name
+      .toLowerCase()
+      .replace(/[^a-z\s]/g, " ")
+      .split(/\s+/)
+      .filter((w) => w && !HONORIFICS.has(w))
+  )
+}
+
+/**
+ * Loosely checks that two names plausibly refer to the same person --
+ * tolerant of titles ("PhD", "Dr"), middle names, and punctuation
+ * differences, but not of two genuinely different names. Every
+ * meaningful word of the SHORTER name must appear in the longer one, so
+ * "Sylvia Anyadoh-Nwadike" matches "Sylvia Onyinyechi Anyadoh-Nwadike,
+ * PhD", but "Juliet Okafor" does not.
+ *
+ * This exists because a registration or fee payment is looked up by email
+ * alone, and live data confirmed real cases of two genuinely different
+ * co-authors sharing one listed email on the same abstract (see the dedupe
+ * comment in lookupPresentationEligibility). Without this check, one of
+ * them registering or paying would silently exempt the OTHER one too --
+ * confirmed exploitable: a co-author with no registration and no paid fee
+ * got a free certificate purely by sharing a shared, duplicated email with
+ * someone who did have one. Comparing names doesn't fully solve the
+ * underlying data problem (fixed properly via the admin author-edit panel
+ * in app/admin/submissions/[id]/actions.ts), but it closes the actual
+ * exploit: an exemption can no longer cross from one real person to a
+ * different one who merely shares their email.
+ */
+export function namesLikelyMatch(a: string, b: string): boolean {
+  const wordsA = nameWords(a)
+  const wordsB = nameWords(b)
+  if (wordsA.size === 0 || wordsB.size === 0) return false
+  const [shorter, longer] = wordsA.size <= wordsB.size ? [wordsA, wordsB] : [wordsB, wordsA]
+  return [...shorter].every((w) => longer.has(w))
+}
+
 export type PresentationAuthorCandidate = {
   authorOrder: number
   fullName: string
@@ -191,10 +232,15 @@ export type CoauthorFeeStatus = "exempt" | "verified" | "pending" | "rejected" |
  * everyone else. Worst case on a missed match here is someone who should
  * have been exempt is asked to pay instead -- an inconvenience an admin can
  * manually wave through, not a hard failure.
+ *
+ * fullName is required (not optional) specifically so every call site is
+ * forced to pass the actual chosen candidate's name -- see namesLikelyMatch
+ * above for why a name check is needed at all here.
  */
 export async function getCoauthorFeeStatus(
   conferenceId: string,
   email: string,
+  fullName: string,
   isCorresponding: boolean
 ): Promise<CoauthorFeeStatus> {
   if (isCorresponding) return "exempt"
@@ -205,25 +251,29 @@ export async function getCoauthorFeeStatus(
   // Looked up the same safe way as every other email match in this file:
   // filter server-side on the cheap, known-safe columns, then compare the
   // email exactly in JS -- never .ilike(column, email), which treats
-  // "%"/"_" in the value as wildcards.
+  // "%"/"_" in the value as wildcards. The name check on top stops one
+  // real person's registration from exempting a DIFFERENT real person who
+  // merely shares their listed email (see namesLikelyMatch's comment).
   const { data: registrations } = await admin
     .from("conference_registrations")
-    .select("email")
+    .select("email, full_name")
     .eq("conference_id", conferenceId)
     .eq("payment_status", "verified")
   const hasConferenceRegistration = (registrations ?? []).some(
-    (r) => r.email.trim().toLowerCase() === normalizedEmail
+    (r) => r.email.trim().toLowerCase() === normalizedEmail && namesLikelyMatch(r.full_name, fullName)
   )
   if (hasConferenceRegistration) return "exempt"
 
   // Scoped by conference_id server-side (safe, not user input), then
   // compared exactly in JS for the email -- same reasoning as elsewhere in
-  // this file: never .ilike(column, userValue).
+  // this file: never .ilike(column, userValue). Same name guard as above.
   const { data: rows } = await admin
     .from("coauthor_certificate_fees")
-    .select("email, payment_status")
+    .select("email, full_name, payment_status")
     .eq("conference_id", conferenceId)
-  const row = rows?.find((r) => r.email.trim().toLowerCase() === normalizedEmail)
+  const row = rows?.find(
+    (r) => r.email.trim().toLowerCase() === normalizedEmail && namesLikelyMatch(r.full_name, fullName)
+  )
 
   if (!row) return "unpaid"
   if (row.payment_status === "verified") return "verified"

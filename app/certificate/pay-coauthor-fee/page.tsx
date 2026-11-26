@@ -22,7 +22,7 @@ export default async function PayCoauthorFeePage(props: PageProps<"/certificate/
   const submitted = searchParams.submitted === "1"
 
   const conference = await getActiveConference()
-  const status = conference && email ? await getCoauthorFeeStatus(conference.id, email, false) : "unpaid"
+  const status = conference && email ? await getCoauthorFeeStatus(conference.id, email, name, false) : "unpaid"
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-gradient-to-b from-white to-[#eef2fa] px-4 py-12">

@@ -174,7 +174,7 @@ async function handlePresentation(
   // one-time fee verified before their own certificate is issued -- see
   // migration 0045 and getCoauthorFeeStatus's own comment for why it's
   // looked up by email rather than per-submission.
-  const feeStatus = await getCoauthorFeeStatus(result.conferenceId, email, chosen.isCorresponding)
+  const feeStatus = await getCoauthorFeeStatus(result.conferenceId, email, chosen.fullName, chosen.isCorresponding)
   if (feeStatus !== "exempt" && feeStatus !== "verified") {
     const params = new URLSearchParams({ email, name: chosen.fullName })
     redirect(`/certificate/pay-coauthor-fee?${params.toString()}`)
