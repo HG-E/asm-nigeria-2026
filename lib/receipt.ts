@@ -136,25 +136,63 @@ export async function generatePaymentReceipt(params: {
     regular
   )
 
-  // Amount block
+  // Amount block. The "PAID" badge sits on the label row, not beside the
+  // figure itself -- a long amount_expected string (e.g. a paid category
+  // plus the workshop add-on) used to run directly under/through a
+  // same-row badge at a fixed x position, since the amount's own
+  // font-shrink loop never accounted for the badge's position. Wrapping
+  // the amount to up to 2 lines across the box's full width, with the
+  // badge safely out of the way above it, fixes that regardless of length.
+  const boxHeight = 96
   y -= 70
-  page.drawRectangle({ x: 48, y: y - 54, width: PAGE_WIDTH - 96, height: 70, color: rgb(0.96, 0.97, 0.99) })
+  page.drawRectangle({ x: 48, y: y - boxHeight + 16, width: PAGE_WIDTH - 96, height: boxHeight, color: rgb(0.96, 0.97, 0.99) })
   page.drawText("AMOUNT PAID", { x: 64, y: y - 2, size: 9, font: bold, color: MUTED })
-  const amountText = pdfSafeText(params.amountExpected)
-  const amountMaxWidth = PAGE_WIDTH - 96 - 32
-  let amountSize = 22
-  while (bold.widthOfTextAtSize(amountText, amountSize) > amountMaxWidth && amountSize > 12) {
-    amountSize -= 1
-  }
-  page.drawText(amountText, { x: 64, y: y - 30, size: amountSize, font: bold, color: INK })
 
   const paidLabel = "PAID"
   const paidWidth = bold.widthOfTextAtSize(paidLabel, 11)
   const badgeX = PAGE_WIDTH - 64 - paidWidth - 24
-  page.drawRectangle({ x: badgeX, y: y - 32, width: paidWidth + 24, height: 24, color: PAID_BG })
-  page.drawText(paidLabel, { x: badgeX + 12, y: y - 24, size: 11, font: bold, color: PAID_TEXT })
+  page.drawRectangle({ x: badgeX, y: y - 14, width: paidWidth + 24, height: 20, color: PAID_BG })
+  page.drawText(paidLabel, { x: badgeX + 12, y: y - 7, size: 10, font: bold, color: PAID_TEXT })
 
-  y -= 100
+  const amountText = pdfSafeText(params.amountExpected)
+  const amountMaxWidth = PAGE_WIDTH - 96 - 32
+  let amountSize = 20
+  let amountLines: string[] = [amountText]
+  for (; amountSize >= 12; amountSize -= 1) {
+    if (bold.widthOfTextAtSize(amountText, amountSize) <= amountMaxWidth) {
+      amountLines = [amountText]
+      break
+    }
+    // Try wrapping across 2 lines at this size before shrinking further --
+    // break on a word boundary closest to the midpoint so it doesn't just
+    // chop mid-word.
+    const words = amountText.split(" ")
+    let line1 = ""
+    for (const word of words) {
+      const candidate = line1 ? `${line1} ${word}` : word
+      if (bold.widthOfTextAtSize(candidate, amountSize) <= amountMaxWidth) {
+        line1 = candidate
+      } else {
+        break
+      }
+    }
+    const line2 = amountText.slice(line1.length).trim()
+    if (line2 && bold.widthOfTextAtSize(line2, amountSize) <= amountMaxWidth) {
+      amountLines = [line1, line2]
+      break
+    }
+  }
+  const amountLineHeight = amountSize * 1.2
+  let amountY = y - 34
+  for (const line of amountLines) {
+    page.drawText(line, { x: 64, y: amountY, size: amountSize, font: bold, color: INK })
+    amountY -= amountLineHeight
+  }
+
+  // The box's bottom edge sits at y-80 (boxHeight=96, drawn from y-80 to
+  // y+16) regardless of whether the amount wrapped to one line or two, so
+  // 110 clears it with margin to spare either way.
+  y -= 110
   page.drawText("Payment received for registration with the Maiden American Society for", {
     x: 48,
     y,
