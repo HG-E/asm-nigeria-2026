@@ -316,6 +316,10 @@ export type AmbiguousAuthorEmailGroup = {
   abstractTitle: string
   email: string
   names: string[]
+  // The distinct authors behind `names`, with their row ids -- lets a caller
+  // (the admin bulk-cleanup view) edit each one's real email inline via
+  // updateAuthorContactAction without a second fetch per group.
+  authors: { id: string; firstName: string; lastName: string; isCorresponding: boolean }[]
 }
 
 /**
@@ -343,7 +347,7 @@ export async function findAmbiguousAuthorEmails(conferenceId: string): Promise<A
   const { data: submissions } = await admin
     .from("submissions")
     .select(
-      "id, reference_number, title, payment_status, conference_id, submission_authors(email, first_name, last_name, author_order)"
+      "id, reference_number, title, payment_status, conference_id, submission_authors(id, email, first_name, last_name, author_order, is_corresponding)"
     )
     .eq("conference_id", conferenceId)
     .eq("payment_status", "verified")
@@ -363,15 +367,24 @@ export async function findAmbiguousAuthorEmails(conferenceId: string): Promise<A
       if (authors.length < 2) continue
       const seen = new Set<string>()
       const names: string[] = []
+      const distinctAuthors: AmbiguousAuthorEmailGroup["authors"] = []
       for (const a of authors.sort((x, y) => x.author_order - y.author_order)) {
         const fullName = `${a.first_name} ${a.last_name}`.trim().replace(/\s+/g, " ")
         const key = fullName.toLowerCase()
         if (seen.has(key)) continue
         seen.add(key)
         names.push(fullName)
+        distinctAuthors.push({ id: a.id, firstName: a.first_name, lastName: a.last_name, isCorresponding: a.is_corresponding })
       }
       if (names.length > 1) {
-        groups.push({ submissionId: s.id, referenceNumber: s.reference_number, abstractTitle: toPlain(s.title), email, names })
+        groups.push({
+          submissionId: s.id,
+          referenceNumber: s.reference_number,
+          abstractTitle: toPlain(s.title),
+          email,
+          names,
+          authors: distinctAuthors,
+        })
       }
     }
   }

@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { CheckCheck, Clock, PiggyBank, XCircle } from "lucide-react"
 
+import { updateAuthorContactAction } from "@/app/admin/submissions/[id]/actions"
+import { AuthorContactPanel } from "@/components/admin/author-contact-panel"
 import { CoauthorFeeVerificationPanel } from "@/components/admin/coauthor-fee-verification-panel"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { StatCard, StatGrid } from "@/components/dashboard/stat-card"
@@ -91,8 +93,8 @@ export default async function AdminCoauthorFeesPage() {
           <CardContent className="space-y-3 text-sm">
             <p className="text-[#8a5a00]">
               These abstracts have two or more different co-authors sharing one listed email -- each of them sees a
-              &quot;which name is yours?&quot; screen when downloading their certificate until this is fixed.
-              Correct each person&apos;s own email from the submission page.
+              &quot;which name is yours?&quot; screen when downloading their certificate until this is fixed. Fix each
+              person&apos;s own email inline below, no need to open the submission page.
             </p>
             <ul className="space-y-2">
               {ambiguousGroups.map((g) => (
@@ -101,9 +103,20 @@ export default async function AdminCoauthorFeesPage() {
                     {g.referenceNumber}
                   </Link>
                   <p className="text-muted-foreground mt-1">{g.abstractTitle}</p>
-                  <p className="mt-1">
-                    <span className="text-muted-foreground">{g.email}</span> is shared by: {g.names.join(", ")}
-                  </p>
+                  <p className="mt-1 text-muted-foreground">Currently shared email: {g.email}</p>
+                  <div className="mt-2">
+                    <AuthorContactPanel
+                      authors={g.authors.map((a) => ({
+                        id: a.id,
+                        firstName: a.firstName,
+                        lastName: a.lastName,
+                        email: g.email,
+                        isCorresponding: a.isCorresponding,
+                        institution: null,
+                      }))}
+                      save={updateAuthorContactAction.bind(null, g.submissionId)}
+                    />
+                  </div>
                 </li>
               ))}
             </ul>
