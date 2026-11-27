@@ -10,11 +10,32 @@ import {
 import { createAdminClient } from "@/lib/supabase/admin"
 import { getCoauthorFeeStatus, lookupPresentationEligibility } from "@/lib/presentation-certificate"
 
+// Payment status can route to one of three different messages (pending,
+// rejected with its own specific reason, or the generic fallback) -- shared
+// by all three registration-backed certificate types so the redirect logic
+// can't drift between them.
+function redirectForPaymentStatus(
+  type: "participation" | "workshop" | "volunteer",
+  status: string,
+  rejectionReason: string | null
+): never {
+  const params = new URLSearchParams({ type })
+  if (status === "pending") {
+    params.set("error", "payment_pending")
+  } else if (status === "rejected") {
+    params.set("error", "payment_rejected")
+    if (rejectionReason) params.set("reason", rejectionReason)
+  } else {
+    params.set("error", "not_verified")
+  }
+  redirect(`/certificate?${params.toString()}`)
+}
+
 async function handleParticipation(referenceNumber: string, email: string) {
   const admin = createAdminClient()
   const { data: registration } = await admin
     .from("conference_registrations")
-    .select("full_name, reference_number, email, payment_status, attended, participant_category")
+    .select("full_name, reference_number, email, payment_status, payment_rejection_reason, attended, participant_category")
     .eq("reference_number", referenceNumber)
     .maybeSingle()
 
@@ -40,7 +61,7 @@ async function handleParticipation(referenceNumber: string, email: string) {
     redirect("/certificate?type=participation&error=volunteer_only")
   }
   if (registration.payment_status !== "verified") {
-    redirect("/certificate?type=participation&error=not_verified")
+    redirectForPaymentStatus("participation", registration.payment_status, registration.payment_rejection_reason)
   }
   if (!registration.attended) {
     redirect("/certificate?type=participation&error=not_attended")
@@ -63,7 +84,7 @@ async function handleWorkshop(referenceNumber: string, email: string) {
   const admin = createAdminClient()
   const { data: registration } = await admin
     .from("conference_registrations")
-    .select("full_name, reference_number, email, payment_status, attended, amount_expected")
+    .select("full_name, reference_number, email, payment_status, payment_rejection_reason, attended, amount_expected")
     .eq("reference_number", referenceNumber)
     .maybeSingle()
 
@@ -80,7 +101,7 @@ async function handleWorkshop(referenceNumber: string, email: string) {
     redirect("/certificate?type=workshop&error=no_workshop")
   }
   if (registration.payment_status !== "verified") {
-    redirect("/certificate?type=workshop&error=not_verified")
+    redirectForPaymentStatus("workshop", registration.payment_status, registration.payment_rejection_reason)
   }
   if (!registration.attended) {
     redirect("/certificate?type=workshop&error=not_attended")
@@ -103,7 +124,7 @@ async function handleVolunteer(referenceNumber: string, email: string) {
   const admin = createAdminClient()
   const { data: registration } = await admin
     .from("conference_registrations")
-    .select("full_name, reference_number, email, payment_status, attended, participant_category")
+    .select("full_name, reference_number, email, payment_status, payment_rejection_reason, attended, participant_category")
     .eq("reference_number", referenceNumber)
     .maybeSingle()
 
@@ -116,7 +137,7 @@ async function handleVolunteer(referenceNumber: string, email: string) {
     redirect("/certificate?type=volunteer&error=not_volunteer")
   }
   if (registration.payment_status !== "verified") {
-    redirect("/certificate?type=volunteer&error=not_verified")
+    redirectForPaymentStatus("volunteer", registration.payment_status, registration.payment_rejection_reason)
   }
   if (!registration.attended) {
     redirect("/certificate?type=volunteer&error=not_attended")

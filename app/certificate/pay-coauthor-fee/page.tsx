@@ -7,7 +7,7 @@ import { CoauthorFeeForm } from "@/components/certificate/coauthor-fee-form"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { buttonVariants } from "@/components/ui/button"
 import { getActiveConference } from "@/lib/conference"
-import { COAUTHOR_FEE_NGN, getCoauthorFeeStatus } from "@/lib/presentation-certificate"
+import { COAUTHOR_FEE_NGN, getCoauthorFeeRejectionReason, getCoauthorFeeStatus } from "@/lib/presentation-certificate"
 
 export const metadata: Metadata = {
   title: "Co-Author Certificate Fee | ASM Nigeria 2026",
@@ -24,6 +24,8 @@ export default async function PayCoauthorFeePage(props: PageProps<"/certificate/
 
   const conference = await getActiveConference()
   const status = conference && email ? await getCoauthorFeeStatus(conference.id, email, name, false) : "unpaid"
+  const rejectionReason =
+    conference && email && status === "rejected" ? await getCoauthorFeeRejectionReason(conference.id, email, name) : null
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-gradient-to-b from-white to-[#eef2fa] px-4 py-12">
@@ -107,8 +109,16 @@ export default async function PayCoauthorFeePage(props: PageProps<"/certificate/
           {status === "rejected" && (
             <Alert variant="destructive" className="border-[#cc2229]/30 bg-[#fdf1f1]">
               <AlertDescription className="text-[#9e1a1f]">
-                Your previous receipt for {email} couldn&apos;t be verified. Please check the amount and account
-                details below and submit a clear copy.
+                <p>
+                  Your previous receipt for {email} couldn&apos;t be verified. Please check the amount and account
+                  details below and submit a clear copy.
+                </p>
+                {rejectionReason && (
+                  <p className="mt-2">
+                    <span className="font-medium">Reason given: </span>
+                    {rejectionReason}
+                  </p>
+                )}
               </AlertDescription>
             </Alert>
           )}

@@ -1,8 +1,11 @@
 import type { Metadata } from "next"
 
+import Link from "next/link"
+
 import { BrandMark } from "@/components/layout/brand-mark"
 import { CertificateForm } from "@/components/certificate/certificate-form"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { buttonVariants } from "@/components/ui/button"
 
 export const metadata: Metadata = {
   title: "Download Your Certificate | ASM Nigeria 2026",
@@ -16,6 +19,10 @@ const ERROR_MESSAGES: Record<string, string> = {
     "We couldn't find a match for that reference number and email. Double-check both and try again.",
   not_verified:
     "Your registration payment hasn't been verified yet, so a certificate isn't available. Contact the admin if you believe this is a mistake.",
+  payment_pending:
+    "Your registration payment is still under review. This usually takes 1-2 days — check back soon, or reach out to the secretariat below if it's been longer.",
+  payment_rejected:
+    "Your registration payment was rejected, so a certificate isn't available yet.",
   not_attended:
     "Certificates are issued after the conference, once attendance has been confirmed. If you attended and this seems wrong, contact the admin.",
   not_accepted:
@@ -40,6 +47,7 @@ export default async function CertificatePage(props: PageProps<"/certificate">) 
   const searchParams = await props.searchParams
   const errorCode = typeof searchParams.error === "string" ? searchParams.error : null
   const errorMessage = errorCode ? (ERROR_MESSAGES[errorCode] ?? "Something went wrong. Please try again.") : null
+  const rejectionReason = typeof searchParams.reason === "string" ? searchParams.reason : null
   const defaultType =
     searchParams.type === "presentation"
       ? "presentation"
@@ -77,8 +85,40 @@ export default async function CertificatePage(props: PageProps<"/certificate">) 
 
         <div className="space-y-4 px-6 pt-4 pb-8">
           {errorMessage && (
-            <Alert variant="destructive" className="border-[#cc2229]/30 bg-[#fdf1f1]">
-              <AlertDescription className="text-[#9e1a1f]">{errorMessage}</AlertDescription>
+            <Alert
+              variant={errorCode === "payment_pending" ? "default" : "destructive"}
+              className={
+                errorCode === "payment_pending"
+                  ? "border-[#f5a800]/30 bg-[#fffaf0]"
+                  : "border-[#cc2229]/30 bg-[#fdf1f1]"
+              }
+            >
+              <AlertDescription className={errorCode === "payment_pending" ? "text-[#8a5a00]" : "text-[#9e1a1f]"}>
+                <p>{errorMessage}</p>
+                {errorCode === "payment_rejected" && rejectionReason && (
+                  <p className="mt-2">
+                    <span className="font-medium">Reason given: </span>
+                    {rejectionReason}
+                  </p>
+                )}
+                {errorCode === "payment_rejected" && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Link href="/register-conference" className={buttonVariants({ size: "sm" })}>
+                      Submit a new registration
+                    </Link>
+                    <Link href="/#contacts" className={buttonVariants({ size: "sm", variant: "outline" })}>
+                      Contact the secretariat
+                    </Link>
+                  </div>
+                )}
+                {errorCode === "payment_pending" && (
+                  <div className="mt-3">
+                    <Link href="/#contacts" className={buttonVariants({ size: "sm", variant: "outline" })}>
+                      Contact the secretariat
+                    </Link>
+                  </div>
+                )}
+              </AlertDescription>
             </Alert>
           )}
           <CertificateForm defaultType={defaultType} previewToken={previewToken} />

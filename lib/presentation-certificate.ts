@@ -286,6 +286,30 @@ export async function getCoauthorFeeStatus(
   return "pending"
 }
 
+/**
+ * The specific reason an admin gave when rejecting this person's fee
+ * receipt -- fetched separately from getCoauthorFeeStatus above so every
+ * existing call site of that function (which only needs the status enum)
+ * is unaffected. Only meaningful to call once that status is "rejected".
+ */
+export async function getCoauthorFeeRejectionReason(
+  conferenceId: string,
+  email: string,
+  fullName: string
+): Promise<string | null> {
+  const admin = createAdminClient()
+  const normalizedEmail = email.trim().toLowerCase()
+
+  const { data: rows } = await admin
+    .from("coauthor_certificate_fees")
+    .select("email, full_name, rejection_reason")
+    .eq("conference_id", conferenceId)
+  const row = rows?.find(
+    (r) => r.email.trim().toLowerCase() === normalizedEmail && namesLikelyMatch(r.full_name, fullName)
+  )
+  return row?.rejection_reason ?? null
+}
+
 export type AmbiguousAuthorEmailGroup = {
   submissionId: string
   referenceNumber: string
