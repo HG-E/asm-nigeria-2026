@@ -6,7 +6,7 @@
 export type Partner = {
   name: string
   logo: string
-  url: string
+  url?: string // omit if the partner has no website to link to
   type: string // short badge, e.g. "Technical Partner"
   desc: string // one line, for the homepage card
   fullDesc: string // a short paragraph, for the /partners page
@@ -66,5 +66,14 @@ export const PARTNERS: Partner[] = [
     desc: "A health-focused Nigerian tech outlet providing user-driven technology transformation coverage for ASM Nigeria 2026.",
     fullDesc:
       "Healths.NG Media Limited helps Nigerian healthcare professionals and organizations build a powerful digital presence. As a digital media partner, Healths.NG is amplifying ASM Nigeria 2026's technology and digital reach online.",
+  },
+  {
+    name: "Applied Biotech International Nigeria Limited",
+    logo: "/partners/appliedbiotech.jpg",
+    url: "https://appliedbiotech.ng",
+    type: "Partner",
+    desc: "A Nigerian biotechnology company offering molecular diagnostics, hands-on training and local reagent production, supporting ASM Nigeria 2026.",
+    fullDesc:
+      "Founded in 2006, Applied Biotech International Nigeria Limited is a Nigerian biotechnology company providing molecular diagnostics, hands-on training, laboratory services and local reagent production. It is a partner of ASM Nigeria 2026, supporting the conference's mission to advance microbiology and biotechnology across Nigeria.",
   },
 ]

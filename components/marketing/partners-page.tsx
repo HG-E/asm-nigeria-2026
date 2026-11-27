@@ -40,16 +40,25 @@ export function PartnersPage({ partners = PARTNERS }: { partners?: Partner[] } =
             <div className="partners-grid">
               {partners.map((p, i) => (
                 <Reveal key={p.name} delay={(i % 3) * 80} className="partner-full-card">
-                  <a href={p.url} target="_blank" rel="noopener noreferrer" className="pfc-logo-link">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={p.logo} alt={p.name} className="pfc-logo" />
-                  </a>
+                  {p.url ? (
+                    <a href={p.url} target="_blank" rel="noopener noreferrer" className="pfc-logo-link">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={p.logo} alt={p.name} className="pfc-logo" />
+                    </a>
+                  ) : (
+                    <span className="pfc-logo-link">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={p.logo} alt={p.name} className="pfc-logo" />
+                    </span>
+                  )}
                   <span className="chip chip-blue pfc-type">{p.type}</span>
                   <h2 className="pfc-name">{p.name}</h2>
                   <p className="pfc-desc">{p.fullDesc}</p>
-                  <a href={p.url} target="_blank" rel="noopener noreferrer" className="pfc-link">
-                    Visit website ↗
-                  </a>
+                  {p.url && (
+                    <a href={p.url} target="_blank" rel="noopener noreferrer" className="pfc-link">
+                      Visit website ↗
+                    </a>
+                  )}
                 </Reveal>
               ))}
             </div>

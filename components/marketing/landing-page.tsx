@@ -1887,9 +1887,9 @@ export function LandingPage() {
                     {PARTNERS.map((p) => (
                       <a
                         key={p.name}
-                        href={p.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        {...(p.url
+                          ? { href: p.url, target: "_blank", rel: "noopener noreferrer" }
+                          : {})}
                         className="pc-card"
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
