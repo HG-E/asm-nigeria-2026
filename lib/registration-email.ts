@@ -39,6 +39,7 @@ export function registrationRejectedHtml(params: {
   fullName: string
   referenceNumber: string
   reason: string | null
+  resubmitLink: string
 }) {
   const firstName = params.fullName.trim().split(/\s+/)[0] || params.fullName
   const reasonNote = params.reason ? `<p><strong>Reason:</strong> ${escapeHtml(params.reason)}</p>` : ""
@@ -48,7 +49,8 @@ export function registrationRejectedHtml(params: {
     <p>We could not verify the payment receipt for your registration.</p>
     <p><strong>Reference number:</strong> ${escapeHtml(params.referenceNumber)}</p>
     ${reasonNote}
-    <p>Please contact the admin with a corrected receipt or proof of payment.</p>
+    <p>Fix it by uploading a corrected receipt here -- no need to register again from scratch, your details stay the same:</p>
+    <p><a href="${escapeHtml(params.resubmitLink)}">${escapeHtml(params.resubmitLink)}</a></p>
     <p>— ASM Nigeria 2026 Finance &amp; Budget Committee and Admin</p>
   `
 }

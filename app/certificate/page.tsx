@@ -48,6 +48,9 @@ export default async function CertificatePage(props: PageProps<"/certificate">) 
   const errorCode = typeof searchParams.error === "string" ? searchParams.error : null
   const errorMessage = errorCode ? (ERROR_MESSAGES[errorCode] ?? "Something went wrong. Please try again.") : null
   const rejectionReason = typeof searchParams.reason === "string" ? searchParams.reason : null
+  const refParam = typeof searchParams.ref === "string" ? searchParams.ref : ""
+  const emailParam = typeof searchParams.email === "string" ? searchParams.email : ""
+  const resubmitHref = `/register-conference/resubmit?ref=${encodeURIComponent(refParam)}&email=${encodeURIComponent(emailParam)}`
   const defaultType =
     searchParams.type === "presentation"
       ? "presentation"
@@ -103,8 +106,8 @@ export default async function CertificatePage(props: PageProps<"/certificate">) 
                 )}
                 {errorCode === "payment_rejected" && (
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <Link href="/register-conference" className={buttonVariants({ size: "sm" })}>
-                      Submit a new registration
+                    <Link href={resubmitHref} className={buttonVariants({ size: "sm" })}>
+                      Resubmit corrected receipt
                     </Link>
                     <Link href="/#contacts" className={buttonVariants({ size: "sm", variant: "outline" })}>
                       Contact the secretariat

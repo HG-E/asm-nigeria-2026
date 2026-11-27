@@ -270,6 +270,7 @@ export async function rejectRegistrationAction(registrationId: string, reason: s
 
   after(async () => {
     try {
+      const resubmitLink = `https://www.asmnigeriaconference.com.ng/register-conference/resubmit?ref=${encodeURIComponent(registration.reference_number ?? "")}&email=${encodeURIComponent(registration.email)}`
       await sendMail({
         to: registration.email,
         subject: `Registration needs attention — ${registration.reference_number}`,
@@ -277,6 +278,7 @@ export async function rejectRegistrationAction(registrationId: string, reason: s
           fullName: registration.full_name,
           referenceNumber: registration.reference_number ?? "",
           reason: reason.trim() || null,
+          resubmitLink,
         }),
       })
     } catch {

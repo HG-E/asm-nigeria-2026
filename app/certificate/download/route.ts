@@ -17,7 +17,9 @@ import { getCoauthorFeeStatus, lookupPresentationEligibility } from "@/lib/prese
 function redirectForPaymentStatus(
   type: "participation" | "workshop" | "volunteer",
   status: string,
-  rejectionReason: string | null
+  rejectionReason: string | null,
+  referenceNumber: string,
+  email: string
 ): never {
   const params = new URLSearchParams({ type })
   if (status === "pending") {
@@ -25,6 +27,11 @@ function redirectForPaymentStatus(
   } else if (status === "rejected") {
     params.set("error", "payment_rejected")
     if (rejectionReason) params.set("reason", rejectionReason)
+    // Lets the certificate page link straight to the pre-filled resubmit
+    // form instead of a bare "/register-conference" that makes someone
+    // retype their whole registration just to fix a receipt.
+    params.set("ref", referenceNumber)
+    params.set("email", email)
   } else {
     params.set("error", "not_verified")
   }
@@ -61,7 +68,7 @@ async function handleParticipation(referenceNumber: string, email: string) {
     redirect("/certificate?type=participation&error=volunteer_only")
   }
   if (registration.payment_status !== "verified") {
-    redirectForPaymentStatus("participation", registration.payment_status, registration.payment_rejection_reason)
+    redirectForPaymentStatus("participation", registration.payment_status, registration.payment_rejection_reason, referenceNumber, email)
   }
   if (!registration.attended) {
     redirect("/certificate?type=participation&error=not_attended")
@@ -101,7 +108,7 @@ async function handleWorkshop(referenceNumber: string, email: string) {
     redirect("/certificate?type=workshop&error=no_workshop")
   }
   if (registration.payment_status !== "verified") {
-    redirectForPaymentStatus("workshop", registration.payment_status, registration.payment_rejection_reason)
+    redirectForPaymentStatus("workshop", registration.payment_status, registration.payment_rejection_reason, referenceNumber, email)
   }
   if (!registration.attended) {
     redirect("/certificate?type=workshop&error=not_attended")
@@ -137,7 +144,7 @@ async function handleVolunteer(referenceNumber: string, email: string) {
     redirect("/certificate?type=volunteer&error=not_volunteer")
   }
   if (registration.payment_status !== "verified") {
-    redirectForPaymentStatus("volunteer", registration.payment_status, registration.payment_rejection_reason)
+    redirectForPaymentStatus("volunteer", registration.payment_status, registration.payment_rejection_reason, referenceNumber, email)
   }
   if (!registration.attended) {
     redirect("/certificate?type=volunteer&error=not_attended")
