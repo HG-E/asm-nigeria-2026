@@ -21,6 +21,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { requireRole } from "@/lib/auth"
+import { findAmbiguousAuthorEmails } from "@/lib/presentation-certificate"
 import { createClient } from "@/lib/supabase/server"
 import type { Database } from "@/types/database"
 
@@ -58,6 +59,30 @@ async function getRevisionsNeedingAttention(supabase: SupabaseClient) {
     })
     .filter((s) => !s.deadline || (s.daysLate ?? 0) >= 0)
     .sort((a, b) => (b.daysLate ?? 9999) - (a.daysLate ?? 9999))
+}
+
+// Pending registration/fee reviews and shared-email mix-ups, surfaced here
+// so a backlog is visible on login rather than only discoverable by
+// remembering to check three separate admin pages unprompted.
+async function getCertificateBacklog(supabase: SupabaseClient) {
+  const { count: pendingRegistrations } = await supabase
+    .from("conference_registrations")
+    .select("id", { count: "exact", head: true })
+    .eq("payment_status", "pending")
+
+  const { count: pendingFees } = await supabase
+    .from("coauthor_certificate_fees")
+    .select("id", { count: "exact", head: true })
+    .eq("payment_status", "pending")
+
+  const { data: conference } = await supabase.from("conferences").select("id").eq("is_active", true).maybeSingle()
+  const ambiguousGroups = conference ? await findAmbiguousAuthorEmails(conference.id) : []
+
+  return {
+    pendingRegistrations: pendingRegistrations ?? 0,
+    pendingFees: pendingFees ?? 0,
+    ambiguousGroups: ambiguousGroups.length,
+  }
 }
 
 export default async function AdminDashboardPage() {
@@ -122,6 +147,8 @@ export default async function AdminDashboardPage() {
     .eq("is_active", true)
 
   const attention = await getRevisionsNeedingAttention(supabase)
+  const backlog = await getCertificateBacklog(supabase)
+  const backlogTotal = backlog.pendingRegistrations + backlog.pendingFees + backlog.ambiguousGroups
 
   return (
     <div className="space-y-8">
@@ -166,6 +193,45 @@ export default async function AdminDashboardPage() {
                   — {s.deadline ? `${s.daysLate} day${s.daysLate === 1 ? "" : "s"} overdue` : "no deadline set"}
                 </li>
               ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
+      {backlogTotal > 0 && (
+        <Card className="border-amber-500/30 bg-amber-500/5">
+          <CardHeader>
+            <CardTitle className="text-base">
+              {backlogTotal} registration/certificate item{backlogTotal === 1 ? "" : "s"} need attention
+            </CardTitle>
+            <CardDescription>Pending receipts to review, and shared-email abstracts to clean up.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-1 text-sm">
+              {backlog.pendingRegistrations > 0 && (
+                <li>
+                  <Link href="/admin/registrations" className="font-medium underline underline-offset-4">
+                    {backlog.pendingRegistrations} registration payment{backlog.pendingRegistrations === 1 ? "" : "s"}
+                  </Link>{" "}
+                  awaiting review
+                </li>
+              )}
+              {backlog.pendingFees > 0 && (
+                <li>
+                  <Link href="/admin/coauthor-fees" className="font-medium underline underline-offset-4">
+                    {backlog.pendingFees} co-author certificate fee receipt{backlog.pendingFees === 1 ? "" : "s"}
+                  </Link>{" "}
+                  awaiting review
+                </li>
+              )}
+              {backlog.ambiguousGroups > 0 && (
+                <li>
+                  <Link href="/admin/coauthor-fees" className="font-medium underline underline-offset-4">
+                    {backlog.ambiguousGroups} abstract{backlog.ambiguousGroups === 1 ? "" : "s"}
+                  </Link>{" "}
+                  with a shared-email author mix-up needing manual cleanup
+                </li>
+              )}
             </ul>
           </CardContent>
         </Card>
