@@ -137,7 +137,7 @@ export async function GET(request: Request) {
   // deadline approaches (only while the admin has submissions open).
   const { data: conference } = await supabase
     .from("conferences")
-    .select("id, late_submission_deadline, submissions_open, secretariat_email")
+    .select("id, late_submission_deadline, submissions_open, secretariat_email, presentation_certificates_open")
     .eq("is_active", true)
     .maybeSingle()
 
@@ -232,7 +232,13 @@ export async function GET(request: Request) {
   // metadata.email) so clearing a large backlog takes several days of runs
   // rather than one burst -- see the constant comment above for why that
   // matters.
-  if (conference?.id) {
+  //
+  // Gated on the same presentation_certificates_open pause flag as the
+  // public download/fee flow itself -- pointing people at a feature that's
+  // currently switched off would just generate confused replies, and this
+  // way reopening the flag alone resumes reminders too, with no separate
+  // toggle to remember.
+  if (conference?.id && conference.presentation_certificates_open) {
     try {
       const { data: decisions } = await supabase
         .from("decisions")
