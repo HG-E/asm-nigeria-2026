@@ -31,6 +31,7 @@ export async function verifyRegistrationAction(registrationId: string): Promise<
       payment_verified_by: session.authUserId,
       payment_verified_at: new Date().toISOString(),
       payment_rejection_reason: null,
+      attended: true,
     })
     .eq("id", registrationId)
 
@@ -111,6 +112,7 @@ export async function convertToCommitteeMemberAction(
       payment_verified_by: session.authUserId,
       payment_verified_at: new Date().toISOString(),
       payment_rejection_reason: null,
+      attended: true,
     })
     .eq("id", registrationId)
 
@@ -146,9 +148,13 @@ export async function convertToCommitteeMemberAction(
   return { success: true }
 }
 
-// Independent of payment status -- verified only means they paid, not that
-// they actually showed up. This is what gates Certificate of Participation
-// eligibility, set by hand at check-in.
+// Verifying payment now sets attended=true automatically (see
+// verifyRegistrationAction/convertToCommitteeMemberAction above) -- this
+// toggle exists for the exception cases: correcting a registration that was
+// verified but the person never actually showed up, or the reverse, a
+// walk-in who paid at the door and is checked in here before their payment
+// is formally verified. This is what gates Certificate of Participation
+// eligibility.
 //
 // registration_desk can't UPDATE conference_registrations directly (RLS only
 // grants that to admin) -- this is the one thing that role exists to do, so
