@@ -243,13 +243,15 @@ async function renderContent(
       const rejectionReason = submissionRow?.payment_rejection_reason
         ? `<p><strong>Reason:</strong> ${escapeHtml(submissionRow.payment_rejection_reason)}</p>`
         : ""
+      const resubmitLink = `https://www.asmnigeriaconference.com.ng/author/submissions/${submissionId}`
       return finish(`
         <h2 style="${HEADING_STYLE}">Your payment receipt needs attention</h2>
         <p>We could not verify the payment receipt for your abstract.</p>
         <p><strong>Reference number:</strong> ${reference}</p>
         <p><strong>Title:</strong> ${title}</p>
         ${rejectionReason}
-        <p>Please log in to your dashboard and upload a corrected receipt as soon as possible.</p>
+        <p>Fix it by uploading a corrected receipt here -- no need to submit again from scratch, your abstract and details stay the same:</p>
+        <p><a href="${resubmitLink}">${resubmitLink}</a></p>
       `)
     }
     case "submission_withdrawn":
